@@ -1,0 +1,130 @@
+/**
+ * copyright  (C) 2010
+ * The Icecube Collaboration
+ *
+ * $Id$
+ *
+ * @version $Revision$
+ * @date $LastChangedDate$
+ * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
+ */
+
+#include <I3Test.h>
+
+#include "H5TA.h"
+#include <vector>
+
+#include <hdf-writer/internals/I3TableRow.h>
+#include <hdf-writer/internals/I3TableRowDescription.h>
+
+TEST_GROUP(I3TableRowTests);
+
+TEST(creation) {
+    I3TableRowDescriptionPtr base_d = I3TableRowDescriptionPtr( new I3TableRowDescription());
+    base_d->AddField<unsigned int>("Run", "", "doc");
+    base_d->AddField<unsigned int>("Event", "", "doc");
+
+    for(int i=0; i<10000; ++i) {
+        I3TableRow row(base_d);
+    }
+}
+
+TEST(assignment) {
+    I3TableRowDescriptionPtr base_d = I3TableRowDescriptionPtr( new I3TableRowDescription());
+    base_d->AddField<unsigned int>("Run", "", "doc");
+    base_d->AddField<unsigned int>("Event", "", "doc");
+
+    I3TableRow row(base_d);
+    row.Set<unsigned int>("Run",  1);
+    row.Set<unsigned int>("Event",  2);
+    
+    ENSURE_EQUAL(row.Get<unsigned int>("Run"), static_cast<unsigned int>(1), "reread values");
+    ENSURE_EQUAL(row.Get<unsigned int>("Event"), static_cast<unsigned int>(2), "reread values");
+}
+
+TEST(type_checking) {
+    I3TableRowDescriptionPtr desc = I3TableRowDescriptionPtr( new I3TableRowDescription());
+    desc->AddField<int>("field", "unit", "doc");
+    I3TableRow row(desc);
+
+    bool thrown = false;
+    try { row.Set<double>("field", 1); } // use wrong type 
+    catch(...) { thrown = true; }
+    ENSURE_EQUAL(thrown, true, "the above operation should throw an exception");
+
+    row.Set<int>("field", 2);
+    thrown = false;
+    try { row.Get<bool>("field"); } // use wrong type 
+    catch(...) { thrown = true; }
+    ENSURE_EQUAL(thrown, true, "the above operation should throw an exception");
+    
+    // type checking works over the size of the field
+    // hence it cannot catch attempts to use Set and Get with a wrong type which
+    // has the correct length
+    // assumption here: sizeof(float) == sizeof(int)
+    thrown = false;
+    try { row.Get<float>("field"); } // use wrong type
+    catch(...) { thrown = true; }
+    ENSURE_EQUAL(thrown, false, "type checking fails");
+}
+
+TEST(array_assignment) {
+    I3TableRowDescriptionPtr base_d = I3TableRowDescriptionPtr( new I3TableRowDescription());
+    base_d->AddField<unsigned int>("Run", "", "doc");
+    base_d->AddField<unsigned int>("Event", "", "doc");
+    base_d->AddField<double>("Waveform", "mV", "doc", 128);
+    base_d->AddField<bool>("Saturated", "", "doc");
+
+    I3TableRow row(base_d);
+    row.Set<unsigned int>("Run", 1);
+    row.Set<unsigned int>("Event", 2);
+    double* wf = row.GetPointer<double>("Waveform");
+    for (int i = 0; i < 128; ++i) {
+        wf[i] = 3.0*i + 2 ;
+    }
+    wf = 0;
+    row.Set<bool>("Saturated", true);
+    
+    // reread it
+    ENSURE_EQUAL(row.Get<unsigned int>("Run"), static_cast<unsigned int>(1), "reread values");
+    ENSURE_EQUAL(row.Get<unsigned int>("Event"), static_cast<unsigned int>(2), "reread values");
+
+    wf = row.GetPointer<double>("Waveform");
+    for (int i = 0; i < 128; ++i) {
+        ENSURE_DISTANCE(wf[i], 3.0*i + 2, 0.0000001);
+    }
+    wf = 0;
+    
+    ENSURE_EQUAL(row.Get<bool>("Saturated"), true, "reread values");
+
+}
+
+TEST(copy_constructor) {
+    I3TableRowDescriptionPtr base_d = I3TableRowDescriptionPtr( new I3TableRowDescription());
+    base_d->AddField<unsigned int>("Run", "", "doc");
+    base_d->AddField<unsigned int>("Event", "", "doc");
+    base_d->AddField<double>("Waveform", "mV", "doc", 128);
+    base_d->AddField<bool>("Saturated", "", "doc");
+
+    I3TableRow row(base_d);
+    row.Set<unsigned int>("Run", 1);
+    row.Set<unsigned int>("Event", 2);
+    double* wf1 = 0;
+    double* wf2 = 0;
+    wf1 = row.GetPointer<double>("Waveform");
+    for (int i = 0; i < 128; ++i) {
+        wf1[i] = 3.0*i + 2 ;
+    }
+    wf1 = 0;
+    row.Set<bool>("Saturated", true);
+
+    I3TableRow row2 (row);
+    ENSURE_EQUAL( row.Get<unsigned int>("Run"), row2.Get<unsigned int>("Run"), "fields equal");
+    ENSURE_EQUAL( row.Get<unsigned int>("Event"), row2.Get<unsigned int>("Event"), "fields equal");
+    ENSURE_EQUAL( row.Get<bool>("Saturated"), row2.Get<bool>("Saturated"), "fields equal");
+    wf1 = row.GetPointer<double>("Waveform");
+    wf2 = row2.GetPointer<double>("Waveform");
+    for (int i = 0; i < 128; ++i) {
+        ENSURE_EQUAL(wf1[i], wf2[i], "array fields equal");
+    }
+}
