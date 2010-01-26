@@ -72,6 +72,8 @@ endif(COMMAND cmake_policy)
     # add all the projects needed, in particular those needed by the converters
     USE_PROJECTS ${${PROJECT_NAME}_PROJECTS})
 
+  add_subdirectory(private/pybindings)
+
   # add the path to the place where the hdf5 libs exist
   #TARGET_LINK_LIBRARIES(hdf-writer ${HDF5_LIBRARIES})
   i3_test_executable(test 
