@@ -29,7 +29,7 @@ void add_field(I3TableRowDescription& self, const std::string& name, bp::object 
 		}
 		self.AddEnumField(name,values,unit,doc,array_length);
 		
-	} else if (basename == std::string("object")) {
+	} else {
 		// handle all other types
 		// TODO: can anything else concievably be passed through pybindings?
 		// the union mechanism doesn't save us any space anyhow...

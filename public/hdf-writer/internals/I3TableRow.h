@@ -31,9 +31,13 @@ class I3TableRow {
         void SetCurrentRow(unsigned int row);
         unsigned int GetCurrentRow();
         
+        // set the value of a field
+        template<class T>
+        void Set(const std::string& fieldName, T value, bool all);
+
         // set the value of a field in the current row
         template<class T>
-        void Set(const std::string& fieldName, T value);
+        void SetCurrent(const std::string& fieldName, T value);
         
         // get the value of a field in the current row
         template<class T>
@@ -75,7 +79,13 @@ I3_POINTER_TYPEDEFS( I3TableRow );
 /******************************************************************************/
 
 template<class T>
-void I3TableRow::Set(const std::string& fieldName, T value) {
+void I3TableRow::Set(const std::string& fieldName, T value, bool all = false) {
+	if (all) SetCurrent(fieldName,value);
+	else SetAll(fieldName,value);
+}
+
+template<class T>
+void I3TableRow::SetCurrent(const std::string& fieldName, T value) {
     T*  pointer = GetPointerToRow<T>(fieldName, currentRow_); 
     *pointer = value;
 }
@@ -83,7 +93,7 @@ void I3TableRow::Set(const std::string& fieldName, T value) {
 template<class T>
 void I3TableRow::SetAll(const std::string& fieldName, T value) {
     for (unsigned int row = 0; row < nrows_; ++row) {
-       T*  pointer = GetPointer<T>(fieldName, row); 
+       T*  pointer = GetPointerToRow<T>(fieldName, row); 
        *pointer = value;
     }
 }
