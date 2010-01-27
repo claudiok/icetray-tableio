@@ -13,7 +13,7 @@ void add_field(I3TableRowDescription& self, const std::string& name, bp::object 
 	if (basename == std::string("enum")) {
 		// extract the entries in the wrapped
 		// Boost.Python.enum
-		log_info("handling enum");
+		log_trace("handling enum");
 		std::vector<pair> values;
 		bp::tuple entry;
 		std::string entry_name;
@@ -34,7 +34,7 @@ void add_field(I3TableRowDescription& self, const std::string& name, bp::object 
 		// TODO: can anything else concievably be passed through pybindings?
 		// the union mechanism doesn't save us any space anyhow...
 		std::string classname = bp::extract<std::string>(py_type.attr("__name__"));
-		log_info("handling '%s'",classname.c_str());
+		log_trace("handling '%s'",classname.c_str());
 		if (classname == std::string("float")) {
 			self.AddField<double>(name,unit,doc,array_length);
 		} else if (classname == std::string("int")) {

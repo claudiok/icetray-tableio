@@ -44,7 +44,12 @@ I3TableRowDescriptionConstPtr PythonConverter::GetDescription() {
 I3TableRowDescriptionPtr PythonConverter::CreateDescription(const I3FrameObject& object) {
 	log_trace("%s",__PRETTY_FUNCTION__);
 	if (bp::override create_desc = this->get_override("CreateDescription")) {
-		return create_desc(object);
+		I3TableRowDescriptionPtr desc_ptr = create_desc(object);
+		if (!desc_ptr) {
+			log_fatal("CreateDescription(frame_object) must return an I3TableRowDescription.");
+		} else {
+			return desc_ptr;
+		}
 	} else {
 		log_fatal("Python module must implement CreateDescription(frame_object).");
 	}
