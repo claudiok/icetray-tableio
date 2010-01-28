@@ -29,42 +29,20 @@ hid_t HDFTypeConv::GetType(unsigned long x)  { return H5T_NATIVE_ULONG; }
 hid_t HDFTypeConv::GetType(long long x)      { return H5T_NATIVE_LLONG; }
 hid_t HDFTypeConv::GetType(bool x)           { return H5T_NATIVE_HBOOL; }
 
-//FIXME: there's got to be a better way to do this
-char PyTypeConv::GetTypeCode(hid_t hdf_type) {
-	// grab the native datatype of the atom
-	if ( H5Tget_class(hdf_type) == H5T_ENUM ) {
-		hdf_type = H5Tget_super(hdf_type);
-	}
-   hid_t n = H5Tget_native_type(hdf_type,H5T_DIR_ASCEND);
-   char code = 0;
-   if        ( H5Tequal(n,H5T_NATIVE_FLOAT)  ) {
-          code = 'f'; // python double       
-   } else if ( H5Tequal(n,H5T_NATIVE_DOUBLE) ) {
-          code = 'd'; // python double       
-   } else if ( H5Tequal(n,H5T_NATIVE_CHAR)   ) {
-          code = 'c'; // python character    
-   } else if ( H5Tequal(n,H5T_NATIVE_UCHAR)  ) {
-          code = 'B'; // python int          
-   } else if ( H5Tequal(n,H5T_NATIVE_SCHAR)  ) {
-          code = 'b'; // python int          
-   } else if ( H5Tequal(n,H5T_NATIVE_SHORT)  ) {
-          code = 'h'; // python int          
-   } else if ( H5Tequal(n,H5T_NATIVE_USHORT) ) {
-          code = 'H'; // python int          
-   } else if ( H5Tequal(n,H5T_NATIVE_INT)    ) {
-          code = 'i'; // python int          
-   } else if ( H5Tequal(n,H5T_NATIVE_UINT)   ) {
-          code = 'I'; // python long         
-   } else if ( H5Tequal(n,H5T_NATIVE_LONG)   ) {
-          code = 'l'; // python long         
-   } else if ( H5Tequal(n,H5T_NATIVE_ULONG)  ) {
-          code = 'L'; // python long
-   } else if ( H5Tequal(n,H5T_NATIVE_HBOOL)  ) {
-          code = 'o'; // bool
-   }
-	H5Tclose(n);
-   return code;
-}
+char PyTypeConv::GetTypeCode(float x)          { return 'f'; }
+char PyTypeConv::GetTypeCode(double x)         { return 'd'; }
+// char PyTypeConv::GetTypeCode(long double x)    { return '\0'; }
+char PyTypeConv::GetTypeCode(char x)           { return 'c'; }
+char PyTypeConv::GetTypeCode(unsigned char x)  { return 'B'; }
+char PyTypeConv::GetTypeCode(signed char x)    { return 'b'; }
+char PyTypeConv::GetTypeCode(short x)          { return 'h'; }
+char PyTypeConv::GetTypeCode(unsigned short x) { return 'H'; }
+char PyTypeConv::GetTypeCode(int x)            { return 'i'; }
+char PyTypeConv::GetTypeCode(unsigned x)       { return 'I'; }
+char PyTypeConv::GetTypeCode(long x)           { return 'l'; }
+char PyTypeConv::GetTypeCode(unsigned long x)  { return 'L'; }
+// char PyTypeConv::GetTypeCode(long long x)      { return '\0'; }
+char PyTypeConv::GetTypeCode(bool x)           { return 'o'; }
 
 /******************************************************************************/
 
@@ -142,7 +120,7 @@ bool I3TableRowDescription::CanBeFilledInto(I3TableRowDescriptionConstPtr other)
 
 /******************************************************************************/
 
-void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType, 
+void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType, char typeCode,
                                      size_t typeSize, const std::string& unit,
                                      const std::string& doc, size_t arrayLength) {
 
@@ -164,8 +142,8 @@ void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType,
         hid_t array_tid = H5Tarray_create(hdfType, rank, &dims.front(), NULL);
         fieldHdfTypes_.push_back(array_tid);
     }
-    char typeCode = PyTypeConv::GetTypeCode(hdfType);
-	if (typeCode == 0) log_error("No type code for field '%s'",name.c_str());
+    // char typeCode = PyTypeConv::GetTypeCode(hdfType);
+    // if (typeCode == 0) log_error("No type code for field '%s'",name.c_str());
     fieldTypeCodes_.push_back(typeCode);
     fieldTypeSizes_.push_back(typeSize);
     fieldArrayLengths_.push_back(arrayLength);

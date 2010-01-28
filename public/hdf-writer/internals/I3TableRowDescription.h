@@ -55,7 +55,21 @@ namespace HDFTypeConv {
 }
 
 namespace PyTypeConv {
-    char GetTypeCode(hid_t);
+    // char GetTypeCode(hid_t); // broken
+   char GetTypeCode(float x);          
+   char GetTypeCode(double x);        
+// char GetTypeCode(long double x); 
+   char GetTypeCode(char x);           
+   char GetTypeCode(unsigned char x);  
+   char GetTypeCode(signed char x);    
+   char GetTypeCode(short x);          
+   char GetTypeCode(unsigned short x); 
+   char GetTypeCode(int x);            
+   char GetTypeCode(unsigned x);       
+   char GetTypeCode(long x);           
+   char GetTypeCode(unsigned long x);  
+// char GetTypeCode(long long x)   
+   char GetTypeCode(bool x);           
 }
 
 /*****************************************************************************/
@@ -68,7 +82,7 @@ class I3TableRowDescription {
         // TODO logger
         
         /* basic AddField */
-        void AddField(const std::string& name, hid_t hdfType, 
+        void AddField(const std::string& name, hid_t hdfType, char typeCode,
                       size_t typeSize, const std::string& unit,
                       const std::string& doc,
                       size_t arrayLength);
@@ -81,8 +95,9 @@ class I3TableRowDescription {
                       size_t arrayLength=1) {
             T value;
             hid_t hdfType = HDFTypeConv::GetType(value);
+            char typeCode = PyTypeConv::GetTypeCode(value);
             size_t typeSize = sizeof(T);
-            AddField(name, hdfType, typeSize, unit, doc, arrayLength);
+            AddField(name, hdfType, typeCode, typeSize, unit, doc, arrayLength);
         }
         
         /* convenience AddEnumField - create hdf type and call AddField */
@@ -101,8 +116,8 @@ class I3TableRowDescription {
                 H5Tenum_insert(enum_tid, it->first.c_str(),
                                (enum_instance=it->second, &enum_instance));
             }
-
-            AddField(name, enum_tid, sizeof(enum_type), unit, doc, arrayLength);
+            char typeCode = 'i';
+            AddField(name, enum_tid, typeCode, sizeof(enum_type), unit, doc, arrayLength);
         }
 
         bool CanBeFilledInto(shared_ptr<const I3TableRowDescription> other) const;

@@ -30,7 +30,7 @@ void set_from_address(I3TableRow& self, const std::string& field, void* location
 }
 
  
-#define EXTRACT_SCALAR(code,type) \
+#define EXTRACT_SCALAR_SET(code,type) \
 (type_code == code) { type val = bp::extract<type>(value); self.Set(field,val,all); success = true; }
 
 #define EXTRACT_BUFFER(code,type) \
@@ -53,18 +53,18 @@ void set_field(I3TableRow& self, const std::string& field, bp::object value, boo
 			success = true;
 			self.Set(field,val,all);
 		} else if (type_code != 0) {
-			if      EXTRACT_SCALAR('c',char)
-			else if EXTRACT_SCALAR('b',signed char)
-			else if EXTRACT_SCALAR('B',unsigned char)
-			else if EXTRACT_SCALAR('h',signed short)
-			else if EXTRACT_SCALAR('H',unsigned short)
-			else if EXTRACT_SCALAR('i',signed int)
-			else if EXTRACT_SCALAR('I',unsigned int)
-			else if EXTRACT_SCALAR('h',signed long)
-			else if EXTRACT_SCALAR('H',unsigned long)
-			else if EXTRACT_SCALAR('f',float)
-			else if EXTRACT_SCALAR('d',double)
-			else if EXTRACT_SCALAR('o',bool)
+			if      EXTRACT_SCALAR_SET('c',char)
+			else if EXTRACT_SCALAR_SET('b',signed char)
+			else if EXTRACT_SCALAR_SET('B',unsigned char)
+			else if EXTRACT_SCALAR_SET('h',signed short)
+			else if EXTRACT_SCALAR_SET('H',unsigned short)
+			else if EXTRACT_SCALAR_SET('i',signed int)
+			else if EXTRACT_SCALAR_SET('I',unsigned int)
+			else if EXTRACT_SCALAR_SET('h',signed long)
+			else if EXTRACT_SCALAR_SET('H',unsigned long)
+			else if EXTRACT_SCALAR_SET('f',float)
+			else if EXTRACT_SCALAR_SET('d',double)
+			else if EXTRACT_SCALAR_SET('o',bool)
 			else log_fatal("Couldn\'t interpret type code '%c' ",type_code);
 		}
 	} else { // handle vectors
@@ -135,6 +135,58 @@ static boost::shared_ptr<I3TableRow> int_init( I3TableRowDescriptionPtr desc, in
 	return boost::shared_ptr<I3TableRow>(new I3TableRow(desc,static_cast<unsigned int>(num_rows)));
 } 
 
+void setitem(I3TableRow& self, const std::string& field, bp::object value) {
+   set_field(self,field,value);
+}
+
+#define EXTRACT_SCALAR(code,type) \
+(type_code == code) { return get_object<type>(self,field); }
+
+template <typename T>
+bp::object get_object(I3TableRow& self, const std::string& field) {
+	return bp::object(self.Get<T>(field));
+}
+
+bp::object getitem(I3TableRow& self, const std::string& field) {
+	I3TableRowDescriptionConstPtr desc = self.GetDescription();
+	int index = desc->GetFieldColumn(field);
+	if (index < 0) log_fatal("Tried to get value for unknown column '%s'",field.c_str());
+	
+	// char type_code = PyTypeConv::GetTypeCode(desc->GetFieldHdfTypes().at(index));
+	char type_code = desc->GetFieldTypeCodes().at(index);
+	
+	bp::object result;
+	if (desc->GetFieldArrayLengths().at(index) == 1) { // handle scalars
+			if      EXTRACT_SCALAR('c',char)
+			else if EXTRACT_SCALAR('b',signed char)
+			else if EXTRACT_SCALAR('B',unsigned char)
+			else if EXTRACT_SCALAR('h',signed short)
+			else if EXTRACT_SCALAR('H',unsigned short)
+			else if EXTRACT_SCALAR('i',signed int)
+			else if EXTRACT_SCALAR('I',unsigned int)
+			else if EXTRACT_SCALAR('h',signed long)
+			else if EXTRACT_SCALAR('H',unsigned long)
+			else if EXTRACT_SCALAR('f',float)
+			else if EXTRACT_SCALAR('d',double)
+			else if EXTRACT_SCALAR('o',bool)
+			else log_fatal("Couldn\'t interpret type code '%c' ",type_code);
+	} else {
+		log_fatal("Can't handle vectors yet.");
+	}
+}
+
+bp::list keys(I3TableRow& self) {
+	I3TableRowDescriptionConstPtr desc = self.GetDescription();
+	const std::vector<std::string>& fields = desc->GetFieldNames();
+	std::vector<std::string>::const_iterator it;
+	bp::list l;
+	for (it=fields.begin();it!=fields.end();it++) {
+		l.append(*it);
+	}
+	return l;
+}
+
+
 
 void register_I3TableRow() {
 	
@@ -148,5 +200,8 @@ void register_I3TableRow() {
 	BOOST_PP_SEQ_FOR_EACH(WRAP_PROP,I3TableRow,PROPS)
 	BOOST_PP_SEQ_FOR_EACH(WRAP_PROP_RO,I3TableRow,PROPS_RO)
 	.def("set",set_field,set_overloads(bp::args("self","field","value","all")))
+	.def("__setitem__",setitem)
+	.def("__getitem__",getitem)
+	.def("keys",keys)
 	;
 }
