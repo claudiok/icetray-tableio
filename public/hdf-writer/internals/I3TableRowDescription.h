@@ -53,7 +53,11 @@ namespace HDFTypeConv {
     hid_t GetType(long long);
     hid_t GetType(bool);
 }
-  
+
+namespace PyTypeConv {
+    char GetTypeCode(hid_t);
+}
+
 /*****************************************************************************/
 
 class I3TableRowDescription {
@@ -106,6 +110,7 @@ class I3TableRowDescription {
         // getter and setter - remove them? no real encapsulation anyway
         const std::vector<std::string>& GetFieldNames() const;
         const std::vector<hid_t>&  GetFieldHdfTypes() const;
+        const std::vector<char>& GetFieldTypeCodes() const;
         // units of bytes
         const std::vector<size_t>& GetFieldTypeSizes() const;
         const std::vector<size_t>& GetFieldByteOffsets() const;
@@ -122,6 +127,7 @@ class I3TableRowDescription {
         std::vector<std::string> fieldNames_;
         std::map<std::string, size_t> fieldNameToIndex_;
         std::vector<hid_t> fieldHdfTypes_;
+        std::vector<char> fieldTypeCodes_;
         std::vector<size_t> fieldTypeSizes_;
         std::vector<size_t> fieldArrayLengths_;
         std::vector<size_t> fieldByteOffsets_;

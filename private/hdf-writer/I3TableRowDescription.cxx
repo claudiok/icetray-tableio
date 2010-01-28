@@ -29,6 +29,43 @@ hid_t HDFTypeConv::GetType(unsigned long x)  { return H5T_NATIVE_ULONG; }
 hid_t HDFTypeConv::GetType(long long x)      { return H5T_NATIVE_LLONG; }
 hid_t HDFTypeConv::GetType(bool x)           { return H5T_NATIVE_HBOOL; }
 
+//FIXME: there's got to be a better way to do this
+char PyTypeConv::GetTypeCode(hid_t hdf_type) {
+	// grab the native datatype of the atom
+	if ( H5Tget_class(hdf_type) == H5T_ENUM ) {
+		hdf_type = H5Tget_super(hdf_type);
+	}
+   hid_t n = H5Tget_native_type(hdf_type,H5T_DIR_ASCEND);
+   char code = 0;
+   if        ( H5Tequal(n,H5T_NATIVE_FLOAT)  ) {
+          code = 'f'; // python double       
+   } else if ( H5Tequal(n,H5T_NATIVE_DOUBLE) ) {
+          code = 'd'; // python double       
+   } else if ( H5Tequal(n,H5T_NATIVE_CHAR)   ) {
+          code = 'c'; // python character    
+   } else if ( H5Tequal(n,H5T_NATIVE_UCHAR)  ) {
+          code = 'B'; // python int          
+   } else if ( H5Tequal(n,H5T_NATIVE_SCHAR)  ) {
+          code = 'b'; // python int          
+   } else if ( H5Tequal(n,H5T_NATIVE_SHORT)  ) {
+          code = 'h'; // python int          
+   } else if ( H5Tequal(n,H5T_NATIVE_USHORT) ) {
+          code = 'H'; // python int          
+   } else if ( H5Tequal(n,H5T_NATIVE_INT)    ) {
+          code = 'i'; // python int          
+   } else if ( H5Tequal(n,H5T_NATIVE_UINT)   ) {
+          code = 'I'; // python long         
+   } else if ( H5Tequal(n,H5T_NATIVE_LONG)   ) {
+          code = 'l'; // python long         
+   } else if ( H5Tequal(n,H5T_NATIVE_ULONG)  ) {
+          code = 'L'; // python long
+   } else if ( H5Tequal(n,H5T_NATIVE_HBOOL)  ) {
+          code = 'o'; // bool
+   }
+	H5Tclose(n);
+   return code;
+}
+
 /******************************************************************************/
 
 I3TableRowDescription::I3TableRowDescription() {}
@@ -45,6 +82,10 @@ const std::vector<std::string>& I3TableRowDescription::GetFieldNames() const {
 
 const std::vector<hid_t>&  I3TableRowDescription::GetFieldHdfTypes() const {
     return fieldHdfTypes_;
+}
+
+const std::vector<char>&  I3TableRowDescription::GetFieldTypeCodes() const {
+    return fieldTypeCodes_;
 }
 
 const std::vector<size_t>& I3TableRowDescription::GetFieldTypeSizes() const {
@@ -105,7 +146,7 @@ void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType,
                                      size_t typeSize, const std::string& unit,
                                      const std::string& doc, size_t arrayLength) {
 
-    log_trace("adding field %s with type %d of size %d", name.c_str(), hdfType, typeSize);
+    log_trace("adding field %s with type %d of size %d", name.c_str(), hdfType, (int)typeSize);
     size_t chunkOffset=0;
     size_t byteOffset=0;
     if (fieldChunkOffsets_.size() > 0) {
@@ -123,6 +164,9 @@ void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType,
         hid_t array_tid = H5Tarray_create(hdfType, rank, &dims.front(), NULL);
         fieldHdfTypes_.push_back(array_tid);
     }
+    char typeCode = PyTypeConv::GetTypeCode(hdfType);
+	if (typeCode == 0) log_error("No type code for field '%s'",name.c_str());
+    fieldTypeCodes_.push_back(typeCode);
     fieldTypeSizes_.push_back(typeSize);
     fieldArrayLengths_.push_back(arrayLength);
     fieldChunkOffsets_.push_back(chunkOffset);

@@ -119,7 +119,7 @@ T* I3TableRow::GetPointerToRow(const std::string& fieldName, unsigned int row) {
         log_fatal("trying to get the address of unknown field %s", fieldName.c_str());
 
     if (sizeof(T) != description_->GetFieldTypeSizes().at(index) )
-        log_fatal("size mismatch between the requested type and field");
+        log_fatal("size mismatch between the requested type (%d) and field '%s' (%d)",(int)sizeof(T),fieldName.c_str(),(int)description_->GetFieldTypeSizes().at(index));
 
     if ( !(( 0 <= row) && (row < nrows_)) )
         log_fatal("requested pointer to row %d which is not in [0,%d]", row, nrows_);
