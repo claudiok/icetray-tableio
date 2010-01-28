@@ -71,14 +71,19 @@ void set_field(I3TableRow& self, const std::string& field, bp::object value, boo
 		bool is_array = (value.attr("__class__").attr("__name__") == std::string("array"));
 		bool is_ndarray = (value.attr("__class__").attr("__name__") == std::string("ndarray"));
 		if (is_array || is_ndarray) { // handle array.array and numpy.ndarray
-			char arr_typecode = 0;
+			char arr_typecode = 0x20;
+			char arr_byteorder = 0x20;
 			if (is_array) {
 				arr_typecode = PyString_AsString(bp::object(value.attr("typecode")).ptr())[0];
+				arr_byteorder = '='; // array is always native
 			} else {
 				arr_typecode = PyString_AsString(bp::object(value.attr("dtype").attr("char")).ptr())[0];
+				arr_byteorder = PyString_AsString(bp::object(value.attr("dtype").attr("byteorder")).ptr())[0];
 			}
 			if (arr_typecode != type_code) 
 				log_fatal("Type of array ('%c') does not match field '%s' ('%c')",arr_typecode,field.c_str(),type_code);
+			if (!(arr_byteorder == '|') && !(arr_byteorder == '='))
+				log_fatal("Array must be in native byte order (not '%c')",arr_byteorder);
 			// hang on to your hats, here we go!
 			const void* location;
 			Py_ssize_t length;
