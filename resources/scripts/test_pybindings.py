@@ -1,56 +1,15 @@
 from icecube import icetray,dataclasses,hdf_writer,dataio
 import array
 import unittest
+import exceptions
 
 try:
 	import numpy
+	have_numpy = True
 except ImportError:
 	print "Numpy isn't installed, skipping numpy-specific tests"
+	have_numpy = False
 	
-
-class Bookie(hdf_writer.I3Converter):
-	def CreateDescription(self,thing):
-		desc = hdf_writer.I3TableRowDescription()
-		
-		desc.add_field('char',          'c','','')
-		desc.add_field('signed_char',   'b','','')
-		desc.add_field('unsigned_char', 'B','','')
-		desc.add_field('signed_short',  'h','','')
-		desc.add_field('unsigned_short','H','','')
-		desc.add_field('signed_int',    'i','','')
-		desc.add_field('unsigned_int',  'I','','')
-		desc.add_field('signed_long',   'h','','')
-		desc.add_field('unsigned_long', 'H','','')
-		desc.add_field('float',         'f','','')
-		desc.add_field('double',        'd','','')
-		desc.add_field('bool',          'o','','')
-		
-		desc.add_field('double_py',     float,'','')
-		desc.add_field('int_py',        int,'','')
-		desc.add_field('bool_py',       bool,'','')
-		
-		desc.add_field('trigger_type',dataclasses.I3DOMLaunch.TriggerType,'','')
-		return desc
-		
-types = {'char':          'c',
-         'signed_char':   'b',
-         'unsigned_char': 'B',
-         'signed_short':  'h',
-         'unsigned_short':'H',
-         'signed_int':    'i',
-         'unsigned_int':  'I',
-         'signed_long':   'h',
-         'unsigned_long': 'H',
-         'float':         'f',
-         'double':        'd',
-         'bool':          'o'}
-
-convertible = {int:   ['c','b','B','h','H','i'],
-               long:  ['I','h','H'],
-               float: ['f','d'],
-               bool:  ['o']
-}
-
 class I3PythonConverterTest(unittest.TestCase):
 	def setUp(self):
 		desc = hdf_writer.I3TableRowDescription()
@@ -63,8 +22,8 @@ class I3PythonConverterTest(unittest.TestCase):
 		              'unsigned_short':'H',
 		              'signed_int':    'i',
 		              'unsigned_int':  'I',
-		              'signed_long':   'h',
-		              'unsigned_long': 'H',
+		              'signed_long':   'l',
+		              'unsigned_long': 'L',
 		              'float':         'f',
 		              'double':        'd',
 		              'bool':          'o'}
@@ -99,7 +58,7 @@ class I3PythonConverterTest(unittest.TestCase):
 			elif field.endswith('_py'):
 				base = field[:-3]
 			if base in self.types:
-				tc_set = types[base]
+				tc_set = self.types[base]
 			elif field == 'trigger_type':
 				tc_set = 'i'
 			tc_got = typecodes[i]
@@ -107,6 +66,12 @@ class I3PythonConverterTest(unittest.TestCase):
 	def testKeys(self):
 		fields = list(self.desc.field_names);
 		self.assertEquals( fields, self.rows.keys() )
+	def testEnum(self):
+		field = 'trigger_type'
+		val = dataclasses.I3DOMLaunch.TriggerType.SPE_DISCRIMINATOR_TRIGGER
+		self.rows[field] = val
+		got = self.rows[field]
+		self.assertEquals( int(val), got )
 	def testIntegerScalars(self):
 		types = self.conversions[int]
 		reverse_types = dict([(b,a) for a,b in self.types.iteritems()])
@@ -119,11 +84,47 @@ class I3PythonConverterTest(unittest.TestCase):
 			self.assertEquals( val, got_val, "Set field '%s' to %d, got %d back."%(field,val,got_val))
 	def testLongScalars(self):
 		import sys
-		
-		field,val = 'signed_long',32767+1
-		self.rows[field] = val; # OMFG, this is SHRT_MAX+1 going into a signed long!
+		field,val = 'signed_long',sys.maxint
+		self.rows[field] = val;
 		got_val = self.rows[field]
 		self.assertEquals( val, got_val, "Set field '%s' to %d, got %d back."%(field,val,got_val))
+		bad_news = lambda: self.rows.set(field,sys.maxint+1)
+		self.assertRaises(exceptions.OverflowError, bad_news)
+	def testArray(self):
+		field = 'signed_int_vec'
+		arr = array.array(self.types[field[:-4]],range(128))
+		self.rows[field] = arr
+		got = self.rows[field]
+		self.assertEquals( list(arr), got )
+	if have_numpy:
+		def testNumpy(self):
+			field = 'signed_long_vec'
+			arr = numpy.array(range(128),self.types[field[:-4]])
+			self.rows[field] = arr
+			got = self.rows[field]
+			self.assertEquals( list(arr), got )
+			import sys
+			# try passing an array in byte-swapped order
+			swapped = '>' if (sys.byteorder == 'little') else '<'
+			arr = numpy.array(range(128), (swapped + self.types[field[:-4]]) )
+			bad_news = lambda: self.rows.set(field,arr)
+			self.assertRaises(exceptions.RuntimeError,bad_news)
+	def testVectorInt(self):
+		vec = dataclasses.I3VectorInt()
+		for r in xrange(128): vec.append(r)
+		field = 'signed_int_vec'
+		self.rows[field] = vec
+		got = self.rows[field]
+		self.assertEquals( range(128), got )
+	def testVectorDouble(self):
+		vec = dataclasses.I3VectorDouble()
+		for r in xrange(128): vec.append(r+3)
+		field = 'double_vec'
+		self.rows[field] = vec
+		got = self.rows[field]
+		for a,b in zip(vec,got):
+			self.assertAlmostEqual(a,b)
+		
 
 class DOMLaunchBookie(hdf_writer.I3Converter):
 	booked = dataclasses.I3DOMLaunch
