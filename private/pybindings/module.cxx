@@ -1,3 +1,16 @@
+/**
+ * hdf-writer pybindings
+ *
+ * copyright  (C) 2010
+ * The Icecube Collaboration
+ *
+ * $Id$
+ *
+ * @version $Revision$
+ * @date $LastChangedDate$
+ * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
+ */
+
 #include <icetray/load_project.h>
 
 namespace bp = boost::python;

@@ -1,11 +1,20 @@
+/**
+ * I3Converter.cxx (pybindings)
+ *
+ * copyright  (C) 2010
+ * The Icecube Collaboration
+ *
+ * $Id$
+ *
+ * @version $Revision$
+ * @date $LastChangedDate$
+ * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
+ */
+
+
 #include <hdf-writer/PythonConverter.h>
 
 namespace bp = boost::python;
-
-// unsigned int (I3Converter::*convert)(
-//                      const I3FrameObject&, 
-//                      I3TableRowPtr, 
-//                      I3FrameConstPtr);
 
 void register_I3Converter() {
 	bp::class_<PythonConverter, boost::noncopyable>
