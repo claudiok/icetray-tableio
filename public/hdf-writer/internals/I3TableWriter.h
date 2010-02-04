@@ -29,12 +29,15 @@ class I3TableWriter {
         // register one specific object. if type and converter are empty the writer 
         // should figure out appropriate values
         void AddObject(std::string name, std::string tableName, 
-                       std::string type, std::string converter, 
-                       const StringPairVector& params);
+                       std::string type, std::string converter);
         
+        
+        // add object to wanted list
+        void AddObject(std::string typeName);
         // write all objects with this type
-        void AddType(std::string typeName, std::string converter,
-                     const StringPairVector& params);
+        void AddType(std::string typeName);
+        
+        void AddConverter(std::string typeName, I3ConverterPtr converter);
 
         void Setup();
 
@@ -48,7 +51,7 @@ class I3TableWriter {
         void DisconnectTable(I3TablePtr& table);
         
         
-        // group components that belong togehter
+        // group components that belong together
         struct TableBundle {
             std::string objectType;
             I3ConverterPtr converter;
@@ -59,9 +62,11 @@ class I3TableWriter {
         std::map<std::string, TableBundle> tables_;
         std::map<std::string, I3ConverterPtr> converters_;
          
-        // wanted lists 
+        // configuration lists and maps
         std::vector<std::string> wantedNames_;
         std::vector<std::string> wantedTypes_;
+        std::map<std::string,std::string> objNameToTableName_;
+        std::map<std::string,std::string> typeNameToConverterName_;
         I3FrameConstPtr currentFrame_;
         I3ConverterPtr ticConverter_;
 

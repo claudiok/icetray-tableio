@@ -82,7 +82,6 @@ typedef I3Factory<I3Converter, I3Converter_ffn_t> I3ConverterFactory;
     }									
 
 /******************************************************************************/
-I3ConverterPtr BuildConverter(std::string name, StringPairVector params);
 
 I3ConverterPtr BuildConverter(std::string name);
 

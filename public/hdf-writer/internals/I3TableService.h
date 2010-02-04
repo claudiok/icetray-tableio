@@ -21,6 +21,7 @@
 
 I3_FORWARD_DECLARATION(I3TableRow);
 I3_FORWARD_DECLARATION(I3Table);
+I3_FORWARD_DECLARATION(I3Converter);
 
 class I3TableService {
     public:
@@ -29,15 +30,26 @@ class I3TableService {
         I3TablePtr GetTable(std::string tableName, 
                             I3TableRowDescriptionConstPtr description);
 
+        I3TableRowConstPtr GetPaddingRows(I3EventHeaderConstPtr lastHeader,
+                                          I3EventHeaderConstPtr newHeader,
+                                          I3TableRowDescriptionConstPtr description_);
+
         void Finish();
 
-    private:
-        std::map<std::string, I3TablePtr> tables_;
-
-        std::vector<I3EventHeader> eventHeaderCache_;
+    protected:
         // to be overridden by implementation
-        I3TablePtr CreateTable(std::string tableName, 
-                               I3TableRowDescriptionConstPtr description);
+        virtual I3TablePtr CreateTable(const std::string& tableName, 
+                                       I3TableRowDescriptionConstPtr description) = 0;
+        virtual void CloseFile() = 0;
+
+    private:
+        bool EventHeadersEqual(const I3EventHeader& header1,
+                               const I3EventHeader& header2);
+        
+        std::map<std::string, I3TablePtr> tables_;
+        std::vector<I3EventHeaderConstPtr> eventHeaderCache_;
+        I3ConverterPtr ticConverter_;
+
 };
 
 I3_POINTER_TYPEDEFS( I3TableService );

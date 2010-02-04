@@ -11,8 +11,15 @@
 
 #include "hdf-writer/internals/I3TableService.h"
 #include "hdf-writer/internals/I3TableRow.h"
+#include "hdf-writer/internals/I3ConverterFactory.h"
 
-I3TableService::I3TableService()  { }
+/******************************************************************************/
+
+I3TableService::I3TableService()  { 
+    ticConverter_ = BuildConverter("I3IndexColumnsGenerator");
+}
+
+/******************************************************************************/
         
 I3TablePtr I3TableService::GetTable(std::string name,
                                     I3TableRowDescriptionConstPtr description) {
@@ -29,39 +36,77 @@ I3TablePtr I3TableService::GetTable(std::string name,
     return table;
 }
 
-/* partly moved into I3Table and GetTable
-void I3TableService::AddRow(std::string tableName, I3TableRowConstPtr row) {
-    I3TablePtr table = GetTable(tableName);
-
-    // if the table doesn't exist create it
-    if (!table) {
-        table = CreateTable(row->GetDescription());
-        tables_[tableName] = table;
-    }
-
-    // FIXME require identity or compatibility here?
-    if (table->GetDescription() != row->GetDescription()) {
-        log_fatal("I3TableRowDescription instances differ for table " 
-                  "%s and the given row!", tableName.c_str()); 
-    }
-
-    // assure allignment
-    if (!table->IsAligned())
-        table->Align(eventHeaderCache_);
-    
-    table->AddRow(row);
-    
-    // implemenation pending
-}
-*/
+/******************************************************************************/
         
+/*
 I3TablePtr I3TableService::CreateTable(std::string tableName,
                                        I3TableRowDescriptionConstPtr description) {
     // implementation pending
+    log_fatal("not implemented");
     return I3TablePtr();
 }
+*/
+
+/******************************************************************************/
+        
+bool I3TableService::EventHeadersEqual(const I3EventHeader& header1,
+                                       const I3EventHeader& header2) {
+    //  ignore subeventid
+    return ( (header1.GetRunID() == header2.GetRunID()) &&
+             (header1.GetEventID() == header2.GetEventID()) );
+}
+
+/******************************************************************************/
+        
+I3TableRowConstPtr I3TableService::GetPaddingRows(I3EventHeaderConstPtr lastHeader,
+                                                  I3EventHeaderConstPtr newHeader,
+                                             I3TableRowDescriptionConstPtr description_){
+    // TODO change == into a comparison function
+
+    // catch the cases where padding is not necessary 
+    if (eventHeaderCache_.size() == 0) { // first call, first event 
+        return I3TableRowConstPtr();
+    }
+    if ( EventHeadersEqual(*lastHeader, *(eventHeaderCache_.back())) ) { // first call for new event
+        return I3TableRowConstPtr();
+    }
+    // padding is necessary -> figure out how many rows
+    // 2 scenarios: l: lastHeader, h: newHeader, 1...6 cached headers
+    // A: 1,2,3,l,4,5,6,h -> 3 padding rows
+    // B: 1,2,3,l,4,5,(6=h) -> 2 padding rows
+    
+    std::vector<I3EventHeaderConstPtr>::const_iterator it;
+    int nrows = 0;
+    // scenario B
+    if (EventHeadersEqual(*newHeader, *eventHeaderCache_.back())) { // another table already reported this event
+        // start at 
+        for(it = eventHeaderCache_.end(); !EventHeadersEqual(**it, *lastHeader); --it) 
+            nrows++;
+        ++it;  // go to the first missed event
+        nrows -= 2;
+    }
+    // scenario A
+    else {
+        for(it = eventHeaderCache_.end(); !EventHeadersEqual(**it, *lastHeader); --it) 
+            nrows++;
+        ++it; // go to the first missed event
+        nrows -= 1;
+    }
+
+    I3TableRowPtr rows = I3TableRowPtr(new I3TableRow(description_, nrows));
+    I3FrameConstPtr frame; // assume ticConv doesn't need the frame
+    for (unsigned int i=0; i< nrows; ++i) {
+        rows->SetCurrentRow(i);
+        ticConverter_->Convert(*it, rows,frame);
+        i++;
+    }
+    return rows;
+}
+
+/******************************************************************************/
 
 void I3TableService::Finish() {
-    // implemenation pending
+    // TODO: walk through tables, make sure all are disconnected and flush them
+    CloseFile();
 }
 

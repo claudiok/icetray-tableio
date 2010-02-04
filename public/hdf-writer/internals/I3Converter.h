@@ -21,8 +21,6 @@
 #include "hdf-writer/internals/I3TableRowDescription.h"
 #include "hdf-writer/internals/I3TableRow.h"
 
-typedef std::vector<std::pair<std::string, std::string> > StringPairVector;
-
 I3_FORWARD_DECLARATION(I3TableWriter);
 I3_FORWARD_DECLARATION(I3FrameObject);
 
@@ -32,11 +30,6 @@ I3_FORWARD_DECLARATION(I3FrameObject);
 // will be created. All methods take unspecialized pointers to I3FrameObjects
 class I3Converter {
     public:
-        /**
-         * Configure this converter with the string,string pairs in vector params
-         */
-        virtual void Configure( const StringPairVector& params);
-        
         /**
          * Allows to show an I3FrameObject to this converter to get the number
          * of rows that this converter will produce
@@ -99,7 +92,6 @@ class I3ConverterImplementation : public I3Converter {
         unsigned int GetNumberOfRows(I3FrameObjectConstPtr object) {
             return GetNumberOfRows(dynamic_cast<const FrmObj&>(*object));
         }
-
         
         unsigned int Convert(const I3FrameObject& object, I3TableRowPtr rows, 
                              I3FrameConstPtr frame) {

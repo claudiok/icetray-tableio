@@ -21,19 +21,6 @@
 
 template <class FrmObj>
 class I3STLVectorConverter : public I3ConverterImplementation<std::vector<FrmObj> > {
-    public:
-        void Configure( const StringPairVector& params) {
-            StringPairVector::const_iterator it;
-            // dynamic  solution with bad error handling
-            for (it = params.begin(); it != params.end(); ++it) {
-                if (it->first == "converter") {
-                    converterName_ = it->second;
-                }
-            }
-            params_ = params;
-        }
-
-
     private:
         unsigned int GetNumberOfRows(std::vector<FrmObj>& vect) {
             typename std::vector<FrmObj>::const_iterator it;
@@ -109,7 +96,6 @@ class I3STLVectorConverter : public I3ConverterImplementation<std::vector<FrmObj
             return i_row;
         }
 
-    StringPairVector params_;
     std::string  converterName_;
     I3ConverterPtr itemConverter_;
 };

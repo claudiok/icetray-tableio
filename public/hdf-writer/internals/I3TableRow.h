@@ -80,8 +80,8 @@ I3_POINTER_TYPEDEFS( I3TableRow );
 
 template<class T>
 void I3TableRow::Set(const std::string& fieldName, T value, bool all = false) {
-	if (all) SetCurrent(fieldName,value);
-	else SetAll(fieldName,value);
+	if (all) SetAll(fieldName,value);
+    else SetCurrent(fieldName,value);
 }
 
 template<class T>

@@ -11,16 +11,9 @@
 
 #include "hdf-writer/internals/I3ConverterFactory.h"
 
-I3ConverterPtr BuildConverter(std::string name, StringPairVector params) {
+I3ConverterPtr BuildConverter(std::string name) {
     I3ConverterPtr converter = 
         I3::Singleton<I3ConverterFactory>::get_const_instance()
         .Create(name)();
-    converter->Configure(params);
     return converter;
 }
-
-I3ConverterPtr BuildConverter(std::string name) {
-    StringPairVector params;
-    return BuildConverter(name, params);
-}
-

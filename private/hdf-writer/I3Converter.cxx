@@ -13,13 +13,6 @@
 
 /******************************************************************************/
 
-void I3Converter::Configure( const StringPairVector& params) { 
-    if (params.size() > 0)
-        log_fatal("This converter doesn't take any parameters!");
-}
-
-/******************************************************************************/
-
 I3TableRowDescriptionConstPtr I3Converter::GetDescription() {
     if (description_)
         return description_;

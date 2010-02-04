@@ -15,6 +15,7 @@
 #include <string>
 
 #include "icetray/IcetrayFwd.h"
+//#include "hdf-writer/internals/I3TableService.h"
 
 I3_FORWARD_DECLARATION(I3TableRowDescription);
 I3_FORWARD_DECLARATION(I3TableRow);
@@ -23,22 +24,15 @@ I3_FORWARD_DECLARATION(I3TableService);
 
 class I3Table {
     public:
-        I3Table(const I3TableService& service, std::string name,
-                I3TableRowDescriptionConstPtr description, 
-                unsigned int initialRows=0);
-        ~I3Table(); // Flush?
-
-        void Create();
-        void Align();
+        I3Table(I3TableService& service, std::string name,
+                I3TableRowDescriptionConstPtr description);
+        virtual ~I3Table(); // Flush?
         
-        bool IsAligned();
         bool IsConnectedToWriter();
         void SetConnectedToWriter(bool connected);
 
         I3TableRowPtr CreateRow(unsigned int nrows);
         void AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row);
-
-        
 
         std::string GetName() const; 
         unsigned int GetNumberOfEvents() const; 
@@ -46,7 +40,10 @@ class I3Table {
         I3TableRowDescriptionConstPtr GetDescription();
 
     protected:
-        const I3TableService& service_;
+        // to be overridden by derivatives
+        virtual void WriteRows(I3TableRowConstPtr row) = 0; 
+
+        I3TableService& service_;
         std::string name_;
 
         I3TableRowDescriptionConstPtr description_;
@@ -55,6 +52,9 @@ class I3Table {
         unsigned int nevents_; // number of events written
         unsigned int nrows_;   // number of rows (>= events) written
         bool connected_;       // connected to a writer
+        bool tableCreated_;    // the table/tree has been created successfully
+
+        I3EventHeaderConstPtr lastHeader_;
 
     private:
         I3Table();

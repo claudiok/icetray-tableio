@@ -37,22 +37,6 @@ TEST(factory_creation) {
     ENSURE(thrown, "description not set yet");
 }
 
-TEST(factory_creation_no_parameter_check) {
-    StringPairVector params;
-    params.push_back(std::pair<std::string, std::string>("param1", "value1"));
-    bool thrown = false;
-    I3ConverterPtr converter;
-    try {
-        converter = BuildConverter("I3Double", params);
-    }
-    catch(...) {
-        thrown = true;
-    }
-
-    ENSURE(!converter, "factory didn't produce anything");
-    ENSURE(thrown, "call to log_fatal in not overridden Configure(params)");
-}
-
 TEST(convert_one_row) {
     I3ConverterPtr converter = BuildConverter("I3Double");
 
@@ -90,7 +74,7 @@ TEST(convert_into_many_rows) {
     I3TableRowPtr rows = I3TableRowPtr(new I3TableRow(converter->GetDescription(), 10));
 
     // inspect empty row
-    ENSURE_EQUAL(rows->GetNumberOfRows(), static_cast<unsigned int>(10), "one row created");
+    ENSURE_EQUAL(rows->GetNumberOfRows(), static_cast<unsigned int>(10), "rows created");
     ENSURE_EQUAL(rows->GetDescription(), converter->GetDescription(), "description created and equal");
     ENSURE_EQUAL(rows->GetDescription()->GetNumberOfFields(), static_cast<unsigned int>(1), "description ok");
     ENSURE_EQUAL(rows->GetDescription()->GetFieldNames().at(0), "value", "description ok");
