@@ -190,6 +190,8 @@ I3TableRowDescription operator|(const I3TableRowDescription& lhs,
         // values that are just copied:
         newlhs.fieldNames_.push_back( fieldName );
         newlhs.fieldTypeSizes_.push_back( rhs.fieldTypeSizes_.at(i) );
+        newlhs.fieldHdfTypes_.push_back( rhs.fieldHdfTypes_.at(i) );
+        newlhs.fieldTypeCodes_.push_back( rhs.fieldTypeCodes_.at(i) );
         newlhs.fieldArrayLengths_.push_back( rhs.fieldArrayLengths_.at(i) );
         newlhs.fieldUnits_.push_back( rhs.fieldUnits_.at(i) );
         newlhs.fieldDocStrings_.push_back( rhs.fieldDocStrings_.at(i) );
