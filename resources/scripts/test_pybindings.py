@@ -159,6 +159,75 @@ class DOMLaunchBookie(hdf_writer.I3Converter):
 		rows['raw_fadc']         = array.array('H',domlaunch.GetRawFADC())
 		return 1
 		
+class I3TableWriterPythonModuleTest(unittest.TestCase):
+		"""Test the option-parsing magic."""
+		def setUp(self):
+			from icecube import icetray,hdf_writer,dataclasses
+			from module import I3TableWriterModule
+			import tempfile
+			from I3Tray import I3Tray, load
+			load("libphys-services")
+			
+			tray = I3Tray()
+			# tray.AddService("I3EmptyStreamsFactory","sound_and_fury_signifying_nothing",
+			#         installGeometry=True,
+			#         installCalibration=True,
+			#         installStatus=True,
+			#         eventTimeYear=2008,
+			#         eventTimeNnanosec=163163250000000011,
+			#         nFrames=1)
+			tray.AddService("I3EmptyStreamsFactory","sound_and_fury_signifying_nothing")
+			tray.AddModule("I3Muxer","muxalot")
+			self.tray = tray
+			self.tempfile = tempfile.NamedTemporaryFile()
+			self.hdf_service = hdf_writer.I3HDFTableService(self.tempfile.name,0)
+			self.target = I3TableWriterModule
+			self.bookie = DOMLaunchBookie()
+			
+		def tearDown(self):
+			# self.hdf_service.CloseFile()
+			self.tempfile.close() # implicit delete
+			
+		def testNoArgs(self):
+			"""TableService is a required argument"""
+			self.tray.AddModule(self.target,'scribe')
+			self.assertRaises(TypeError,self.tray.Execute)
+			# self.tray.Execute()
+			self.tray.Finish()
+		def testNotATable(self):
+			"""Things that are not TableServices are rejected"""
+			self.tray.AddModule(self.target,'scribe',
+				tableservice = 'foo',
+				keys = ['I3EventHeader','InIceRawData']
+				)
+			self.assertRaises(TypeError,self.tray.Execute)
+			# self.tray.Execute()
+			self.tray.Finish()
+		def testKeyList(self):
+			"""A simple list of keys, no error"""
+			self.tray.AddModule(self.target,'scribe',
+				tableservice = self.hdf_service,
+				keys = ['I3EventHeader','InIceRawData']
+				)
+			self.tray.Execute()
+			self.tray.Finish()
+		def testKeyDict(self):
+			"""A dict key: booker"""
+			self.tray.AddModule(self.target,'scribe',
+				tableservice = self.hdf_service,
+				keys = {'InIceRawData': self.bookie}
+				)
+			self.tray.Execute()
+			self.tray.Finish()
+		def testKeyTuples(self):
+			"""Tuples of (key, booker)"""
+			self.tray.AddModule(self.target,'scribe',
+				tableservice = self.hdf_service,
+				keys = [('InIceRawData', self.bookie),('InIceRawData',None)] # repeat with default booker
+				)
+			self.tray.Execute()
+			self.tray.Finish()
+		
 def test(fname='/Users/jakob/Documents/IceCube/nugen_nue_ic80_dc6.001568.000000.hits.001.1881140.domsim.001.2028732.i3.gz'):
 	f = dataio.I3File(fname)
 	fr = f.pop_physics()

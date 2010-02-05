@@ -26,6 +26,7 @@ class I3HDFTableService : public I3TableService {
     protected:
         virtual I3TablePtr CreateTable(const std::string& tableName, 
                                        I3TableRowDescriptionConstPtr description);
+        virtual void CloseFile();
     private:
         hid_t fileId_;
         std::string filename_;

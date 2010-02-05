@@ -45,3 +45,8 @@ I3TablePtr I3HDFTableService::CreateTable(const std::string& tableName,
                                     description, fileId_, compress_));
     return table;
 };
+
+void I3HDFTableService::CloseFile() {
+	log_warn("Closing '%s'. Did I want to do some sanity checks first?",filename_.c_str());
+	H5Fclose(fileId_);
+};
