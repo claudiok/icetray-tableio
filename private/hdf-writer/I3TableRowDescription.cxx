@@ -120,6 +120,27 @@ bool I3TableRowDescription::CanBeFilledInto(I3TableRowDescriptionConstPtr other)
 
 /******************************************************************************/
 
+bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) const {
+   int nfields = GetNumberOfFields();
+   int o_nfields = other->GetNumberOfFields();
+   if (nfields != o_nfields) return false;
+   bool equal = true;
+   
+   for (int i; i < nfields; ++i) {
+       if ( (fieldNames_.at(i) != other->GetFieldNames().at(i) ) ||
+            (fieldHdfTypes_.at(i) != other->GetFieldHdfTypes().at(i) ) ||
+            (fieldUnits_.at(i) != other->GetFieldUnits().at(i) ) ||
+            (fieldDocStrings_.at(i) != other->GetFieldDocStrings().at(i) )          
+          ) {
+              equal = false;
+              break;
+            }
+   }
+   return equal;
+}
+
+/******************************************************************************/
+
 void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType, char typeCode,
                                      size_t typeSize, const std::string& unit,
                                      const std::string& doc, size_t arrayLength) {
@@ -133,7 +154,7 @@ void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType, cha
     }    
     size_t nfields = fieldNameToIndex_.size();
     fieldNames_.push_back(name);
-    fieldNameToIndex_[name] = nfields;
+    fieldNameToIndex_[name] = nfields-1;
     if (arrayLength == 1)
         fieldHdfTypes_.push_back(hdfType);
     else {
