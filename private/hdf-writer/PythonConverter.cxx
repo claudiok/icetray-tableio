@@ -60,12 +60,25 @@ unsigned int PythonConverter::Convert(I3FrameObjectConstPtr object,
                              I3FramePtr frame) {
 	log_trace("%s",__PRETTY_FUNCTION__);
 	// return Convert(*object,rows,frame);
-	if (bp::override convert = this->get_override("Convert")) {
+	// unsigned int nrows;
+	if (bp::override fillrows = this->get_override("FillRows")) {
+		return fillrows(boost::const_pointer_cast<I3FrameObject>(object),rows);
+	} else if (bp::override convert = this->get_override("Convert")) {
 		return convert(boost::const_pointer_cast<I3FrameObject>(object),rows,frame);
 	} else {
-		log_fatal("Python module must implement Convert(frame_object,rows,frame).");
+		log_fatal("Python module must implement Convert(frame_object,rows,frame) or FillRows(frame_object,rows).");
 	}
 }
+
+unsigned int PythonConverter::FillRows(const I3FrameObjectPtr object, I3TableRowPtr rows) {
+	log_trace("%s",__PRETTY_FUNCTION__);
+	if (bp::override fillrows = this->get_override("FillRows")) {
+		return fillrows(boost::const_pointer_cast<I3FrameObject>(object),rows);
+	} else {
+		log_fatal("Python module must implement Convert(frame_object,rows,frame) or FillRows(frame_object,rows).");
+	}
+}
+
 
 unsigned int PythonConverter::Convert(const I3FrameObject& object, 
                              I3TableRowPtr rows, 

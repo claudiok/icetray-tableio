@@ -39,6 +39,23 @@ class I3ParticleConverter(hdf_writer.I3Converter):
 		row['fit_status'] = particle.fit_status
 		return 1
 		
+class SkyBooker(I3ParticleConverter):
+	"""Demo of extending bookers, e.g. to book celestial coordinates"""
+	def CreateDescription(self,part):
+		desc = super(SkyBooker,self).CreateDescription(part)
+		desc.add_field('RA', 'd','radian','right ascension')
+		desc.add_field('Dec','d','radian','declination')
+		return desc
+	def Convert(self,particle,row,frame):
+		"""Here, we would have to get the event time from the header
+		In order to transform from detector to celestial coords."""
+		# Convert() will defer to FillRows() if it is present
+		super(SkyBooker,self).Convert(particle,row,frame)
+		# coordinate-service magic would go here
+		row['RA'] = particle.azimuth
+		row['Dec'] = particle.zenith
+		return 1
+
 tray = I3Tray()
 
 tabler = hdf_writer.I3HDFTableService('foo.hd5')
@@ -46,7 +63,7 @@ tabler = hdf_writer.I3HDFTableService('foo.hd5')
 tray.AddModule('I3Reader','reader',filename='/Users/jakob/Documents/Wisc/2010 Spring/Python Primer/foo.i3.gz')
 tray.AddModule(I3TableWriterModule,'writer',
 	tableservice = tabler,
-	# keys = {'LineFit': DummyBooker()},
+	keys = {'LineFit': SkyBooker()},
 	types = {dataclasses.I3Particle: I3ParticleConverter()}
 )
 

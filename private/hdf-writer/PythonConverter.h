@@ -26,4 +26,6 @@ struct PythonConverter : I3Converter, boost::python::wrapper<I3Converter>
                                  I3TableRowPtr rows, 
                                  I3FramePtr frame=I3FramePtr());
 
+    unsigned int FillRows(const I3FrameObjectPtr object, I3TableRowPtr rows);
+
 };
