@@ -1,4 +1,5 @@
 from icecube import icetray,hdf_writer
+import re
 
 class I3TableWriterModule(icetray.I3Module):
 	def __init__(self,context):
@@ -13,25 +14,77 @@ class I3TableWriterModule(icetray.I3Module):
 			raise TypeError, "TableService must be an instance of I3TableService (got %s instead)" % table_service
 		self.table_service = table_service
 	
-	def _tuplify_args(self,arg,key_type,name):
-		"""Turn {key_type: booker} dict, list of (key_type,booker) tuples, or list of key_type into list of tuples
-		while checking that key_type is the proper type. booker == None means 'infer the booker for me.'"""
+	def _transform_keyitem(self,item):
+		if isinstance(item,tuple):
+			if len(item) == 1:
+				return dict(key=item[0])
+			elif len(item) == 2:
+				return dict(key=item[0],converter=item[1])
+			elif len(item) == 3:
+				return dict(key=item[0],converter=item[1],name=item[2])
+			else:
+				raise ValueError, "Keys must be 2- or 3-tuples (got %s instead)" % item
+		elif isinstance(item,str):
+			return dict(key=item)
+		elif isinstance(item,dict):
+			#sanitize your inputs
+			dictus = dict()
+			for k in ['key','converter','name']:
+				if item.has_key(k): dictus[k] = item[k]
+			return dictus
+		else:
+			raise TypeError, "Keys must be dicts, tuples, or strings."
+		
+	def _transform_typeitem(self,item):
+		typus = None
+		dictus = None
+		if isinstance(item,tuple):
+			if len(item) == 1:
+				dictus = dict(type=item[0])
+			elif len(item) == 2:
+				dictus = dict(type=item[0],converter=item[1])
+			else:
+				raise ValueError, "Types must be 1- or 2-tuples (got %s instead)" % item
+		elif isinstance(item,dict):
+			#sanitize your inputs
+			dictus = dict()
+			for k in ['type','converter']:
+				if item.has_key(k): dictus[k] = item[k]
+		else:
+			dictus = dict(type=item)
+		typus = dictus['type']
+		if not isinstance(typus,str):
+			# FIXME (HACK): this assumes that the pybindings classes are named
+			# the same way as in the C++ I3FrameObject declaration, i.e. __name__
+			# is the same thing that e.g. I3::name_of<I3Particle>() would return.
+			# The pybindings type is in principle the most exact specification of
+			# the type, so it would be preferable to use this.
+			try:
+				name = typus.__name__
+				dictus['type'] = name
+			except AttributeError:
+				raise TypeError, "Couldn't interpret '%s' as a type-specification." % typus
+		return dictus
+				
+	def _parse_args(self,arg,transformer):
 		if arg is None:
 			return []
 		if isinstance(arg,dict):
 			arg = arg.items()
-		elif isinstance(arg,list):
-			if isinstance(arg[0],tuple):
-				pass
-			else:
-				arg = [(k,None) for k in arg]
+		if isinstance(arg,list):
+			arg = [transformer(item) for item in arg]
 		else:
-			raise TypeError, "%s must be a {%s: booker} dict, list of (%s:booker), or list of %s. (got %s instead)" % (name,key_type,key_type,key_type,arg)
-		for k,v in arg:
-			if not isinstance(k,key_type):
-				raise TypeError, "%s must map %s -> booker; got %s as a key instead" % (name,key_type,k)
-			if (v != None) and not isinstance(v,hdf_writer.I3Converter):
-				raise TypeError, "%s must map %s -> booker; got %s as a booker instead" % (name,key_type,v)
+			raise TypeError, "Arguments must be passed as something list-like."
+		valid_name = re.compile("^[a-zA-Z_][a-zA-Z0-9_]*$") 
+		for item in arg:
+			converter = item.get('converter',None)
+			if not converter is None:
+				if not isinstance(converter,hdf_writer.I3Converter):
+					raise TypeError, "In '%s': converter must be an instance of I3Converter"
+			name = item.get('name',None)
+			if not name is None:
+				if not valid_name.match(name):
+					raise ValueError, "'%s' is not a valid table name. Table names must contain only letters, numbers, and underscores and may not start with a number" % name	
 		return arg
 				
 	def Configure(self):
@@ -48,36 +101,22 @@ class I3TableWriterModule(icetray.I3Module):
 			# we will allow both, but configurations specified by key must take precedence
 			pass
 		
-		# convert whatever was passed as 'Keys' to a list of tuples
-		keys = self._tuplify_args(keys,str,'Keys')
+		# convert whatever was passed as 'Keys' to a list of dicts
+		keys = self._parse_args(keys,self._transform_keyitem)
 		
-		# convert whatever was passed as 'Types' to a list of tuples
-		# FIXME (HACK): this returns <type 'Boost.Python.instance'>, but
-		# there has to be a better way to check if something is a dataclass
-		bp_instance = hdf_writer.I3Converter.__base__ 
-		types = self._tuplify_args(types,object,'Types')
-		
-		# FIXME (HACK): this assumes that the pybindings classes are named
-		# the same way as in the C++ I3FrameObject declaration, i.e. __name__
-		# is the same thing that e.g. I3::name_of<I3Particle>() would return.
-		# The pybindings type is in principle the most exact specification of
-		# the type, so it would be preferable to use this.
-		types = map(lambda t: (t[0].__name__,t[1]),types)
+		# convert whatever was passed as 'Types' to a list of dicts
+		types = self._parse_args(types,self._transform_typeitem)
 		
 		self.writer = hdf_writer.I3TableWriter(self.table_service)
 		tablespec = hdf_writer.I3TableWriter.TableSpec
 		
-		# FIXME: need a way to get table names from the user
-		for key,converter in keys:
-			if converter is None:
-				self.writer.add_object(key,tablespec())
-			else:
-				self.writer.add_object(key,tablespec(converter))
-		for type_,converter in types:
-			if converter is None:
-				self.writer.add_type(type_,tablespec())
-			else:
-				self.writer.add_type(type_,tablespec(converter))
+		for item in keys:
+			key = item.pop('key')
+			self.writer.add_object(key,tablespec(**item))
+		for item in types:
+			typus = item.pop('type')
+			self.writer.add_type(typus,tablespec(**item))
+
 	def Physics(self,frame):
 		self.writer.convert(frame)
 		self.PushFrame(frame)
@@ -97,10 +136,13 @@ if False == True:
 	service = hdf_writer.I3HDFTableService('foo.hdf',0)
 	
 	bookie = DOMLaunchBookie()
+	alt_bookie = DOMLaunchBookie(do_magic = True)
 	
+	#like this:
 	tray.AddModule(I3HDFWriterModule,'hdfwriter',
 			tableservice = service,
-			keys = {'InIceRawData': bookie},
+			keys = [dict(key='InIceRawData', converter=bookie, name='HickTown_Barnaby'),
+					  dict(key='InIceRawData', converter=alt_bookie, name='SlickTown_Barnaby')],
 			types = {dataclasses.I3DOMLaunchSeriesMap: bookie}
 			)
 		

@@ -3,6 +3,7 @@
 from icecube import icetray,dataclasses,dataio,hdf_writer
 from I3Tray import I3Tray
 from module import I3TableWriterModule
+from test_pybindings import DOMLaunchBookie
 		
 class I3ParticleConverter(hdf_writer.I3Converter):
 	booked = dataclasses.I3Particle
@@ -63,8 +64,9 @@ tabler = hdf_writer.I3HDFTableService('foo.hd5')
 tray.AddModule('I3Reader','reader',filename='/Users/jakob/Documents/Wisc/2010 Spring/Python Primer/foo.i3.gz')
 tray.AddModule(I3TableWriterModule,'writer',
 	tableservice = tabler,
-	keys = {'LineFit': SkyBooker()},
-	types = {dataclasses.I3Particle: I3ParticleConverter()}
+	keys = [dict(key='LineFit', converter=I3ParticleConverter(), name='Way_out_there_beyond_this_hick_town_Barnaby'),
+			  dict(key='LineFit', converter=SkyBooker(), name='Theres_a_slick_town_Barnaby')],
+	types = {dataclasses.I3DOMLaunchSeriesMap: DOMLaunchBookie()}
 )
 
 tray.AddModule('TrashCan','yeswecan')

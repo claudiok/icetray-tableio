@@ -15,6 +15,12 @@
 
 namespace bp = boost::python;
 
+// I3TableWriter::TableSpec kw_init(bp::object name, bp::object conv) {
+// 	if ((name.ptr() == Py_None) && (conv.ptr() == Py_None)) {
+// 		return I3TableWriter::TableSpec()
+// 	}
+// }
+
 void register_I3TableWriter() {
 	bp::scope tw = bp::class_<I3TableWriter, boost::noncopyable>
 		("I3TableWriter",
@@ -26,8 +32,8 @@ void register_I3TableWriter() {
 	;
 	
 	bp::class_<I3TableWriter::TableSpec>("TableSpec")
-		.def(bp::init<const std::string,I3ConverterPtr>())
-		.def(bp::init<const std::string>())
-		.def(bp::init<I3ConverterPtr>())
+		.def(bp::init<const std::string,I3ConverterPtr>(bp::args("name","converter")))
+		.def(bp::init<const std::string>(bp::args("name")))
+		.def(bp::init<I3ConverterPtr>(bp::args("converter")))
 		;
 }
