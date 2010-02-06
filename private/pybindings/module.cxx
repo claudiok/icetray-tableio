@@ -16,7 +16,8 @@
 namespace bp = boost::python;
 
 #define REGISTER_THESE_THINGS \
-   (I3TableRowDescription)(I3TableRow)(I3Converter)(I3TableService)
+   (I3TableRowDescription)(I3TableRow)(I3Converter)(I3TableService)     \
+   (I3TableWriter)
 
 #define I3_REGISTRATION_FN_DECL(r, data, t) void BOOST_PP_CAT(register_,t)();
 #define I3_REGISTER(r, data, t) BOOST_PP_CAT(register_,t)();

@@ -4,11 +4,11 @@
  * copyright  (C) 2010
  * The Icecube Collaboration
  *
- * $Id: I3TableRowDescription.cxx 61336 2010-01-29 01:26:18Z jvansanten $
+ * $Id$
  *
- * @version $Revision: 61336 $
- * @date $LastChangedDate: 2010-01-28 19:26:18 -0600 (Thu, 28 Jan 2010) $
- * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy: jvansanten $
+ * @version $Revision$
+ * @date $LastChangedDate$
+ * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
 #include <hdf-writer/hdf/I3HDFTableService.h>

@@ -20,10 +20,10 @@ struct PythonConverter : I3Converter, boost::python::wrapper<I3Converter>
     
     unsigned int Convert(I3FrameObjectConstPtr object, 
                                  I3TableRowPtr rows, 
-                                 I3FrameConstPtr frame=I3FrameConstPtr());
+                                 I3FramePtr frame=I3FramePtr());
     
     unsigned int Convert(const I3FrameObject& object, 
                                  I3TableRowPtr rows, 
-                                 I3FrameConstPtr frame=I3FrameConstPtr());
+                                 I3FramePtr frame=I3FramePtr());
 
 };

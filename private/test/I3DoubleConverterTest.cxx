@@ -66,7 +66,7 @@ TEST(convert_into_many_rows) {
     I3ConverterPtr converter = BuildConverter("I3Double");
 
     I3DoublePtr x = I3DoublePtr( new I3Double(3.14) );
-    I3FrameObjectPtr frameobj = x; 
+    I3FrameObjectConstPtr frameobj = x; 
 
     // create 10 empty rows
     // use the I3Double in x to initialize the description

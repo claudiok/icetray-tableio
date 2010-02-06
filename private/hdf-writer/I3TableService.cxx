@@ -94,7 +94,7 @@ I3TableRowConstPtr I3TableService::GetPaddingRows(I3EventHeaderConstPtr lastHead
     }
 
     I3TableRowPtr rows = I3TableRowPtr(new I3TableRow(description_, nrows));
-    I3FrameConstPtr frame; // assume ticConv doesn't need the frame
+    I3FramePtr frame; // assume ticConv doesn't need the frame
     for (unsigned int i=0; i< nrows; ++i) {
         rows->SetCurrentRow(i);
         ticConverter_->Convert(*it, rows,frame);

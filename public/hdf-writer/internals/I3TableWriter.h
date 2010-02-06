@@ -30,20 +30,36 @@ class I3TableWriter {
         // should figure out appropriate values
         void AddObject(std::string name, std::string tableName, 
                        std::string type, std::string converter);
+
+        // register one specific object, lazily. if type and converter are empty the writer 
+        // should figure out appropriate values
+        void AddObject(std::string name, std::string tableName, 
+                       std::string type, I3ConverterPtr converter, I3FrameObjectConstPtr obj);
         
+    	struct TableSpec {
+			std::string tableName;
+			I3ConverterPtr converter;
+			TableSpec(const std::string name,I3ConverterPtr conv) : tableName(name),converter(conv) {};
+			TableSpec(const std::string name) : tableName(name),converter() {};
+			TableSpec(I3ConverterPtr conv) : tableName(),converter(conv) {};
+			TableSpec() : tableName(),converter() {};
+		};
         
         // add object to wanted list
-        void AddObject(std::string typeName);
+        void AddObject(std::string typeName, TableSpec spec);
         // write all objects with this type
-        void AddType(std::string typeName);
+        void AddType(std::string typeName, TableSpec spec);
         
         void AddConverter(std::string typeName, I3ConverterPtr converter);
 
         void Setup();
 
-        void Convert(I3FrameConstPtr frame);
+        void Convert(I3FramePtr frame);
         
         void Finish();
+
+
+
 
     protected:
         I3TablePtr ConnectTable(std::string tableName, 
@@ -58,13 +74,17 @@ class I3TableWriter {
             I3TablePtr table;
         };
 
+
         I3TableServicePtr service_;
-        std::map<std::string, TableBundle> tables_;
+        std::map<std::string, std::vector<TableBundle> > tables_;
         std::map<std::string, I3ConverterPtr> converters_;
          
+		typedef std::map<std::string, std::vector<TableSpec> > tablespec_map;
         // configuration lists and maps
-        std::vector<std::string> wantedNames_;
-        std::vector<std::string> wantedTypes_;
+		tablespec_map wantedNames_;
+		tablespec_map wantedTypes_; 
+        // std::vector<std::string> wantedNames_;
+        // std::vector<std::string> wantedTypes_;
         std::map<std::string,std::string> objNameToTableName_;
         std::map<std::string,std::string> typeNameToConverterName_;
         I3FrameConstPtr currentFrame_;
@@ -74,7 +94,7 @@ class I3TableWriter {
         I3TableWriter();
         I3TableWriter(const I3TableWriter& rhs);
 
-
+    SET_LOGGER("I3TableWriter");
 };
 
 I3_POINTER_TYPEDEFS( I3TableWriter );

@@ -138,6 +138,8 @@ class I3TableRowDescription {
         size_t GetTotalByteSize() const;
         size_t GetTotalChunkSize() const;
         unsigned int GetNumberOfFields() const;
+
+        bool operator==(shared_ptr<const I3TableRowDescription> other) const;
     private:
         std::vector<std::string> fieldNames_;
         std::map<std::string, size_t> fieldNameToIndex_;

@@ -57,13 +57,13 @@ I3TableRowDescriptionPtr PythonConverter::CreateDescription(const I3FrameObject&
 
 unsigned int PythonConverter::Convert(I3FrameObjectConstPtr object, 
                              I3TableRowPtr rows, 
-                             I3FrameConstPtr frame) {
+                             I3FramePtr frame) {
 	return Convert(*object,rows,frame);
 }
 
 unsigned int PythonConverter::Convert(const I3FrameObject& object, 
                              I3TableRowPtr rows, 
-                             I3FrameConstPtr frame) {
+                             I3FramePtr frame) {
 				log_trace("%s",__PRETTY_FUNCTION__);
 	if (bp::override convert = this->get_override("Convert")) {
 		return convert(object);

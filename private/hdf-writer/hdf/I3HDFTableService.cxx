@@ -20,7 +20,8 @@
 I3HDFTableService::I3HDFTableService(const std::string& filename, int compress) :
     I3TableService(),
     filename_(filename),
-    compress_(compress)
+    compress_(compress),
+    tables_()
     {
 
     fileId_ =  H5Fcreate(filename_.c_str(),
@@ -33,7 +34,22 @@ I3HDFTableService::I3HDFTableService(const std::string& filename, int compress) 
 
 /******************************************************************************/
 
-I3HDFTableService::~I3HDFTableService() {}
+I3HDFTableService::~I3HDFTableService() {};
+
+/******************************************************************************/
+
+I3TablePtr I3HDFTableService::GetTable(std::string tableName, 
+                      I3TableRowDescriptionConstPtr description) {
+		std::map<std::string,I3TablePtr>::iterator t_it = tables_.find(tableName);
+		I3TablePtr tab;
+		if (t_it == tables_.end()) {
+			tab = CreateTable(tableName,description);
+			tables_[tableName] = tab;
+		} else {
+			tab = t_it->second;
+		}
+		return tab;
+};
 
 /******************************************************************************/
 

@@ -55,13 +55,37 @@ class I3TableWriterModule(icetray.I3Module):
 		# FIXME (HACK): this returns <type 'Boost.Python.instance'>, but
 		# there has to be a better way to check if something is a dataclass
 		bp_instance = hdf_writer.I3Converter.__base__ 
-		types = self._tuplify_args(types,bp_instance,'Types')
+		types = self._tuplify_args(types,object,'Types')
 		
-		pass
+		# FIXME (HACK): this assumes that the pybindings classes are named
+		# the same way as in the C++ I3FrameObject declaration, i.e. __name__
+		# is the same thing that e.g. I3::name_of<I3Particle>() would return.
+		# The pybindings type is in principle the most exact specification of
+		# the type, so it would be preferable to use this.
+		types = map(lambda t: (t[0].__name__,t[1]),types)
+		
+		self.writer = hdf_writer.I3TableWriter(self.table_service)
+		tablespec = hdf_writer.I3TableWriter.TableSpec
+		
+		# FIXME: need a way to get table names from the user
+		for key,converter in keys:
+			if converter is None:
+				self.writer.add_object(key,tablespec())
+			else:
+				self.writer.add_object(key,tablespec(converter))
+		for type_,converter in types:
+			if converter is None:
+				self.writer.add_type(type_,tablespec())
+			else:
+				self.writer.add_type(type_,tablespec(converter))
 	def Physics(self,frame):
-		pass
+		self.writer.convert(frame)
+		self.PushFrame(frame)
+		header = frame['I3EventHeader']
+		print 'Run %d Event %d' % (header.RunID,header.EventID)
+		return True
 	def Finish(self):
-		pass
+		self.writer.finish()
 		
 		
 if False == True:

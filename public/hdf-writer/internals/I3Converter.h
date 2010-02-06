@@ -53,6 +53,7 @@ class I3Converter {
          * doesn't exist
          */
         I3TableRowDescriptionConstPtr GetDescription();
+        bool HasDescription() { if (description_) return true; else return false; };
         
         /**
          * Fill the object held by pointer object into rows
@@ -62,15 +63,15 @@ class I3Converter {
          */
         virtual unsigned int Convert(I3FrameObjectConstPtr object, 
                                      I3TableRowPtr rows, 
-                                     I3FrameConstPtr frame=I3FrameConstPtr()) = 0;
+                                     I3FramePtr frame=I3FramePtr()) = 0;
         
         virtual unsigned int Convert(const I3FrameObject& object, 
                                      I3TableRowPtr rows, 
-                                     I3FrameConstPtr frame=I3FrameConstPtr()) = 0;
+                                     I3FramePtr frame=I3FramePtr()) = 0;
         
     protected:
         I3TableRowDescriptionPtr description_;
-        I3FrameConstPtr currentFrame_;
+        I3FramePtr currentFrame_;
 
 };
 
@@ -94,7 +95,7 @@ class I3ConverterImplementation : public I3Converter {
         }
         
         unsigned int Convert(const I3FrameObject& object, I3TableRowPtr rows, 
-                             I3FrameConstPtr frame) {
+                             I3FramePtr frame) {
             const FrmObj& typedObject = dynamic_cast<const FrmObj&>(object);
 
             // lazy initialization of the description:
@@ -102,12 +103,13 @@ class I3ConverterImplementation : public I3Converter {
                description_ = CreateDescription(typedObject);
 
             currentFrame_ = frame;
+
             unsigned int nrows = FillRows( typedObject, rows );
             currentFrame_.reset();
             return nrows;
         }
         
-        unsigned int Convert(I3FrameObjectConstPtr object, I3TableRowPtr rows, I3FrameConstPtr frame) {
+        unsigned int Convert(I3FrameObjectConstPtr object, I3TableRowPtr rows, I3FramePtr frame) {
             return Convert( *object, rows, frame);
         }
 

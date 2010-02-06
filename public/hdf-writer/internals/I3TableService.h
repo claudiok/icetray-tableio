@@ -27,7 +27,7 @@ class I3TableService {
     public:
         I3TableService();
 
-        I3TablePtr GetTable(std::string tableName, 
+        virtual I3TablePtr GetTable(std::string tableName, 
                             I3TableRowDescriptionConstPtr description);
 
         I3TableRowConstPtr GetPaddingRows(I3EventHeaderConstPtr lastHeader,

@@ -54,6 +54,32 @@ TEST(simple_creation) {
     ENSURE_EQUAL( desc.GetFieldUnits().at(1), "Volt", "test unit string");
 }
 
+TEST(comparison) {
+   I3TableRowDescriptionPtr desc1(new I3TableRowDescription());
+   I3TableRowDescriptionPtr desc2(new I3TableRowDescription());
+   
+   desc1->AddField<int>("intval","counts", "an int variable");
+   desc2->AddField<int>("intval","counts", "an int variable");
+   
+   ENSURE_EQUAL( *desc1 == desc2, true, "Equal numbers of identical fields => equal");
+   
+   desc2->AddField<double>("doubleval","mV", "an int variable");
+   
+   ENSURE_EQUAL( *desc1 == desc2, false, "Unequal numbers of fields => unequal");
+   
+   desc2->AddField<double>("doubleval","NPE", "an int variable");
+   
+   ENSURE_EQUAL( *desc1 == desc2, false, "Fields with different units => unequal");
+   
+   I3TableRowDescriptionPtr desc3(new I3TableRowDescription());
+   I3TableRowDescriptionPtr desc4(new I3TableRowDescription());
+   
+   desc3->AddField<int>("intval","counts", "FADC counts");
+   desc4->AddField<int>("intval","counts", "FADC counts, multiplied by -1");
+   
+   ENSURE_EQUAL( *desc1 == desc2, false, "Fields with different docstrings => unequal");
+}
+
 TEST(array_creation) {
     I3TableRowDescription desc;
     desc.AddField<int>("int10", "unit", "doc", 10);
