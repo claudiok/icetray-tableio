@@ -11,7 +11,7 @@ PythonConverter::PythonConverter() : I3Converter() {
 unsigned int PythonConverter::GetNumberOfRows(I3FrameObjectConstPtr object) {
 	log_trace("%s",__PRETTY_FUNCTION__);
 	if (bp::override num_rows = this->get_override("GetNumberOfRows")) {
-		return num_rows(object);
+		return num_rows(boost::const_pointer_cast<I3FrameObject>(object));
 	} else {
 		return 1;
 	}
@@ -58,15 +58,21 @@ I3TableRowDescriptionPtr PythonConverter::CreateDescription(const I3FrameObject&
 unsigned int PythonConverter::Convert(I3FrameObjectConstPtr object, 
                              I3TableRowPtr rows, 
                              I3FramePtr frame) {
-	return Convert(*object,rows,frame);
+	log_trace("%s",__PRETTY_FUNCTION__);
+	// return Convert(*object,rows,frame);
+	if (bp::override convert = this->get_override("Convert")) {
+		return convert(boost::const_pointer_cast<I3FrameObject>(object),rows,frame);
+	} else {
+		log_fatal("Python module must implement Convert(frame_object,rows,frame).");
+	}
 }
 
 unsigned int PythonConverter::Convert(const I3FrameObject& object, 
                              I3TableRowPtr rows, 
                              I3FramePtr frame) {
-				log_trace("%s",__PRETTY_FUNCTION__);
+	log_trace("%s",__PRETTY_FUNCTION__);
 	if (bp::override convert = this->get_override("Convert")) {
-		return convert(object);
+		return convert(object,rows,frame);
 	} else {
 		log_fatal("Python module must implement Convert(frame_object,rows,frame).");
 	}

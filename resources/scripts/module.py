@@ -81,8 +81,8 @@ class I3TableWriterModule(icetray.I3Module):
 	def Physics(self,frame):
 		self.writer.convert(frame)
 		self.PushFrame(frame)
-		header = frame['I3EventHeader']
-		print 'Run %d Event %d' % (header.RunID,header.EventID)
+		# header = frame['I3EventHeader']
+		# print 'Run %d Event %d' % (header.RunID,header.EventID)
 		return True
 	def Finish(self):
 		self.writer.finish()

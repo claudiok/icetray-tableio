@@ -127,9 +127,10 @@ class I3PythonConverterTest(unittest.TestCase):
 		
 
 class DOMLaunchBookie(hdf_writer.I3Converter):
-	booked = dataclasses.I3DOMLaunch
-	def CreateDescription(self,dl):
+	booked = dataclasses.I3DOMLaunchSeriesMap
+	def CreateDescription(self,dlsm):
 		desc = hdf_writer.I3TableRowDescription()
+		dl = dlsm.values()[0][0]
 		desc.add_field('start_time','f','ns','')
 		desc.add_field('pedestal_sub',bool,'','Has the pedestal been subtracted?')
 		desc.add_field('lc_bit',bool,'','')
@@ -142,7 +143,8 @@ class DOMLaunchBookie(hdf_writer.I3Converter):
 		return desc
 	def GetNumberOfRows(self,frameobj):
 		return 1
-	def Convert(self,domlaunch,rows,frame):
+	def Convert(self,dlsm,rows,frame):
+		domlaunch = dlsm.values()[0][0]
 		rows['start_time']       = domlaunch.GetStartTime()
 		rows['raw_charge_stamp'] = domlaunch.GetRawChargeStamp()
 		rows['pedestal_sub']     = domlaunch.GetIsPedestalSub()

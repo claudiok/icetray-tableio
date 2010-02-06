@@ -27,5 +27,6 @@ void register_I3Converter() {
 	                                                  I3TableRowPtr, 
 	                                                  I3FramePtr))
 	               &PythonConverter::Convert)
+	.def("GetNumberOfRows",&PythonConverter::GetNumberOfRows)
 	;
 }
