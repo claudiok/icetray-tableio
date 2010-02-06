@@ -154,7 +154,7 @@ void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType, cha
     }    
     size_t nfields = fieldNameToIndex_.size();
     fieldNames_.push_back(name);
-    fieldNameToIndex_[name] = nfields-1;
+    fieldNameToIndex_[name] = nfields;
     if (arrayLength == 1)
         fieldHdfTypes_.push_back(hdfType);
     else {
@@ -218,7 +218,7 @@ I3TableRowDescription operator|(const I3TableRowDescription& lhs,
         newlhs.fieldDocStrings_.push_back( rhs.fieldDocStrings_.at(i) );
         
         // values that have to be recalculated:
-        newlhs.fieldNameToIndex_[fieldName] = newlhs.fieldNameToIndex_.size();
+        newlhs.fieldNameToIndex_[fieldName] = newlhs.fieldNameToIndex_.size()-1;
         newlhs.fieldByteOffsets_.push_back(byteOffset);
         newlhs.fieldChunkOffsets_.push_back(chunkOffset);
     }
