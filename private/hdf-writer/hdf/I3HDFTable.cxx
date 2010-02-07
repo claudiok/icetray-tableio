@@ -61,7 +61,35 @@ I3HDFTable::I3HDFTable(I3TableService& service, const std::string& name,
         tableCreated_ = true;
     }
 
-    // TODO metadata
+   // Add some helpful attributes
+   const std::vector<std::string>& unitStrings = description->GetFieldUnits();
+   const std::vector<std::string>& docStrings  = description->GetFieldDocStrings();
+   std::vector<std::string>::const_iterator it_unit;
+   std::vector<std::string>::const_iterator it_doc;
+   unsigned int i;
+   // std::ostringstream osu,osd;
+   for (i=0, it_unit = unitStrings.begin(), it_doc = docStrings.begin();
+        it_unit != unitStrings.end();
+        it_unit++, it_doc++, i++) {
+         
+         // FIXME: is there a kosher way to do this?
+         std::ostringstream osu,osd;
+         // build attribute names
+         osu << "FIELD_" << i << "_UNIT";
+         osd << "FIELD_" << i << "_DOC";
+
+         // set string attributes on the dataset
+         if (H5LTset_attribute_string( fileId_, name_.c_str(), osu.str().c_str(), it_unit->c_str() ) < 0)
+               // FIXME: handle errors
+               log_fatal("Couldn't set attribute '%s' = '%s' for dataset '%s'",
+                          osu.str().c_str(),it_unit->c_str(),name_.c_str());
+         if (H5LTset_attribute_string( fileId_, name_.c_str(), osd.str().c_str(), it_doc->c_str() ) < 0)
+               // FIXME: handle errors
+               log_fatal("Couldn't set attribute '%s' = '%s' for dataset '%s'",
+                          osd.str().c_str(),it_doc->c_str(),name_.c_str());
+      
+   }
+   
 }
 
 /******************************************************************************/

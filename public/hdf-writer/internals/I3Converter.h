@@ -68,6 +68,12 @@ class I3Converter {
         virtual unsigned int Convert(const I3FrameObject& object, 
                                      I3TableRowPtr rows, 
                                      I3FramePtr frame=I3FramePtr()) = 0;
+
+        /**
+         * return true if this converter can handle the object
+         */
+        virtual bool CanConvert(I3FrameObjectConstPtr object) = 0;
+
         
     protected:
         I3TableRowDescriptionPtr description_;
@@ -126,6 +132,9 @@ class I3ConverterImplementation : public I3Converter {
             return GetDescription(*object);
         }
 
+        virtual bool CanConvert(I3FrameObjectConstPtr object);
+
+
     protected:
         virtual I3TableRowDescriptionPtr CreateDescription(const FrmObj& object) = 0;
         virtual unsigned int GetNumberOfRows(const FrmObj& object);
@@ -138,6 +147,14 @@ class I3ConverterImplementation : public I3Converter {
 template <class FrmObj>
 unsigned int I3ConverterImplementation<FrmObj>::GetNumberOfRows(const FrmObj& object) {
     return 1;
+}
+
+/******************************************************************************/
+
+// a default implementation of CanConvert. simply compares the template type to the pointer
+template <class FrmObj>
+bool I3ConverterImplementation<FrmObj>::CanConvert(I3FrameObjectConstPtr object) {
+      return (typeid(FrmObj) == typeid(*object.get()));
 }
 
 /******************************************************************************/

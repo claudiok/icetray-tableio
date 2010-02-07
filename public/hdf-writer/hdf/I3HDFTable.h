@@ -29,5 +29,6 @@ class I3HDFTable : public I3Table {
         virtual void WriteRows(I3TableRowConstPtr row);
         hid_t fileId_;
 
+    SET_LOGGER("I3HDFTable");
 };
 #endif

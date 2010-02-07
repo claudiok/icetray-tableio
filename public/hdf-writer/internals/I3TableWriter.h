@@ -17,6 +17,7 @@
 #include <string>
 
 #include "hdf-writer/internals/I3Converter.h"
+#include <boost/python.hpp>
 
 I3_FORWARD_DECLARATION(I3TableService);
 I3_FORWARD_DECLARATION(I3Table);
@@ -34,21 +35,47 @@ class I3TableWriter {
         // register one specific object, lazily. if type and converter are empty the writer 
         // should figure out appropriate values
         void AddObject(std::string name, std::string tableName, 
-                       std::string type, I3ConverterPtr converter, I3FrameObjectConstPtr obj);
+                       I3ConverterPtr converter, I3FrameObjectConstPtr obj);
         
-    	struct TableSpec {
-			std::string tableName;
-			I3ConverterPtr converter;
-			TableSpec(const std::string name,I3ConverterPtr conv) : tableName(name),converter(conv) {};
-			TableSpec(const std::string name) : tableName(name),converter() {};
-			TableSpec(I3ConverterPtr conv) : tableName(),converter(conv) {};
-			TableSpec() : tableName(),converter() {};
-		};
+        struct TableSpec {
+           std::string tableName;
+           I3ConverterPtr converter;
+           TableSpec(const std::string name,I3ConverterPtr conv) : tableName(name),converter(conv) {};
+           TableSpec(const std::string name) : tableName(name),converter() {};
+           TableSpec(I3ConverterPtr conv) : tableName(),converter(conv) {};
+           TableSpec() : tableName(),converter() {};
+        };
         
+        struct TypeSpec {
+           boost::python::object held_type_;
+           
+           bool operator<(const TypeSpec& rhs) const {
+              return boost::python::extract<bool>(held_type_.attr("__lt__")(rhs.held_type_));
+           }
+        
+           TypeSpec(boost::python::object t_) : held_type_(t_) { }
+        
+           bool check(I3FrameObjectConstPtr p) const {
+              return check(boost::const_pointer_cast<I3FrameObject>(p));
+           }
+           
+           bool check(I3FrameObjectPtr p) const {
+              boost::python::object frameobj(p);
+              // FIXME: remove debugging output
+              std::string cls   = boost::python::extract<const std::string>(frameobj.attr("__class__").attr("__name__"));
+              std::string cname = boost::python::extract<const std::string>(held_type_.attr("__name__"));
+              log_trace("Checking object of type '%s' against '%s'",
+                       cls.c_str(),
+                       cname.c_str());
+              int rv = PyObject_IsInstance(frameobj.ptr(),held_type_.ptr());
+              return (rv > 0);
+           }
+        };
+      
         // add object to wanted list
         void AddObject(std::string typeName, TableSpec spec);
         // write all objects with this type
-        void AddType(std::string typeName, TableSpec spec);
+        void AddType(TypeSpec type, TableSpec spec);
         
         void AddConverter(std::string typeName, I3ConverterPtr converter);
 
@@ -78,13 +105,16 @@ class I3TableWriter {
         I3TableServicePtr service_;
         std::map<std::string, std::vector<TableBundle> > tables_;
         std::map<std::string, I3ConverterPtr> converters_;
+        std::vector<I3ConverterPtr> converterCache_;
+        // keys that have been examined and found useless
+        std::vector<std::string> uselessKeys_;
          
-		typedef std::map<std::string, std::vector<TableSpec> > tablespec_map;
+        typedef std::map<std::string, std::vector<TableSpec> > tablespec_map;
+        typedef std::map<TypeSpec, std::vector<TableSpec> > typespec_map;
         // configuration lists and maps
-		tablespec_map wantedNames_;
-		tablespec_map wantedTypes_; 
-        // std::vector<std::string> wantedNames_;
-        // std::vector<std::string> wantedTypes_;
+        tablespec_map wantedNames_;
+        typespec_map wantedTypes_; 
+      
         std::map<std::string,std::string> objNameToTableName_;
         std::map<std::string,std::string> typeNameToConverterName_;
         I3FrameConstPtr currentFrame_;
@@ -93,6 +123,10 @@ class I3TableWriter {
     private:
         I3TableWriter();
         I3TableWriter(const I3TableWriter& rhs);
+
+        const std::string GetTypeName(I3FramePtr, const std::string&);
+
+        I3ConverterPtr FindConverter(I3FrameObjectConstPtr obj);
 
     SET_LOGGER("I3TableWriter");
 };

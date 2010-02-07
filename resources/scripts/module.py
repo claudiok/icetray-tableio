@@ -34,6 +34,9 @@ class I3TableWriterModule(icetray.I3Module):
 			return dictus
 		else:
 			raise TypeError, "Keys must be dicts, tuples, or strings."
+	
+	# FIXME (HACK): there has to be a better way to get at <type 'Boost.Python.class'>
+	bp_class = type(icetray.I3Module)
 		
 	def _transform_typeitem(self,item):
 		typus = None
@@ -53,17 +56,8 @@ class I3TableWriterModule(icetray.I3Module):
 		else:
 			dictus = dict(type=item)
 		typus = dictus['type']
-		if not isinstance(typus,str):
-			# FIXME (HACK): this assumes that the pybindings classes are named
-			# the same way as in the C++ I3FrameObject declaration, i.e. __name__
-			# is the same thing that e.g. I3::name_of<I3Particle>() would return.
-			# The pybindings type is in principle the most exact specification of
-			# the type, so it would be preferable to use this.
-			try:
-				name = typus.__name__
-				dictus['type'] = name
-			except AttributeError:
-				raise TypeError, "Couldn't interpret '%s' as a type-specification." % typus
+		if type(typus) != self.bp_class:
+			raise TypeError, "Type must be an instance of Boost.Python.class (got %s instead)" % typus
 		return dictus
 				
 	def _parse_args(self,arg,transformer):
@@ -109,13 +103,14 @@ class I3TableWriterModule(icetray.I3Module):
 		
 		self.writer = hdf_writer.I3TableWriter(self.table_service)
 		tablespec = hdf_writer.I3TableWriter.TableSpec
+		typespec = hdf_writer.I3TableWriter.TypeSpec
 		
 		for item in keys:
 			key = item.pop('key')
 			self.writer.add_object(key,tablespec(**item))
 		for item in types:
 			typus = item.pop('type')
-			self.writer.add_type(typus,tablespec(**item))
+			self.writer.add_type(typespec(typus),tablespec(**item))
 
 	def Physics(self,frame):
 		self.writer.convert(frame)

@@ -90,3 +90,8 @@ unsigned int PythonConverter::Convert(const I3FrameObject& object,
 		log_fatal("Python module must implement Convert(frame_object,rows,frame).");
 	}
 }
+
+// FIXME: this is pretty trusting
+bool PythonConverter::CanConvert(I3FrameObjectConstPtr object) {
+	return true;
+}

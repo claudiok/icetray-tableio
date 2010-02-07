@@ -20,6 +20,12 @@
 I3TableWriter::I3TableWriter(I3TableServicePtr service) {
     service_ = service;
     ticConverter_ = BuildConverter("I3IndexColumnsGenerator");
+    // instantiate each registered converter    
+    I3ConverterFactory::const_iterator it_conv;
+    const I3ConverterFactory& factory = I3::Singleton<I3ConverterFactory>::get_const_instance();
+    for(it_conv = factory.begin(); it_conv != factory.end(); it_conv++) {
+         converterCache_.push_back((it_conv->second.fn)());
+    }
 }
 
 /******************************************************************************/
@@ -82,15 +88,40 @@ void I3TableWriter::AddObject(std::string name, std::string tableName,
 
 /******************************************************************************/
 
+// Search the converter cache for a converter that says it can handle obj
+// raise an error and if more than one answers the call (there can be only one highlander)
+I3ConverterPtr I3TableWriter::FindConverter(I3FrameObjectConstPtr obj) {
+	bool found = false;
+	I3ConverterPtr converter_ptr;
+	std::vector<I3ConverterPtr>::const_iterator it_conv;
+	for(it_conv = converterCache_.begin(); it_conv != converterCache_.end(); it_conv++) {
+		log_trace("Asking converter '%s' what it thinks of '%s'",typeid(*(it_conv->get())).name(),typeid(*(obj.get())).name());
+		bool match = it_conv->get()->CanConvert(obj);
+		if (match && (converter_ptr != NULL)) {
+			log_fatal("Ambiguity in the converter registry. Converters '%s' and '%s' both want to handle '%s'",
+						typeid(*(converter_ptr.get())).name(),typeid(*(it_conv->get())).name(),typeid(*(obj.get())).name());
+		} else if (match) {
+			log_trace("Converter '%s' can convert '%s'",typeid(*(it_conv->get())).name(),typeid(*(obj.get())).name());
+			converter_ptr = *it_conv;
+		}
+	}
+	return converter_ptr;
+}
+
+/******************************************************************************/
+
 // register one specific object, lazily. if type and converter are empty the writer 
 // should figure out appropriate values
 void I3TableWriter::AddObject(std::string name, std::string tableName, 
-                              std::string type, I3ConverterPtr converter, 
-                              I3FrameObjectConstPtr obj) {
+                              I3ConverterPtr converter, I3FrameObjectConstPtr obj) {
 
     // create a converter if needed
     if (converter == NULL) {
-        converter = BuildConverter(type);
+      converter = FindConverter(obj);
+      if (converter == NULL) {
+         log_fatal("No converter found for '%s' of type '%s'",name.c_str(),typeid(*(obj.get())).name());
+      }
+        // converter = BuildConverter(type);
     }
 
     // construct the table description
@@ -102,42 +133,42 @@ void I3TableWriter::AddObject(std::string name, std::string tableName,
     if (tableName == "")
         tableName = name;
 
-	std::map<std::string,std::vector<TableBundle> >::iterator tlist_it = tables_.find(name);
-	std::vector<TableBundle>::iterator t_it;
-	bool duplicate = false;
-	if (tlist_it != tables_.end()) {
-		// a table is connected to the key already,
-		// search for duplicates
-		for (t_it = tlist_it->second.begin(); t_it != tlist_it->second.end(); ++t_it) {
-			if (t_it->table->GetName() == tableName) {
-				log_warn("There is already a table named '%s', appending superfluous underscores.",t_it->table->GetName().c_str());
-				tableName += "_";
-			}
-			// by convention, identical description => identical converter
-			if (combinedDescription == t_it->table->GetDescription()) {
-				duplicate = true;
-				log_error("Another table '%s' exists with the same description. The new table '%s' will be dropped.",
-					t_it->table->GetName().c_str(),tableName.c_str());
-				break;
-			}
-		}
-	} else {
-		tables_[name] = std::vector<TableBundle>();
-		tlist_it = tables_.find(name);
-	}
-		
-	if (!duplicate) {
-		// get the table from the service
-	    I3TablePtr table = ConnectTable(tableName, combinedDescription);
+    std::map<std::string,std::vector<TableBundle> >::iterator tlist_it = tables_.find(name);
+    std::vector<TableBundle>::iterator t_it;
+    bool duplicate = false;
+    if (tlist_it != tables_.end()) {
+       // a table is connected to the key already,
+       // search for duplicates
+       for (t_it = tlist_it->second.begin(); t_it != tlist_it->second.end(); ++t_it) {
+          if (t_it->table->GetName() == tableName) {
+             log_warn("There is already a table named '%s', appending superfluous underscores.",t_it->table->GetName().c_str());
+             tableName += "_";
+          }
+          // by convention, identical description => identical converter
+          if (combinedDescription == t_it->table->GetDescription()) {
+             duplicate = true;
+             log_error("Another table '%s' exists with the same description. The new table '%s' will be dropped.",
+                t_it->table->GetName().c_str(),tableName.c_str());
+             break;
+          }
+       }
+    } else {
+       tables_[name] = std::vector<TableBundle>();
+       tlist_it = tables_.find(name);
+    }
+       
+    if (!duplicate) {
+      // get the table from the service
+       I3TablePtr table = ConnectTable(tableName, combinedDescription);
 
-	    // store all this in tables_ 
-	    TableBundle bundle;
-	    bundle.objectType = type;
-	    bundle.converter = converter;
-	    bundle.table = table;
-	
-		tlist_it->second.push_back(bundle);
-	}
+       // store all this in tables_ 
+       TableBundle bundle;
+       bundle.objectType = typeid(*(obj.get())).name(); // FIXME: this field can be dropped
+       bundle.converter = converter;
+       bundle.table = table;
+   
+      tlist_it->second.push_back(bundle);
+   }
 }
 
 
@@ -156,12 +187,12 @@ void I3TableWriter::AddObject(std::string objName, TableSpec spec) {
 
 /******************************************************************************/
 
-void I3TableWriter::AddType(std::string typeName, TableSpec spec) {
+void I3TableWriter::AddType(TypeSpec type, TableSpec spec) {
     // FIXME: error/duplicate checking
     // wantedTypes_.push_back(typeName);
-	tablespec_map::iterator t_it = wantedTypes_.find(typeName);
+	typespec_map::iterator t_it = wantedTypes_.find(type);
 	if (t_it == wantedTypes_.end()) {
-		wantedTypes_[typeName] = std::vector<TableSpec>(1,spec);
+		wantedTypes_[type] = std::vector<TableSpec>(1,spec);
 	} else {
 		t_it->second.push_back(spec);
 	}
@@ -181,6 +212,17 @@ void I3TableWriter::Setup() {
 }
 
 /******************************************************************************/
+
+const std::string I3TableWriter::GetTypeName(I3FramePtr frame, const std::string& key) {
+	std::string typeName;
+	try {
+		typeName = I3::name_of(*frame->type_id(key));
+	} catch (...) {
+		typeName = "";
+	}
+	// TODO: put key on a ban list
+	return typeName;
+}
 
 void I3TableWriter::Convert(I3FramePtr frame) {
     // implemenation pending
@@ -205,6 +247,7 @@ void I3TableWriter::Convert(I3FramePtr frame) {
     if (!ticConverter_->HasDescription()) { ticConverter_->GetDescription(header); }
     
     tablespec_map::iterator vlist_it;
+    typespec_map::iterator typelist_it;
     std::vector<TableSpec>::iterator v_it;
     std::vector<std::string>::const_iterator k_it; 
     std::map<std::string, std::vector<TableBundle> >::iterator tlist_it;
@@ -215,38 +258,36 @@ void I3TableWriter::Convert(I3FramePtr frame) {
     // to tables_. this loop erases elements from wantedNames_
     for(vlist_it = wantedNames_.begin(); vlist_it != wantedNames_.end(); ) {
         const std::string& objName = vlist_it->first;
+        tablespec_map::iterator eraser;          
+
         if( (tlist_it = tables_.find(objName)) == tables_.end() ) {
             // try to get the object from the frame 
-           // if exist: derive type, get converter, add to tables_, pop from wanted list           
-           I3FrameObjectConstPtr object = frame->Get<I3FrameObjectConstPtr>(objName);
-           if(object) {
-               const std::string& typeName = frame->typename_find(objName)->second;
-               // std::string tableName = "";
-               // std::string converterName = "";
-               //            
-               // if ( (m_it = objNameToTableName_.find(objName)) != objNameToTableName_.end()) {
-               //     tableName = m_it->second;
-               // }
-               // if ( (m_it = typeNameToConverterName_.find(typeName)) != typeNameToConverterName_.end()) {
-               //     converterName = m_it->second;
-               // }
-               
-					for (v_it = vlist_it->second.begin(); v_it != vlist_it->second.end(); ++v_it) {
-						AddObject(objName, v_it->tableName, typeName, v_it->converter, object);
-					}
-               // AddObject(objName, tableName, typeName, converterName);
-               
-               // erase returns an iterator to the following element
-					// copy the iterator to avoid invalidating it on erase
-					tablespec_map::iterator eraser = vlist_it++;
+           // if exist: derive type, get converter, add to tables_, pop from wanted list
+            I3FrameObjectConstPtr object;
+            
+            try {
+               object = frame->Get<I3FrameObjectConstPtr>(objName);
+            } catch (...) {
+               log_error("Frame object '%s' could not be deserialized and will not be booked.",objName.c_str());
+               eraser = vlist_it++;
+               wantedNames_.erase(eraser);
+               continue;
+            }
+            
+            if (object) {
+               for (v_it = vlist_it->second.begin(); v_it != vlist_it->second.end(); ++v_it) {
+                  AddObject(objName, v_it->tableName, v_it->converter, object);
+               }
+               // copy the iterator to avoid invalidating it on erase
+               eraser = vlist_it++;
                wantedNames_.erase(eraser);
            }
            else{
                ++vlist_it;
            }
-			} else { 
-				++vlist_it; 
-			} 
+         } else { 
+            ++vlist_it; 
+         } 
      }            
 
     // now, cycle through the typelist and look for objects in the frames that 
@@ -254,48 +295,60 @@ void I3TableWriter::Convert(I3FramePtr frame) {
     // TODO rather expensive loop -> restructure to optimize?
     std::vector<std::string> objectsInFrame = frame->keys();
 
-    // for every type in wantedTypes_ ...
-    for (vlist_it = wantedTypes_.begin(); vlist_it != wantedTypes_.end(); ++vlist_it) {
-        const std::string& typeName = vlist_it->first;
-
-        // .. loop through the frame
-        for (k_it = objectsInFrame.begin(); k_it != objectsInFrame.end(); ++k_it) {
-            const std::string& objName = *k_it;
-
-            // if the object is already in tables ignore it 
-            if ( tables_.find(objName) != tables_.end() )
-                continue;
-
-            // if the type matches get the object from the frame and call AddObject
-            const std::string& objTypeName = 
-                frame->typename_find(objName)->second;
-            if (typeName == objTypeName) { 
-                I3FrameObjectConstPtr object = frame->Get<I3FrameObjectConstPtr>(objName);
-                if(object) { // should always be true
-                    // std::string tableName = "";
-                    // std::string converterName = "";
-
-                    // if ( (m_it = objNameToTableName_.find(objName)) != objNameToTableName_.end()) {
-                    //     tableName = m_it->second;
-                    // }
-                    // if ( (m_it = typeNameToConverterName_.find(objTypeName)) != typeNameToConverterName_.end()) {
-                    //     converterName = m_it->second;
-                    // }
-                    
-                    // AddObject(objName, tableName, objTypeName, converterName);
-							for (v_it = vlist_it->second.begin(); v_it != vlist_it->second.end(); ++v_it) {
-								AddObject(objName, v_it->tableName, typeName, v_it->converter, object);
-							}
-                }
-                else {
-                    log_fatal("frame->keys() yields keys that cannot be retrieved from the frame!");
-                } // if(object)
-            } // if (typeName == objTypeName)
-        } // for (k_it
-    } // for (vlist_it
+   std::vector<std::string>::const_iterator it_skipkeys;
+   // if the user specified types to be booked, loop through the frame's keys
+   if (wantedTypes_.size() > 0) {
+      // .. loop through the frame
+      for (k_it = objectsInFrame.begin(); k_it != objectsInFrame.end(); ++k_it) {
+         // skip this key if we've already examined it before
+         // and decided we don't need it        
+         it_skipkeys = std::find(uselessKeys_.begin(),uselessKeys_.end(),*k_it);
+         if (it_skipkeys != uselessKeys_.end()) {  
+            log_trace("Skipping examination of key '%s'",k_it->c_str());
+            continue;
+         }
+         
+         bool selected = false;
+         const std::string& objName = *k_it;
+         
+         // for every type in wantedTypes_ ...
+         for (typelist_it = wantedTypes_.begin(); typelist_it != wantedTypes_.end(); ++typelist_it) {
+               const TypeSpec& typeSpec = typelist_it->first;
+               // if the object is already in tables ignore it 
+               if ( tables_.find(objName) != tables_.end() ) {
+                  uselessKeys_.push_back(objName);
+                  log_trace("Added key '%s' to ban list (already booked)",objName.c_str());
+                  continue;
+               }
+               
+               I3FrameObjectConstPtr object;
+               
+               try {
+                  object = frame->Get<I3FrameObjectConstPtr>(objName,true);
+               } catch (...) {
+                  uselessKeys_.push_back(objName);
+                  log_trace("Added key '%s' to ban list (unregistered class)",objName.c_str());
+                  continue;
+               }
+               
+               log_trace("Checking type of '%s'",objName.c_str());
+               if ( typeSpec.check(object) ) {
+                  selected = true;
+                  for (v_it = typelist_it->second.begin(); v_it != typelist_it->second.end(); ++v_it) {
+                     AddObject(objName, v_it->tableName, v_it->converter, object);
+                  }
+               } // if (typeName == objTypeName)
+               
+               if (!selected) {
+                  uselessKeys_.push_back(objName);
+                  log_trace("Added key '%s' to ban list (nobody wants it)",objName.c_str());
+               } // if !selected
+            } // for (k_it
+         } // for (vlist_it
+      } // if wantedTypes_.size() > 0
 
     // now walk through tables_ and convert what is there
-    for(tlist_it = tables_.begin(); tlist_it != tables_.end(); ++tlist_it) {	
+    for(tlist_it = tables_.begin(); tlist_it != tables_.end(); ++tlist_it) {  
         for(t_it = tlist_it->second.begin(); t_it!= tlist_it->second.end(); ++t_it) {
 	
             const std::string& objName = tlist_it->first;
