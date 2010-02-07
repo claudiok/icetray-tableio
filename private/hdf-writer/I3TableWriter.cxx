@@ -121,7 +121,11 @@ void I3TableWriter::AddObject(std::string name, std::string tableName,
       if (converter == NULL) {
          log_fatal("No converter found for '%s' of type '%s'",name.c_str(),typeid(*(obj.get())).name());
       }
-        // converter = BuildConverter(type);
+     } else {
+      // check the converter anyhow
+      if (!converter->CanConvert(obj)) {
+         log_fatal("Converter for key '%s' of type '%s' can't convert the object.",name.c_str(),typeid(*(obj.get())).name());
+      }
     }
 
     // construct the table description

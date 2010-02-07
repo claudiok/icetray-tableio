@@ -3,9 +3,9 @@
 
 namespace bp = boost::python;
 
-PythonConverter::PythonConverter() : I3Converter() {
-	log_trace("%s",__PRETTY_FUNCTION__);
-}
+// PythonConverter::PythonConverter() : I3Converter() {
+// 	log_trace("%s",__PRETTY_FUNCTION__);
+// }
 
 
 unsigned int PythonConverter::GetNumberOfRows(I3FrameObjectConstPtr object) {
@@ -91,7 +91,22 @@ unsigned int PythonConverter::Convert(const I3FrameObject& object,
 	}
 }
 
-// FIXME: this is pretty trusting
 bool PythonConverter::CanConvert(I3FrameObjectConstPtr object) {
-	return true;
+	return CanConvert(boost::const_pointer_cast<I3FrameObject>(object));
+}
+
+bool PythonConverter::CanConvert(I3FrameObjectPtr obj) {
+	if (bp::override can_convert = this->get_override("CanConvert")) {
+		return can_convert(obj);
+	} else {
+		bp::reference_existing_object::apply<PythonConverter*>::type converter;
+		PyObject* sptr = converter( this );
+		bp::object object(obj);
+		if (!PyObject_HasAttrString(sptr,"booked")) {
+			log_fatal("Python module must define attribute 'booked' holding the type to be converted.");
+			return false;
+		} else {
+			return PyObject_IsInstance(object.ptr(),PyObject_GetAttrString(sptr, "booked"));
+		}
+	}
 }
