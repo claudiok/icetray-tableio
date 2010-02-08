@@ -3,11 +3,6 @@
 
 namespace bp = boost::python;
 
-// PythonConverter::PythonConverter() : I3Converter() {
-// 	log_trace("%s",__PRETTY_FUNCTION__);
-// }
-
-
 unsigned int PythonConverter::GetNumberOfRows(I3FrameObjectConstPtr object) {
 	log_trace("%s",__PRETTY_FUNCTION__);
 	if (bp::override num_rows = this->get_override("GetNumberOfRows")) {
@@ -59,8 +54,6 @@ unsigned int PythonConverter::Convert(I3FrameObjectConstPtr object,
                              I3TableRowPtr rows, 
                              I3FramePtr frame) {
 	log_trace("%s",__PRETTY_FUNCTION__);
-	// return Convert(*object,rows,frame);
-	// unsigned int nrows;
 	if (bp::override fillrows = this->get_override("FillRows")) {
 		return fillrows(boost::const_pointer_cast<I3FrameObject>(object),rows);
 	} else if (bp::override convert = this->get_override("Convert")) {
@@ -70,7 +63,7 @@ unsigned int PythonConverter::Convert(I3FrameObjectConstPtr object,
 	}
 }
 
-unsigned int PythonConverter::FillRows(const I3FrameObjectPtr object, I3TableRowPtr rows) {
+unsigned int PythonConverter::FillRows(const I3FrameObjectConstPtr object, I3TableRowPtr rows) {
 	log_trace("%s",__PRETTY_FUNCTION__);
 	if (bp::override fillrows = this->get_override("FillRows")) {
 		return fillrows(boost::const_pointer_cast<I3FrameObject>(object),rows);

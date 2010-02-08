@@ -244,8 +244,8 @@ void I3TableWriter::Convert(I3FramePtr frame) {
     // TODO rethink requirement of event header? -> what about gcd frames?
 
 
-    // I3EventHeaderConstPtr header = frame->Get<I3EventHeaderConstPtr>(); // TODO name?
-    I3EventHeaderConstPtr header = frame->Get<I3EventHeaderConstPtr>(std::string("I3EventHeader"));
+    I3EventHeaderConstPtr header = frame->Get<I3EventHeaderConstPtr>(); // the name is _not_ canonical
+    // I3EventHeaderConstPtr header = frame->Get<I3EventHeaderConstPtr>(std::string("I3EventHeader"));
 
     // lazily initialize the header
     if (!ticConverter_->HasDescription()) { ticConverter_->GetDescription(header); }

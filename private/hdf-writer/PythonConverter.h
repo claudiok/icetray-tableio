@@ -4,12 +4,11 @@
 
 struct PythonConverter : I3Converter, boost::python::wrapper<I3Converter>
 {
-	// PythonConverter(PyObject* self) : self_(self) {};
-	PythonConverter() {};
-	
-	
-	// void Configure( const StringPairVector& params);
-    
+
+    PythonConverter() {};
+
+    // void Configure( const StringPairVector& params);
+
     unsigned int GetNumberOfRows(I3FrameObjectConstPtr object);
 
     I3TableRowDescriptionConstPtr GetDescription(I3FrameObjectConstPtr object);
@@ -28,11 +27,9 @@ struct PythonConverter : I3Converter, boost::python::wrapper<I3Converter>
                                  I3TableRowPtr rows, 
                                  I3FramePtr frame=I3FramePtr());
 
-    unsigned int FillRows(const I3FrameObjectPtr object, I3TableRowPtr rows);
+    unsigned int FillRows(const I3FrameObjectConstPtr object, I3TableRowPtr rows);
 
     bool CanConvert(I3FrameObjectConstPtr object);
     bool CanConvert(I3FrameObjectPtr object);
 
-
-	PyObject* self_;
 };
