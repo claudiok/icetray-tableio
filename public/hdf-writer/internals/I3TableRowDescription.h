@@ -136,6 +136,8 @@ private:
     CODEMAP_DEF(unsigned long int, H5T_NATIVE_ULONG, 'L');
     CODEMAP_DEF(bool, H5T_NATIVE_HBOOL, 'o');
 
+  #undef CODEMAP_DEF
+
     friend I3TableRowDescription operator|(const I3TableRowDescription& lhs, const I3TableRowDescription& rhs);
 
 
