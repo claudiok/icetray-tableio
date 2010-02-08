@@ -14,38 +14,6 @@
 
 /******************************************************************************/
 
-hid_t HDFTypeConv::GetType(float x)          { return H5T_NATIVE_FLOAT; }
-hid_t HDFTypeConv::GetType(double x)         { return H5T_NATIVE_DOUBLE; }
-hid_t HDFTypeConv::GetType(long double x)    { return H5T_NATIVE_LDOUBLE; }
-hid_t HDFTypeConv::GetType(char x)           { return H5T_NATIVE_CHAR; }
-hid_t HDFTypeConv::GetType(unsigned char x)  { return H5T_NATIVE_UCHAR; }
-hid_t HDFTypeConv::GetType(signed char x)    { return H5T_NATIVE_SCHAR; }
-hid_t HDFTypeConv::GetType(short x)          { return H5T_NATIVE_SHORT; }
-hid_t HDFTypeConv::GetType(unsigned short x) { return H5T_NATIVE_USHORT; }
-hid_t HDFTypeConv::GetType(int x)            { return H5T_NATIVE_INT; }
-hid_t HDFTypeConv::GetType(unsigned x)       { return H5T_NATIVE_UINT; }
-hid_t HDFTypeConv::GetType(long x)           { return H5T_NATIVE_LONG; }
-hid_t HDFTypeConv::GetType(unsigned long x)  { return H5T_NATIVE_ULONG; }
-hid_t HDFTypeConv::GetType(long long x)      { return H5T_NATIVE_LLONG; }
-hid_t HDFTypeConv::GetType(bool x)           { return H5T_NATIVE_HBOOL; }
-
-char PyTypeConv::GetTypeCode(float x)          { return 'f'; }
-char PyTypeConv::GetTypeCode(double x)         { return 'd'; }
-// char PyTypeConv::GetTypeCode(long double x)    { return '\0'; }
-char PyTypeConv::GetTypeCode(char x)           { return 'c'; }
-char PyTypeConv::GetTypeCode(unsigned char x)  { return 'B'; }
-char PyTypeConv::GetTypeCode(signed char x)    { return 'b'; }
-char PyTypeConv::GetTypeCode(short x)          { return 'h'; }
-char PyTypeConv::GetTypeCode(unsigned short x) { return 'H'; }
-char PyTypeConv::GetTypeCode(int x)            { return 'i'; }
-char PyTypeConv::GetTypeCode(unsigned x)       { return 'I'; }
-char PyTypeConv::GetTypeCode(long x)           { return 'l'; }
-char PyTypeConv::GetTypeCode(unsigned long x)  { return 'L'; }
-// char PyTypeConv::GetTypeCode(long long x)      { return '\0'; }
-char PyTypeConv::GetTypeCode(bool x)           { return 'o'; }
-
-/******************************************************************************/
-
 I3TableRowDescription::I3TableRowDescription() {}
 
 /******************************************************************************/
