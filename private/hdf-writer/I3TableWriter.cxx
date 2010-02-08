@@ -91,7 +91,6 @@ void I3TableWriter::AddObject(std::string name, std::string tableName,
 // Search the converter cache for a converter that says it can handle obj
 // raise an error and if more than one answers the call (there can be only one highlander)
 I3ConverterPtr I3TableWriter::FindConverter(I3FrameObjectConstPtr obj) {
-	bool found = false;
 	I3ConverterPtr converter_ptr;
 	std::vector<I3ConverterPtr>::const_iterator it_conv;
 	for(it_conv = converterCache_.begin(); it_conv != converterCache_.end(); it_conv++) {
