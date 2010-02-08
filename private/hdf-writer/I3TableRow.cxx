@@ -21,7 +21,7 @@ void I3TableRow::init() {
 
     // initialize memory block with zeros - TODO useful?
     char* pointy = reinterpret_cast<char*>(&data_[0]);
-    for (int i=0; i < totalByteSize; ++i)
+    for (unsigned int i=0; i < totalByteSize; ++i)
         pointy[i] = 0;
 }
 

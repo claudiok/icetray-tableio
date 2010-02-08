@@ -76,7 +76,7 @@ I3TableRowConstPtr I3TableService::GetPaddingRows(I3EventHeaderConstPtr lastHead
     // B: 1,2,3,l,4,5,(6=h) -> 2 padding rows
     
     std::vector<I3EventHeaderConstPtr>::const_iterator it;
-    int nrows = 0;
+    unsigned nrows = 0;
     // scenario B
     if (EventHeadersEqual(*newHeader, *eventHeaderCache_.back())) { // another table already reported this event
         // start at 

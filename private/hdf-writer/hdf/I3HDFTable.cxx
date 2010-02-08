@@ -25,7 +25,6 @@ I3HDFTable::I3HDFTable(I3TableService& service, const std::string& name,
     const size_t structSize = description_->GetTotalByteSize();
     const unsigned nfields = description_->GetNumberOfFields();
     const size_t* fieldOffsets = &(description_->GetFieldByteOffsets().front());
-    const size_t* fieldSizes   = &(description_->GetFieldTypeSizes().front());
     const hid_t* fieldTypes    = &(description_->GetFieldHdfTypes().front());
   
     // converter field name strings into char**
