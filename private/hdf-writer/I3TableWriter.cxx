@@ -246,6 +246,10 @@ void I3TableWriter::Convert(I3FramePtr frame) {
 
     I3EventHeaderConstPtr header = frame->Get<I3EventHeaderConstPtr>(); // the name is _not_ canonical
     // I3EventHeaderConstPtr header = frame->Get<I3EventHeaderConstPtr>(std::string("I3EventHeader"));
+    if (!header) {
+       log_error("This frame is missing an I3EventHeader and will not be booked!");
+       return;
+    }
 
     // lazily initialize the header
     if (!ticConverter_->HasDescription()) { ticConverter_->GetDescription(header); }
