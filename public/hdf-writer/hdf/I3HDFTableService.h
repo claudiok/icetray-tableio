@@ -19,21 +19,21 @@
 
 class I3HDFTableService : public I3TableService {
     public:
-        I3HDFTableService(const std::string& filename, int compress=1);
+        I3HDFTableService(const std::string& filename, int compress=1, char mode='w');
         virtual ~I3HDFTableService();
-        
-        virtual I3TablePtr GetTable(std::string tableName, 
-                            I3TableRowDescriptionConstPtr description);
 
     protected:
         virtual I3TablePtr CreateTable(const std::string& tableName, 
                                        I3TableRowDescriptionConstPtr description);
         virtual void CloseFile();
+
     private:
+        
+        void FindTables();
+
         hid_t fileId_;
         std::string filename_;
         int compress_;
-        std::map<std::string,I3TablePtr> tables_;
 
     SET_LOGGER("I3HDFTableService");
 };

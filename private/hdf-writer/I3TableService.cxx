@@ -20,19 +20,36 @@ I3TableService::I3TableService()  {
 }
 
 /******************************************************************************/
+
+std::vector<std::string> I3TableService::GetTableNames() {
+	std::vector<std::string> out;
+	out.reserve(tables_.size());
+	std::map<std::string, I3TablePtr>::const_iterator it;
+	
+	for(it = tables_.begin(); it != tables_.end(); it++) out.push_back(it->first);
+	return out;
+}
+
+/******************************************************************************/
         
 I3TablePtr I3TableService::GetTable(std::string name,
                                     I3TableRowDescriptionConstPtr description) {
     std::map<std::string, I3TablePtr>::iterator it;
     I3TablePtr table;
     it = tables_.find(name);
+
     if (it != tables_.end()) {
         // test description 
         // TODO useful here? rethink task definitions
-        if (description->CanBeFilledInto( it->second->GetDescription() ) )
+        // if (description->CanBeFilledInto( it->second->GetDescription() ) )
             table = it->second;
+    } else if (description) {
+       // create table if description is not NULL
+       table = CreateTable(name,description);
+       tables_[name] = table;
     }
 
+    // otherwise, return NULL
     return table;
 }
 

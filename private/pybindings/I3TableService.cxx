@@ -35,5 +35,7 @@ void register_I3TableService() {
       boost::shared_ptr<I3HDFTableService>, bp::bases<I3TableService> >
       ("I3HDFTableService", bp::init<const std::string>(bp::args("filename")))
       .def(bp::init<const std::string&,int>(bp::args("filename","compression_level")))
+      .def(bp::init<const std::string&,int,char>(bp::args("filename","compression_level","mode")))
+
 		;
 }

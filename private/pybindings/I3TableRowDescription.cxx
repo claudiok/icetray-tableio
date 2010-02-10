@@ -133,7 +133,8 @@ void register_I3TableRowDescription() {
 
 
    bp::class_<I3TableRowDescription, 
-      boost::shared_ptr<I3TableRowDescription> >
+      boost::shared_ptr<I3TableRowDescription>,
+      boost::shared_ptr<I3TableRowDescription const> >
       ("I3TableRowDescription")
       #define RO_VEC_PROPERTIES (FieldNames)(FieldHdfTypes)(FieldTypeCodes)(FieldTypeSizes)(FieldByteOffsets)(FieldChunkOffsets)(FieldArrayLengths)(FieldUnits)(FieldDocStrings)
       #define RO_PROPERTIES (TotalByteSize)(TotalChunkSize)(NumberOfFields)

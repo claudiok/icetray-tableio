@@ -122,3 +122,26 @@ void I3TableRow::SetCurrentRow(unsigned int row) {
 unsigned int I3TableRow::GetCurrentRow() {
     return currentRow_;
 }
+
+/******************************************************************************/
+
+// For the times when you really want to blow your leg off...
+template<>
+void* I3TableRow::GetPointerToRow(const std::string& fieldName, unsigned int row) {
+    int index;
+    if ( (index = description_->GetFieldColumn(fieldName)) == -1 ) 
+        log_fatal("trying to get the address of unknown field %s", fieldName.c_str());
+
+    if ( !(( 0 <= row) && (row < nrows_)) )
+        log_fatal("requested pointer to row %d which is not in [0,%d]", row, nrows_);
+    
+    /*
+    if (description_->GetFieldArrayLengths().at(index) > 1 )
+        log_fatal("trying to use I3TableRow::Get() on array element %s. Use GetPointer() instead",
+                fieldName.c_str());
+    */
+    
+    return ( reinterpret_cast<void*>( &data_[description_->GetTotalChunkSize()*row + 
+                                             description_->GetFieldChunkOffsets().at(index)]) );
+}
+

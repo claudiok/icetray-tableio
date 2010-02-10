@@ -30,6 +30,8 @@ class I3TableService {
         virtual I3TablePtr GetTable(std::string tableName, 
                             I3TableRowDescriptionConstPtr description);
 
+        std::vector<std::string> GetTableNames();
+
         I3TableRowConstPtr GetPaddingRows(I3EventHeaderConstPtr lastHeader,
                                           I3EventHeaderConstPtr newHeader,
                                           I3TableRowDescriptionConstPtr description_);
@@ -42,11 +44,13 @@ class I3TableService {
                                        I3TableRowDescriptionConstPtr description) = 0;
         virtual void CloseFile() = 0;
 
+        std::map<std::string, I3TablePtr> tables_;
+
+
     private:
         bool EventHeadersEqual(const I3EventHeader& header1,
                                const I3EventHeader& header2);
         
-        std::map<std::string, I3TablePtr> tables_;
         std::vector<I3EventHeaderConstPtr> eventHeaderCache_;
         I3ConverterPtr ticConverter_;
 

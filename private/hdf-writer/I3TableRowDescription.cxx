@@ -18,7 +18,14 @@ I3TableRowDescription::I3TableRowDescription() {}
 
 /******************************************************************************/
 
-I3TableRowDescription::~I3TableRowDescription() {}
+I3TableRowDescription::~I3TableRowDescription() {
+	// Release the HDF5 type ids when no longer needed
+	std::vector<hid_t>::const_iterator hid_it;
+	for(hid_it = fieldHdfTypes_.begin(); hid_it != fieldHdfTypes_.end(); hid_it++) {
+		// FIXME: we should only release mutable dtypes...how to tell the difference?
+		// H5Tclose(*hid_it);
+	}
+}
 
 /******************************************************************************/
 

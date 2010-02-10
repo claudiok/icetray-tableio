@@ -73,6 +73,18 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
     lastHeader_ = header;
 }
 
+I3TableRowConstPtr I3Table::GetRowForEvent(unsigned int RunID, unsigned int EventID) {
+	// FIXME: index implementation pending
+	return ReadRows(0,1);
+}
+
+// default implementation is write-only
+I3TableRowConstPtr I3Table::ReadRows(size_t start, size_t nrows) {
+	log_fatal("This table is write-only.");
+	return I3TableRowConstPtr();
+}
+
+
 /******************************************************************************/
 
 unsigned int I3Table::GetNumberOfEvents() const {
