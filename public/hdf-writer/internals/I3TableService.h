@@ -35,7 +35,8 @@ class I3TableService {
         I3TableRowConstPtr GetPaddingRows(I3EventHeaderConstPtr lastHeader,
                                           I3EventHeaderConstPtr newHeader,
                                           I3TableRowDescriptionConstPtr description_);
-
+        // Phone home to tell the service that an event has been written
+        void HeaderWritten(I3EventHeaderConstPtr lastHeader,unsigned int nrows);
         void Finish();
 
     protected:
@@ -53,6 +54,8 @@ class I3TableService {
         
         std::vector<I3EventHeaderConstPtr> eventHeaderCache_;
         I3ConverterPtr ticConverter_;
+
+    SET_LOGGER("I3TableService");
 
 };
 

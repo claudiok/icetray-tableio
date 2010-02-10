@@ -64,13 +64,16 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
     assert(row->GetDescription() == description_);
     I3TableRowConstPtr padding = 
         service_.GetPaddingRows(lastHeader_, header, description_);
-    if (padding)
+    if (padding) {
+        log_trace("Writing %u padding rows",padding->GetNumberOfRows());
         WriteRows(padding);
-
+    }
+    // FIXME: catch errors from the table
     WriteRows(row);
     nevents_++;
     nrows_ += row->GetNumberOfRows();
     lastHeader_ = header;
+    service_.HeaderWritten(header,row->GetNumberOfRows());
 }
 
 I3TableRowConstPtr I3Table::GetRowForEvent(unsigned int RunID, unsigned int EventID) {

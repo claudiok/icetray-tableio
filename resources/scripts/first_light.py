@@ -73,5 +73,5 @@ tray.AddModule(I3TableWriterModule,'writer',
 
 tray.AddModule('TrashCan','yeswecan')
 
-tray.Execute(20)
+tray.Execute(50)
 tray.Finish()

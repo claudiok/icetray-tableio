@@ -61,6 +61,8 @@ class I3Table {
     private:
         I3Table();
 
+    SET_LOGGER("I3Table");
+
 };
 
 I3_POINTER_TYPEDEFS( I3Table );
