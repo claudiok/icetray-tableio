@@ -429,6 +429,7 @@ I3TablePtr I3TableWriter::ConnectTable(std::string tableName,
 
 void I3TableWriter::DisconnectTable(I3TablePtr& table) {
     log_debug("Disconnecting from table %s", table->GetName().c_str());
+    table->Align();
     table->SetConnectedToWriter(false);
     table.reset();
 }

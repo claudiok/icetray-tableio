@@ -33,6 +33,8 @@ class I3Table {
 
         I3TableRowPtr CreateRow(unsigned int nrows);
         void AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row);
+        void Align();
+        
         I3TableRowConstPtr GetRowForEvent(unsigned int RunID, unsigned int EventID);
 
         std::string GetName() const; 

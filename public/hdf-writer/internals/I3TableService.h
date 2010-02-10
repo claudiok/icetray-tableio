@@ -35,6 +35,8 @@ class I3TableService {
         I3TableRowConstPtr GetPaddingRows(I3EventHeaderConstPtr lastHeader,
                                           I3EventHeaderConstPtr newHeader,
                                           I3TableRowDescriptionConstPtr description_);
+                                          
+        I3EventHeaderConstPtr GetLastHeader();
         // Phone home to tell the service that an event has been written
         void HeaderWritten(I3EventHeaderConstPtr lastHeader,unsigned int nrows);
         void Finish();

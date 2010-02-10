@@ -73,13 +73,33 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
     nevents_++;
     nrows_ += row->GetNumberOfRows();
     lastHeader_ = header;
-    service_.HeaderWritten(header,row->GetNumberOfRows());
+    service_.HeaderWritten(lastHeader_,row->GetNumberOfRows());
 }
+
+/******************************************************************************/
+
+// force the table to write out padding rows
+// FIXME: this is triggered by passing a NULL header pointer
+// is there a better way to do this?
+// FIXME 2: this should only be called at the end, otherwise rows could be duplicated
+void I3Table::Align() {
+   I3TableRowConstPtr padding = 
+        service_.GetPaddingRows(lastHeader_, I3EventHeaderConstPtr(), description_);
+     if (padding) {
+        log_trace("Finalizing alignment with %u padding rows",padding->GetNumberOfRows());
+        WriteRows(padding);
+     }
+     lastHeader_ = service_.GetLastHeader();
+}
+
+/******************************************************************************/
 
 I3TableRowConstPtr I3Table::GetRowForEvent(unsigned int RunID, unsigned int EventID) {
 	// FIXME: index implementation pending
 	return ReadRows(0,1);
 }
+
+/******************************************************************************/
 
 // default implementation is write-only
 I3TableRowConstPtr I3Table::ReadRows(size_t start, size_t nrows) {
