@@ -117,6 +117,24 @@ bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) cons
 
 /******************************************************************************/
 
+    /* specialized AddField for booleans */
+    template<>
+    void I3TableRowDescription::AddField<bool>(const std::string& name, 
+		  const std::string& unit,
+		  const std::string& doc, 
+		  size_t arrayLength) 
+    {
+		// Since booleans are just integers, we need to enforce this unit convention
+		std::string boolunit("bool");
+		if ((unit.size() != 0) && (unit != boolunit))
+			log_fatal("The unit string of a boolean field must be \"bool\".");
+	AddField(name, hdf_type(bool()), py_code(bool()), sizeof(bool), 
+		 boolunit, doc, arrayLength);
+    }
+
+
+/******************************************************************************/
+
 void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType, char typeCode,
                                      size_t typeSize, const std::string& unit,
                                      const std::string& doc, size_t arrayLength) {
@@ -139,9 +157,9 @@ void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType, cha
         hid_t array_tid = H5Tarray_create(hdfType, rank, &dims.front(), NULL);
         fieldHdfTypes_.push_back(array_tid);
     }
-    if (typeCode == 0) typeCode = py_code_from_hdf(hdfType);
-    // char typeCode = PyTypeConv::GetTypeCode(hdfType);
-    // if (typeCode == 0) log_error("No type code for field '%s'",name.c_str());
+    // special case for ambigous integers that may be booleans
+    if ( unit == std::string("bool") ) typeCode = 'o';
+    else if (typeCode == 0) typeCode = py_code_from_hdf(hdfType);
     fieldTypeCodes_.push_back(typeCode);
     fieldTypeSizes_.push_back(typeSize);
     fieldArrayLengths_.push_back(arrayLength);

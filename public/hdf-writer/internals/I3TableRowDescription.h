@@ -140,7 +140,7 @@ private:
     CODEMAP_DEF(unsigned int, H5T_NATIVE_UINT, 'I');
     CODEMAP_DEF(long int, H5T_NATIVE_LONG, 'l');
     CODEMAP_DEF(unsigned long int, H5T_NATIVE_ULONG, 'L');
-    // CODEMAP_DEF(bool, H5T_NATIVE_HBOOL, 'o');
+    CODEMAP_DEF(bool, H5T_NATIVE_CHAR, 'o'); // HBOOL is really an int
 
   #undef CODEMAP_DEF
 

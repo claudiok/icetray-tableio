@@ -125,6 +125,15 @@ unsigned int I3TableRow::GetCurrentRow() {
 
 /******************************************************************************/
 
+// Explictly case booleans to true/false
+template<>
+void I3TableRow::Set<bool>(const std::string& fieldName, bool value, bool all) {
+   if (all) SetAll(fieldName,(value!=false));
+   else SetCurrent(fieldName,(value!=false));
+}
+
+/******************************************************************************/
+
 // For the times when you really want to blow your leg off...
 template<>
 void* I3TableRow::GetPointerToRow(const std::string& fieldName, unsigned int row) {

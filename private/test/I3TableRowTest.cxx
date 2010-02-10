@@ -68,6 +68,31 @@ TEST(type_checking) {
     ENSURE_EQUAL(thrown, false, "type checking fails");
 }
 
+TEST(bool_casting) {
+   I3TableRowDescriptionPtr desc = I3TableRowDescriptionPtr( new I3TableRowDescription());
+   desc->AddField<bool>("field", "", "doc");
+   ENSURE_EQUAL( std::string("bool"), desc->GetFieldUnits().at(0), "Bool unit field is set automatically")
+   bool thrown = false;      
+   try { desc->AddField<bool>("field2","this_is_not_bool",""); } // use some other unit
+   catch(...) { thrown = true; }
+   ENSURE_EQUAL(thrown, true, "Can't AddField<bool>() with a unit that is not 'bool'.");
+
+   I3TableRow row(desc);
+   row.Set<bool>("field",true);
+   ENSURE_EQUAL( true, row.Get<bool>("field"), "Bool values are set properly.");
+   row.Set<bool>("field",1);
+   ENSURE_EQUAL( true, row.Get<bool>("field"), "Integer values are set properly.");
+   row.Set<bool>("field",false);
+   ENSURE_EQUAL( false, row.Get<bool>("field"), "Bool values are set properly.");
+   row.Set<bool>("field",0);
+   ENSURE_EQUAL( false, row.Get<bool>("field"), "Integer values are set properly.");
+   
+   row.Set<bool>("field",-17);
+   ENSURE_EQUAL( true, row.Get<bool>("field"), "Anything not false is true.");
+   row.Set<bool>("field",123);
+   ENSURE_EQUAL( true, row.Get<bool>("field"), "Anything not false is true.");
+}
+
 TEST(array_assignment) {
     I3TableRowDescriptionPtr base_d = I3TableRowDescriptionPtr( new I3TableRowDescription());
     base_d->AddField<unsigned int>("Run", "", "doc");

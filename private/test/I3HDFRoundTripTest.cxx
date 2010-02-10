@@ -38,7 +38,13 @@ TEST(resurrection) {
          Oliver R. Smoot end-over-end from one side of the Charles River to the other.\
          Smoot chaired ANSI from 2001-2002 and was president of ISO from 2003-2004.\
          [http://en.wikipedia.org/wiki/Smoot]");
-   desc->AddField<bool>("farcicality","truth-units","Has this test become a farce?");
+   
+	bool thrown = false;
+	try { desc->AddField<bool>("farcicality","truth-units","Has this test become a farce?"); }
+	catch (...) { thrown = true; }
+	ENSURE( thrown, "Setting a boolean field with a non-empty unit string that is not 'bool' throws an error.");
+   
+	desc->AddField<bool>("farcicality","","Has this test become a farce?");
    
    
    // create a table in the HDF file
@@ -102,10 +108,7 @@ TEST(resurrection) {
    for (osize_it  = desc->GetFieldTypeSizes().begin(), zsize_it = zombie_desc->GetFieldTypeSizes().begin(), i=0;
         osize_it != desc->GetFieldTypeSizes().end();
         osize_it++, zsize_it++, i++) {
-            // ENSURE_EQUAL( *osize_it, *zsize_it, "Field type sizes match.");
-            // trips up on the representation of bool
-            // int on Darwin, char on many Linuces.
-         ENSURE( *zsize_it >= *osize_it, "Fields type size or read data is equal or greater than written data.");
+            ENSURE_EQUAL( *osize_it, *zsize_it, "Field type sizes match.");
    }
    for (osize_it  = desc->GetFieldByteOffsets().begin(), zsize_it = zombie_desc->GetFieldByteOffsets().begin(), i=0;
         osize_it != desc->GetFieldByteOffsets().end();
@@ -123,7 +126,6 @@ TEST(resurrection) {
             ENSURE_EQUAL( *osize_it, *zsize_it, "Field array offsets match");
    }
    
-   // FIXME: these are currently not read out of the table
    std::vector<char>::const_iterator opytype_it,zpytype_it;
    for (opytype_it  = desc->GetFieldTypeCodes().begin(), zpytype_it = zombie_desc->GetFieldTypeCodes().begin(), i=0;
         opytype_it != desc->GetFieldTypeCodes().end();
@@ -156,8 +158,6 @@ TEST(resurrection) {
       ENSURE_EQUAL( longval, castaway->Get<long>("long_dooby_doo_long_long"), "Read long is equal to set long."); 
       ENSURE_EQUAL( shortval, castaway->Get<short>("shorty"), "Read short is equal to set short.");
       ENSURE_EQUAL( charval, castaway->Get<char>("charlatan"), "Read char is equal to set char.");
-
-      // FIXME: do something about bools turning in to ints
       ENSURE_EQUAL( boolval, castaway->Get<bool>("farcicality"), "Read bool is equal to set bool.");
    }
 
