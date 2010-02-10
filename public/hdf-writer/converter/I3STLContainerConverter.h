@@ -34,7 +34,7 @@ class I3STLVectorConverter : public I3ConverterImplementation<std::vector<FrmObj
         I3TableRowDescriptionPtr CreateDescription(const std::vector<FrmObj>& vect) {
             I3TableRowDescriptionPtr desc_vector = 
                 I3TableRowDescriptionPtr(new I3TableRowDescription() );
-            
+            desc_vector->isMultiRow_ = true;
             desc_vector->AddField<unsigned int>("vector_index", "", "index in vector");
 
             // create the converter for the elements of the vector

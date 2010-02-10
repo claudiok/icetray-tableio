@@ -105,6 +105,10 @@ public:
     size_t GetTotalChunkSize() const;
     unsigned int GetNumberOfFields() const;
 
+    // Will this description be used for an object flattened across multiple rows?
+    bool isMultiRow_;
+    bool IsMultiRow() { return isMultiRow_; };
+
     bool operator==(shared_ptr<const I3TableRowDescription> other) const;
 private:
     std::vector<std::string> fieldNames_;
@@ -117,6 +121,8 @@ private:
     std::vector<size_t> fieldChunkOffsets_;
     std::vector<std::string> fieldUnits_;
     std::vector<std::string> fieldDocStrings_;
+
+
         
 #define CODEMAP_DEF(TYPE, CODE, TYPECODE)				\
     const static inline hid_t hdf_type(TYPE) { return  CODE; }		\

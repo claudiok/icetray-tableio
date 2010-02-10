@@ -14,7 +14,7 @@
 
 /******************************************************************************/
 
-I3TableRowDescription::I3TableRowDescription() {}
+I3TableRowDescription::I3TableRowDescription() : isMultiRow_(false) {}
 
 /******************************************************************************/
 
@@ -99,6 +99,7 @@ bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) cons
    int nfields = GetNumberOfFields();
    int o_nfields = other->GetNumberOfFields();
    if (nfields != o_nfields) return false;
+	if (isMultiRow_ != other->isMultiRow_) return false;
    bool equal = true;
    
    for (int i; i < nfields; ++i) {
@@ -182,6 +183,8 @@ I3TableRowDescription operator|(const I3TableRowDescription& lhs,
             chunkOffset = newlhs.GetTotalChunkSize();
 
         std::string fieldName = rhs.fieldNames_.at(i);
+
+        newlhs.isMultiRow_ = (lhs.isMultiRow_ || rhs.isMultiRow_);
         
         // values that are just copied:
         newlhs.fieldNames_.push_back( fieldName );
