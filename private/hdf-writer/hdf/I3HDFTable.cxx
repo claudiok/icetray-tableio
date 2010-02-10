@@ -188,7 +188,8 @@ void I3HDFTable::CreateDescription() {
    
    description_ = description;
    nrows_ = nrecords;
-   
+   tableCreated_ = true;
+
    //FIXME: fill lastHeader_, nevents_, etc.
 }
 

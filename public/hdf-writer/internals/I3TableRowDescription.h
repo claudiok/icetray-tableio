@@ -140,9 +140,45 @@ private:
     CODEMAP_DEF(unsigned int, H5T_NATIVE_UINT, 'I');
     CODEMAP_DEF(long int, H5T_NATIVE_LONG, 'l');
     CODEMAP_DEF(unsigned long int, H5T_NATIVE_ULONG, 'L');
-    CODEMAP_DEF(bool, H5T_NATIVE_HBOOL, 'o');
+    // CODEMAP_DEF(bool, H5T_NATIVE_HBOOL, 'o');
 
   #undef CODEMAP_DEF
+
+const static inline char py_code_from_hdf(hid_t hdf_type) { 
+   // grab the native datatype of the atom 
+   if ( H5Tget_class(hdf_type) == H5T_ENUM ) { 
+        hdf_type = H5Tget_super(hdf_type); 
+   } 
+   hid_t n = H5Tget_native_type(hdf_type,H5T_DIR_ASCEND); 
+   char code = 0; 
+   if        ( H5Tequal(n,H5T_NATIVE_FLOAT)  ) { 
+          code = 'f'; // python double        
+   } else if ( H5Tequal(n,H5T_NATIVE_DOUBLE) ) { 
+          code = 'd'; // python double        
+   } else if ( H5Tequal(n,H5T_NATIVE_CHAR)   ) { 
+          code = 'c'; // python character     
+   } else if ( H5Tequal(n,H5T_NATIVE_UCHAR)  ) { 
+          code = 'B'; // python int           
+   } else if ( H5Tequal(n,H5T_NATIVE_SCHAR)  ) { 
+          code = 'b'; // python int           
+   } else if ( H5Tequal(n,H5T_NATIVE_SHORT)  ) { 
+          code = 'h'; // python int           
+   } else if ( H5Tequal(n,H5T_NATIVE_USHORT) ) { 
+          code = 'H'; // python int           
+   } else if ( H5Tequal(n,H5T_NATIVE_INT)    ) { 
+          code = 'i'; // python int           
+   } else if ( H5Tequal(n,H5T_NATIVE_UINT)   ) { 
+          code = 'I'; // python long          
+   } else if ( H5Tequal(n,H5T_NATIVE_LONG)   ) { 
+          code = 'l'; // python long          
+   } else if ( H5Tequal(n,H5T_NATIVE_ULONG)  ) { 
+          code = 'L'; // python long 
+   } //else if ( H5Tequal(n,H5T_NATIVE_HBOOL)  ) { 
+     //     code = 'o'; // bool 
+   //} 
+   H5Tclose(n); 
+   return code; 
+}
 
     friend I3TableRowDescription operator|(const I3TableRowDescription& lhs, const I3TableRowDescription& rhs);
 

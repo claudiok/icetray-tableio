@@ -29,6 +29,8 @@ TEST(resurrection) {
    // build up a data type
    I3TableRowDescriptionPtr desc = I3TableRowDescriptionPtr(new I3TableRowDescription());
    desc->AddField<double>("double","double-units","A thing which is doubly precise, verily, the float is unworthy look upon.");
+   desc->AddField<short>("shorty","short-units","Short is as short does. Unless things have to be aligned to 32 bits, that is.");
+   desc->AddField<char>("charlatan","letter","Speak your piece, but in 8 bits or less.");
    desc->AddField<long>("long_dooby_doo_long_long","smoots",
          "The length of things which are long, measured in units of the height of one \
          Oliver R. Smoot. Not entirely coincidentally, this was also the unit used to \
@@ -47,6 +49,8 @@ TEST(resurrection) {
    I3TableRowPtr rows = table->CreateRow(nrows);
 
    double doubleval = 3.14;
+   short shortval = 512;
+   short charval = 127;
    long longval = 9223372036854775807;
    bool boolval = true;
    size_t i;
@@ -54,6 +58,8 @@ TEST(resurrection) {
    for(i=0; i<nrows; i++) {
       rows->SetCurrentRow(i);
       rows->Set<double>("double",doubleval);
+      rows->Set<short>("shorty",shortval);
+      rows->Set<char>("charlatan",charval);
       rows->Set<long>("long_dooby_doo_long_long",longval);
       rows->Set<bool>("farcicality",boolval);
    }
@@ -148,6 +154,8 @@ TEST(resurrection) {
       castaway->SetCurrentRow(i);
       ENSURE_EQUAL( doubleval, castaway->Get<double>("double"), "Read double is equal to set double."); 
       ENSURE_EQUAL( longval, castaway->Get<long>("long_dooby_doo_long_long"), "Read long is equal to set long."); 
+      ENSURE_EQUAL( shortval, castaway->Get<short>("shorty"), "Read short is equal to set short.");
+      ENSURE_EQUAL( charval, castaway->Get<char>("charlatan"), "Read char is equal to set char.");
 
       // FIXME: do something about bools turning in to ints
       ENSURE_EQUAL( boolval, castaway->Get<bool>("farcicality"), "Read bool is equal to set bool.");

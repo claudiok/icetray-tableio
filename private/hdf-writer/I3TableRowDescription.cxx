@@ -139,6 +139,7 @@ void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType, cha
         hid_t array_tid = H5Tarray_create(hdfType, rank, &dims.front(), NULL);
         fieldHdfTypes_.push_back(array_tid);
     }
+    if (typeCode == 0) typeCode = py_code_from_hdf(hdfType);
     // char typeCode = PyTypeConv::GetTypeCode(hdfType);
     // if (typeCode == 0) log_error("No type code for field '%s'",name.c_str());
     fieldTypeCodes_.push_back(typeCode);
