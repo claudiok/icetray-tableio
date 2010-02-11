@@ -30,9 +30,6 @@ class I3HDFTableService : public I3TableService {
     private:
         
         void FindTables();
-        
-        // muddying the waters here a bit
-        I3TableRowDescriptionConstPtr CreateIndexDescription();
 
         hid_t fileId_;
         hid_t rootGroupId_;

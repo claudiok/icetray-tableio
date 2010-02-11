@@ -16,7 +16,7 @@ struct PythonConverter : I3Converter, boost::python::wrapper<I3Converter>
 
     I3TableRowDescriptionConstPtr GetDescription();
 
-    // I3TableRowDescriptionPtr CreateDescription(I3FrameObjectConstPtr object);
+    I3TableRowDescriptionPtr CreateDescription(I3FrameObjectConstPtr object);
     I3TableRowDescriptionPtr CreateDescription(const I3FrameObject& object);
     
     unsigned int Convert(I3FrameObjectConstPtr object, 

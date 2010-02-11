@@ -109,6 +109,10 @@ void I3HDFTable::CreateTable(int& compress) {
                           osd.str().c_str(),it_doc->c_str(),name_.c_str());
       
    }
+   
+   // set the MultiRow attribute
+   char ragged = description_->GetIsMultiRow();
+   H5LTset_attribute_char ( fileId_, name_.c_str(), "__I3RaggedTable__", &ragged, 1);
 }
 
 /******************************************************************************/
@@ -188,6 +192,11 @@ void I3HDFTable::CreateDescription() {
       // H5Tclose(dtype);
    }
    H5Tclose(table_dtype);
+   
+   // get the MultiRow attribute
+   char ragged = 0;
+   H5LTget_attribute_char ( fileId_, name_.c_str(), "__I3RaggedTable__", &ragged);
+   description->isMultiRow_ = ragged;
    
    // the individual strings were malloc'd by the HDF library,
    // not new'd by me

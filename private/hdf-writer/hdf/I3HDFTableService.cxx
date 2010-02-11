@@ -100,24 +100,11 @@ I3HDFTableService::~I3HDFTableService() {};
 
 /******************************************************************************/
 
-// muddying the waters a bit
-I3TableRowDescriptionConstPtr I3HDFTableService::CreateIndexDescription() {
-   I3TableRowDescriptionPtr desc = I3TableRowDescriptionPtr(new I3TableRowDescription());
-   desc->AddField<unsigned int>("Run", "", "run number");
-   desc->AddField<unsigned int>("Event", "", "event number");
-   desc->AddField<bool>("exists", "", "object was found in the frame");
-   desc->AddField<unsigned int>("start", "", "Offset at which the rows for this event start");
-   desc->AddField<unsigned int>("end", "", "Offset at which the rows for the next event start");
-   return desc;
-}
-
-/******************************************************************************/
-
 
 I3TablePtr I3HDFTableService::CreateTable(const std::string& tableName, 
                               I3TableRowDescriptionConstPtr description) {
     
-    I3TableRowDescriptionConstPtr index_desc = CreateIndexDescription();
+    I3TableRowDescriptionConstPtr index_desc = GetIndexDescription();
     I3TablePtr index_table(new I3HDFTable(*this, tableName, 
                                           index_desc, indexGroupId_, compress_));
     I3TablePtr table(new I3HDFTable(*this, tableName, 

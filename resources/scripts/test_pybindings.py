@@ -127,40 +127,70 @@ class I3PythonConverterTest(unittest.TestCase):
 		
 
 class DOMLaunchBookie(hdf_writer.I3Converter):
-	booked = dataclasses.I3DOMLaunchSeriesMap
-	def CreateDescription(self,dlsm):
-		desc = hdf_writer.I3TableRowDescription()
-		dl = dlsm.values()[0][0]
-		desc.add_field('start_time','f','ns','')
-		desc.add_field('pedestal_sub',bool,'','Has the pedestal been subtracted?')
-		desc.add_field('lc_bit',bool,'','')
-		desc.add_field('trigger_type',self.booked.TriggerType,'','')
-		desc.add_field('trigger_mode',self.booked.TriggerMode,'','')
-		desc.add_field('raw_charge_stamp',int,'','',len(dl.GetRawChargeStamp()))
-		for i in xrange(3):
-			desc.add_field('raw_atwd_%d'%i,'i','counts','Uncalibrated ATWD digitizer counts',128)
-		desc.add_field('raw_fadc','H','counts','Uncalibrated fADC digitizer counts',256)
-		return desc
-	def GetNumberOfRows(self,frameobj):
-		return 1
-	def Convert(self,dlsm,rows,frame):
-		domlaunch = dlsm.values()[0][0]
-		rows['start_time']       = domlaunch.GetStartTime()
-		rows['raw_charge_stamp'] = domlaunch.GetRawChargeStamp()
-		rows['pedestal_sub']     = domlaunch.GetIsPedestalSub()
-		rows['lc_bit']           = domlaunch.GetLCBit()
-		rows['trigger_type']     = domlaunch.GetTriggerType()
-		rows['trigger_mode']     = domlaunch.GetTriggerMode()
-		# we can pass I3VectorInts
-		rows['raw_atwd_0']       = domlaunch.GetRawATWD(0)
-		# ooooor arrays with the proper typecode
-		rows['raw_atwd_1']       = array.array('i',domlaunch.GetRawATWD(1))
-		# or even numpy ndarrays!
-		rows['raw_atwd_2']       = numpy.array(domlaunch.GetRawATWD(2),'i')
-	
-		rows['raw_fadc']         = array.array('H',domlaunch.GetRawFADC())
-		return 1
-		
+    booked = dataclasses.I3DOMLaunchSeriesMap
+    dl = dataclasses.I3DOMLaunch
+    def CreateDescription(self,dlsm):
+        desc = hdf_writer.I3TableRowDescription()
+        # make this a "ragged" table
+        desc.is_multi_row = True
+        # grab an example DOMLaunch
+        dl = self._get_nonempty(dlsm)
+        # unrolling fields
+        desc.add_field('string','h','','String number')
+        desc.add_field('om','H','','OM number')
+        desc.add_field('index','H','','Index within the vector')
+        # DOMLaunch fields
+        desc.add_field('start_time','f','ns','')
+        desc.add_field('pedestal_sub',bool,'','Has the pedestal been subtracted?')
+        desc.add_field('lc_bit',bool,'','')
+        desc.add_field('trigger_type',self.dl.TriggerType,'','')
+        desc.add_field('trigger_mode',self.dl.TriggerMode,'','')
+        desc.add_field('raw_charge_stamp',int,'','',len(dl.GetRawChargeStamp()))
+        for i in xrange(3):
+            desc.add_field('raw_atwd_%d'%i,'i','counts','Uncalibrated ATWD digitizer counts',128)
+        desc.add_field('raw_fadc','H','counts','Uncalibrated fADC digitizer counts',256)
+        return desc
+    def _get_nonempty(self,dlsm):
+        dl = None
+        for vec in dlsm.itervalues():
+            if len(vec) == 0: continue
+            dl = vec[0]
+            if dl != None: break
+        return dl
+    def GetNumberOfRows(self,frameobj):
+        nrows = 0
+        for vec in frameobj.itervalues():
+            nrows += len(vec)
+        return nrows
+    def Convert(self,dlsm,rows,frame):
+        rowno = 0
+        for omkey,dl_series in dlsm.iteritems():
+            string = omkey.GetString()
+            om = omkey.GetOM()
+            for i,domlaunch in enumerate(dl_series):
+                rows.current_row = rowno
+                rowno += 1
+                rows['string']           = string
+                rows['om']               = om
+                rows['index']            = i
+                rows['pedestal_sub']     = domlaunch.GetIsPedestalSub()
+         
+                rows['start_time']       = domlaunch.GetStartTime()
+                rows['raw_charge_stamp'] = domlaunch.GetRawChargeStamp()
+                rows['pedestal_sub']     = domlaunch.GetIsPedestalSub()
+                rows['lc_bit']           = domlaunch.GetLCBit()
+                rows['trigger_type']     = domlaunch.GetTriggerType()
+                rows['trigger_mode']     = domlaunch.GetTriggerMode()
+                # we can pass I3VectorInts
+                rows['raw_atwd_0']       = domlaunch.GetRawATWD(0)
+                # ooooor arrays with the proper typecode
+                rows['raw_atwd_1']       = array.array('i',domlaunch.GetRawATWD(1))
+                # or even numpy ndarrays!
+                rows['raw_atwd_2']       = numpy.array(domlaunch.GetRawATWD(2),'i')
+    
+                rows['raw_fadc']         = array.array('H',domlaunch.GetRawFADC())
+        return rowno
+        
 class I3TableWriterPythonModuleTest(unittest.TestCase):
 		"""Test the option-parsing magic."""
 		def setUp(self):

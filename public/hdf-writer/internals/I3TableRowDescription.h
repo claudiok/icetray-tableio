@@ -107,7 +107,9 @@ public:
 
     // Will this description be used for an object flattened across multiple rows?
     bool isMultiRow_;
-    bool IsMultiRow() { return isMultiRow_; };
+    bool GetIsMultiRow() const { return isMultiRow_; };
+    void SetIsMultiRow(bool f) { isMultiRow_ = f; };
+    
 
     bool operator==(shared_ptr<const I3TableRowDescription> other) const;
 private:

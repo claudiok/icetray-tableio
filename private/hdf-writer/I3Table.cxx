@@ -63,19 +63,29 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
        and hand out rows in chunks 
     */
     assert(row->GetDescription() == description_);
-    I3TableRowConstPtr padding = 
-        service_.GetPaddingRows(lastHeader_, header, description_);
-    if (padding) {
-        log_trace("(%s) Writing %u padding rows",name_.c_str(),padding->GetNumberOfRows());
-        WriteRows(padding);
-        nrowsWithPadding_ += padding->GetNumberOfRows();
-         if (indexTable_) {
-            padding = 
-                 service_.GetPaddingRows(lastHeader_, header, service_.GetIndexDescription());
-            indexTable_->WriteRows(padding);
-         }
-        
+    
+    // sanity check: padding behavior is different for ragged tables
+    unsigned int nrows = row->GetNumberOfRows(); 
+    if ((nrows != 1) && (!description_->GetIsMultiRow())) {
+        log_fatal("(%s) Converter reported %d rows for a single-row object! Multi-row objects must be marked by their converters.",name_.c_str(),nrows);
     }
+    
+    I3TableRowConstPtr padding;
+    // only pad the data table itself if this is a non-ragged dataset
+    if (!description_->GetIsMultiRow()) {
+        padding = service_.GetPaddingRows(lastHeader_, header, description_);
+        if (padding) {
+            log_trace("(%s) Writing %u padding rows",name_.c_str(),padding->GetNumberOfRows());
+            WriteRows(padding);
+            nrowsWithPadding_ += padding->GetNumberOfRows();
+        }
+    } 
+    // always pad the index table if it exists, since the index is alway a single row
+    if (indexTable_) {
+        padding = service_.GetPaddingRows(lastHeader_, header, service_.GetIndexDescription());
+        if (padding) indexTable_->WriteRows(padding);
+    }
+
     // FIXME: catch errors from the table
     WriteRows(row);
     
@@ -106,26 +116,35 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
 // is there a better way to do this?
 // FIXME 2: this should only be called at the end, otherwise rows could be duplicated
 void I3Table::Align() {
-   I3TableRowConstPtr padding = 
-        service_.GetPaddingRows(lastHeader_, I3EventHeaderConstPtr(), description_);
-     if (padding) {
-        log_trace("(%s) Finalizing alignment with %u padding rows",name_.c_str(),padding->GetNumberOfRows());
-        WriteRows(padding);
-        nrowsWithPadding_ += padding->GetNumberOfRows();
-         if (indexTable_) {
-            padding = 
-                 service_.GetPaddingRows(lastHeader_, I3EventHeaderConstPtr(), service_.GetIndexDescription());
-            indexTable_->WriteRows(padding);
-         }
-     }
-     lastHeader_ = service_.GetLastHeader();
+    I3TableRowConstPtr padding;
+    // only pad the data table itself if this is a non-ragged dataset
+    if (!description_->GetIsMultiRow()) {
+        padding = service_.GetPaddingRows(lastHeader_, I3EventHeaderConstPtr(), description_);
+        if (padding) {
+            log_trace("(%s) Finalizing alignment with %u padding rows",name_.c_str(),padding->GetNumberOfRows());
+            WriteRows(padding);
+            nrowsWithPadding_ += padding->GetNumberOfRows();
+        }
+    }
+    
+    // always pad the index table if it exists, since the index is alway a single row
+    if (indexTable_) {
+        padding = service_.GetPaddingRows(lastHeader_, I3EventHeaderConstPtr(), service_.GetIndexDescription());
+        if (padding) indexTable_->WriteRows(padding);
+    }
+
+    lastHeader_ = service_.GetLastHeader();
 }
 
 /******************************************************************************/
 
 I3TableRowConstPtr I3Table::GetRowForEvent(unsigned int RunID, unsigned int EventID) {
 	// FIXME: index implementation pending
-	return ReadRows(0,1);
+	if (!indexTable_) { 
+	    log_fatal("This table is write-only."); 
+	} else {
+	    return ReadRows(0,1);
+	}
 }
 
 /******************************************************************************/

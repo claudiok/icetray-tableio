@@ -138,8 +138,11 @@ void register_I3TableRowDescription() {
       ("I3TableRowDescription")
       #define RO_VEC_PROPERTIES (FieldNames)(FieldHdfTypes)(FieldTypeCodes)(FieldTypeSizes)(FieldByteOffsets)(FieldChunkOffsets)(FieldArrayLengths)(FieldUnits)(FieldDocStrings)
       #define RO_PROPERTIES (TotalByteSize)(TotalChunkSize)(NumberOfFields)
+      #define PROPERTIES (IsMultiRow)
       BOOST_PP_SEQ_FOR_EACH(WRAP_PROP_RO_INTERNAL_REFERENCE,I3TableRowDescription,RO_VEC_PROPERTIES)
       BOOST_PP_SEQ_FOR_EACH(WRAP_PROP_RO,I3TableRowDescription,RO_PROPERTIES)
+      BOOST_PP_SEQ_FOR_EACH(WRAP_PROP,I3TableRowDescription,PROPERTIES)
+      
       .def("add_field",add_field,
          add_field_overloads(
             bp::args("name","dtype","units","docstring","array_size"),

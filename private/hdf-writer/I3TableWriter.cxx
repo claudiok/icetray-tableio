@@ -111,7 +111,7 @@ I3ConverterPtr I3TableWriter::FindConverter(I3FrameObjectConstPtr obj) {
 
 // register one specific object, lazily. if type and converter are empty the writer 
 // should figure out appropriate values
-void I3TableWriter::AddObject(std::string name, std::string tableName, 
+bool I3TableWriter::AddObject(std::string name, std::string tableName, 
                               I3ConverterPtr converter, I3FrameObjectConstPtr obj) {
 
     // create a converter if needed
@@ -127,6 +127,14 @@ void I3TableWriter::AddObject(std::string name, std::string tableName,
       }
     }
 
+    // check to see whether the object contains anything at all
+    // if it's empty, (e.g. an empty DOMLaunchSeriesMap, the converter 
+    // might not have the information it needs to build the description
+    unsigned int nrows = converter->GetNumberOfRows(obj);
+    // we assume that the converter needs a live object to build its description
+    // if the object is empty, there's no harm in delaying instantiation of the table
+    if (nrows == 0) return false;
+    
     // construct the table description
     I3TableRowDescriptionConstPtr ticDescription  = ticConverter_->GetDescription();
     I3TableRowDescriptionConstPtr convDescription = converter->GetDescription(obj);
@@ -172,6 +180,9 @@ void I3TableWriter::AddObject(std::string name, std::string tableName,
    
       tlist_it->second.push_back(bundle);
    }
+   
+   // the table was successfully added
+   return true;
 }
 
 
@@ -282,12 +293,25 @@ void I3TableWriter::Convert(I3FramePtr frame) {
             }
             
             if (object) {
-               for (v_it = vlist_it->second.begin(); v_it != vlist_it->second.end(); ++v_it) {
-                  AddObject(objName, v_it->tableName, v_it->converter, object);
+               bool success = false;
+               for (v_it = vlist_it->second.begin(); v_it != vlist_it->second.end(); ) {
+                  
+                  success = AddObject(objName, v_it->tableName, v_it->converter, object);
+                  // if the TableSpec was successfully added, erase it from the queue
+                  // and move the to next element
+                  if (success) { 
+                      v_it = vlist_it->second.erase(v_it);
+                  } else { // otherwise, just move to the next element
+                      v_it++;
+                  }
                }
-               // copy the iterator to avoid invalidating it on erase
-               eraser = vlist_it++;
-               wantedNames_.erase(eraser);
+               
+               // if all the TableSpecs were added, remove the key from the queue
+               if (vlist_it->second.size() == 0) {
+                   // copy the iterator to avoid invalidating it on erase
+                   eraser = vlist_it++;
+                   wantedNames_.erase(eraser);
+               }
            }
            else{
                ++vlist_it;
@@ -341,7 +365,8 @@ void I3TableWriter::Convert(I3FramePtr frame) {
                log_trace("Checking type of '%s'",objName.c_str());
                if ( typeSpec.check(object) ) {
                   selected = true;
-                  for (v_it = typelist_it->second.begin(); v_it != typelist_it->second.end(); ++v_it) {
+                  for (v_it = typelist_it->second.begin(); v_it != typelist_it->second.end(); v_it++) {
+                     // FIXME: any action necessary if AddObject fails?
                      AddObject(objName, v_it->tableName, v_it->converter, object);
                   }
                } // if (typeName == objTypeName)
@@ -361,15 +386,16 @@ void I3TableWriter::Convert(I3FramePtr frame) {
             const std::string& objName = tlist_it->first;
             const TableBundle& bundle = *t_it;
             
+            unsigned int nrows = 0;
+            
             I3FrameObjectConstPtr obj = frame->Get<I3FrameObjectConstPtr>(objName);
             if (!obj) {
                 // TODO error logic
                 // rows->Set<bool>("exists", false);
             }
-            else {
-	
-                // ask the converter how many rows he will write
-                unsigned int nrows = bundle.converter->GetNumberOfRows(obj);
+            // ask the converter how many rows he will write
+            // skip the object if there is nothing to be written
+            else if ((nrows = bundle.converter->GetNumberOfRows(obj)) != 0) {
             
                 // with this information the table can create the rows
                 I3TableRowPtr rows = bundle.table->CreateRow(nrows);

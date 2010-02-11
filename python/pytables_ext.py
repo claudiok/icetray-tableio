@@ -24,3 +24,8 @@ if have_pytables:
 		ncols = len(self.description._v_names)
 		self.colunits = [self._v_attrs.get('FIELD_%d_UNIT'%i,'') for i in xrange(ncols)]
 		self.coldoc   = [self._v_attrs.get('FIELD_%d_DOC'%i, '') for i in xrange(ncols)]
+		ragged = self._v_attrs.get('__I3RaggedTable__',None)
+		if ragged is not None:
+		    self.ragged = (ragged[0] != 0)
+		else:
+		    self.ragged = True # this is the more conservative assumption
