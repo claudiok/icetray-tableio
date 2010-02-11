@@ -30,8 +30,13 @@ class I3HDFTableService : public I3TableService {
     private:
         
         void FindTables();
+        
+        // muddying the waters here a bit
+        I3TableRowDescriptionConstPtr CreateIndexDescription();
 
         hid_t fileId_;
+        hid_t rootGroupId_;
+        hid_t indexGroupId_;
         std::string filename_;
         int compress_;
 

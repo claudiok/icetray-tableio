@@ -18,10 +18,12 @@
 
 // If no description provided, read one from the table on disk
 I3HDFTable::I3HDFTable(I3TableService& service, const std::string& name,
-                       hid_t fileId) :
+                       hid_t fileId, I3TablePtr index_table) :
     I3Table(service, name, I3TableRowDescriptionPtr()),
     fileId_(fileId) {
+      indexTable_ = index_table;
       CreateDescription();
+      
    }
 
 /******************************************************************************/
@@ -29,7 +31,7 @@ I3HDFTable::I3HDFTable(I3TableService& service, const std::string& name,
 // If a description is provided, create the corresponding table
 I3HDFTable::I3HDFTable(I3TableService& service, const std::string& name,
                        I3TableRowDescriptionConstPtr description,
-                       hid_t fileId, int compress) :
+                       hid_t fileId, int compress, I3TablePtr inde_table) :
     I3Table(service, name, description),
     fileId_(fileId) {
       CreateTable(compress);
@@ -107,6 +109,13 @@ void I3HDFTable::CreateTable(int& compress) {
       
    }
 }
+
+/******************************************************************************/
+
+// Find the corresponding index table
+// void I3HDFTable::FindIndexTable() {
+//    
+// }
 
 /******************************************************************************/
 

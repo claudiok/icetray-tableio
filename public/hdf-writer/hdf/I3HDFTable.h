@@ -23,9 +23,10 @@ class I3HDFTable : public I3Table {
     public:
         I3HDFTable(I3TableService& service, const std::string& name,
                    I3TableRowDescriptionConstPtr description,
-                   hid_t fileid, int compress);
+                   hid_t fileid, int compress, I3TablePtr index = I3TablePtr());
+
         I3HDFTable(I3TableService& service, const std::string& name,
-                   hid_t fileId);
+                   hid_t fileId, I3TablePtr index = I3TablePtr());
         virtual ~I3HDFTable();
         static std::string ReadAttributeString(hid_t fileID, std::string& where, std::string attribute);
         virtual I3TableRowConstPtr ReadRows(size_t start, size_t nrows);
@@ -35,6 +36,7 @@ class I3HDFTable : public I3Table {
         void CreateTable(int& compress);
         void CreateDescription();
         hid_t fileId_;
+
 
     SET_LOGGER("I3HDFTable");
 };
