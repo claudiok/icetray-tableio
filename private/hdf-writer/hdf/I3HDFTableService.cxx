@@ -53,8 +53,13 @@ I3HDFTableService::I3HDFTableService(const std::string& filename, int compress, 
 
 // A callback for browsing HDF nodes
 herr_t GatherTableNames(hid_t group_id, const char* member_name, void* target) {
-   reinterpret_cast<std::vector<std::string>*>(target)->push_back(std::string(member_name));
-   return 0;
+    H5G_stat_t object_info;
+    H5Gget_objinfo(group_id, member_name, false, &object_info );
+    // only gather datasets, not groups, links, or types
+    if (object_info.type == H5G_DATASET) {
+        reinterpret_cast<std::vector<std::string>*>(target)->push_back(std::string(member_name));
+    }
+    return 0;
 }
 
 /******************************************************************************/
@@ -82,12 +87,15 @@ void I3HDFTableService::FindTables() {
       }  
       
       // get the index table if it exists
-      if (H5TBget_table_info(indexGroupId_,name.c_str(),&nfields,&nrecords)) {
+      if (H5TBget_table_info(indexGroupId_,name.c_str(),&nfields,&nrecords) >= 0) {
          index_table = I3TablePtr(new I3HDFTable(*this,*t_it, indexGroupId_));
+      } else {
+         index_table = I3TablePtr();
+         log_trace("(%s) no index table found.",t_it->c_str());
       }
       
       // it's a table, read in the description
-      tables_[*t_it] = I3TablePtr(new I3HDFTable(*this,*t_it, fileId_));
+      tables_[*t_it] = I3TablePtr(new I3HDFTable(*this,*t_it, fileId_, index_table));
       
       t_it++;
       

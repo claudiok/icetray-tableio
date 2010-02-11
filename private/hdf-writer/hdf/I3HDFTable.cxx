@@ -207,6 +207,7 @@ void I3HDFTable::CreateDescription() {
    
    description_ = description;
    nrows_ = nrecords;
+   nrowsWithPadding_ = nrecords;
    tableCreated_ = true;
 
    //FIXME: fill lastHeader_, nevents_, etc.
@@ -289,5 +290,22 @@ I3TableRowConstPtr I3HDFTable::ReadRows(size_t start, size_t nrows) {
                           fieldSizes,     // size of the fields
                           buffer);        // where to write data
    return rows;
+}
+
+std::pair<unsigned int,unsigned int> I3HDFTable::GetRangeForEvent(unsigned int index) {
+    if (indexTable_) {
+        if (index > indexTable_->GetNumberOfRows()-1) {
+            return std::pair<unsigned int,unsigned int>(0,0);
+        }
+        // FIXME: how to call ReadRows, which is a protected member of the parent class?
+        boost::shared_ptr<I3HDFTable> indexTable = boost::static_pointer_cast<I3HDFTable>(indexTable_);
+        I3TableRowPtr indexrow = boost::const_pointer_cast<I3TableRow>(indexTable->ReadRows(index,1));
+        unsigned int start = indexrow->Get<unsigned int>("start");
+        unsigned int end = indexrow->Get<unsigned int>("end");
+        return std::pair<unsigned int,unsigned int>(start,end);
+    } else {
+        log_fatal("(%s) This table has no index, and is thus write-only.",name_.c_str());
+        return std::pair<unsigned int,unsigned int>();
+    }
 }
 

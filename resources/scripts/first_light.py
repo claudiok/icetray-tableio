@@ -68,8 +68,8 @@ tray.AddModule(I3TableWriterModule,'writer',
 			  dict(key='LineFit', converter=SkyBooker(), name='Theres_a_slick_town_Barnaby')],
 	# types = {dataclasses.I3DOMLaunchSeriesMap: DOMLaunchBookie()},
 	# keys = ['LineFit']
-	types = {dataclasses.I3Particle: I3ParticleConverter(),
-	         dataclasses.I3DOMLaunchSeriesMap: DOMLaunchBookie()}
+	types = {dataclasses.I3Particle: I3ParticleConverter()}#,
+	         #dataclasses.I3DOMLaunchSeriesMap: DOMLaunchBookie()}
 )
 
 tray.AddModule('TrashCan','yeswecan')

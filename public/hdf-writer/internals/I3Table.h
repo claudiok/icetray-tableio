@@ -36,6 +36,7 @@ class I3Table {
         void Align();
         
         I3TableRowConstPtr GetRowForEvent(unsigned int RunID, unsigned int EventID);
+        I3TableRowConstPtr GetRowForEvent(unsigned int index);
 
         std::string GetName() const; 
         unsigned int GetNumberOfEvents() const; 
@@ -46,6 +47,7 @@ class I3Table {
         // to be overridden by derivatives
         virtual void WriteRows(I3TableRowConstPtr row) = 0;
         virtual I3TableRowConstPtr ReadRows(size_t start, size_t nrows);
+        virtual std::pair<unsigned int,unsigned int> GetRangeForEvent(unsigned int index);
 
         I3TableService& service_;
         std::string name_;

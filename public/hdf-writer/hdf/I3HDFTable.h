@@ -33,6 +33,7 @@ class I3HDFTable : public I3Table {
 
     protected:
         virtual void WriteRows(I3TableRowConstPtr row);
+        virtual std::pair<unsigned int,unsigned int> GetRangeForEvent(unsigned int index);
         void CreateTable(int& compress);
         void CreateDescription();
         hid_t fileId_;

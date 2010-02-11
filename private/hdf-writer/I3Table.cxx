@@ -147,6 +147,24 @@ I3TableRowConstPtr I3Table::GetRowForEvent(unsigned int RunID, unsigned int Even
 	}
 }
 
+I3TableRowConstPtr I3Table::GetRowForEvent(unsigned int index) {
+    std::pair<unsigned int,unsigned int> range;
+    
+    range = GetRangeForEvent(index);
+    if (range.second == 0) {
+        return I3TableRowPtr();
+    } else {
+        return ReadRows(range.first,range.second-range.first);
+    }
+}
+
+
+std::pair<unsigned int,unsigned int> I3Table::GetRangeForEvent(unsigned int index) {
+    log_fatal("This table is write-only.");
+    return std::pair<unsigned int,unsigned int>();
+}
+
+
 /******************************************************************************/
 
 // default implementation is write-only
