@@ -25,6 +25,7 @@ I3Table::I3Table(I3TableService& service,
     indexTable_(),
     nevents_(0),
     nrows_(0),
+    nrowsWithPadding_(0),
     connected_(false),
     tableCreated_(false) {
     // implementation pending
@@ -65,13 +66,35 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
     I3TableRowConstPtr padding = 
         service_.GetPaddingRows(lastHeader_, header, description_);
     if (padding) {
-        log_trace("Writing %u padding rows",padding->GetNumberOfRows());
+        log_trace("(%s) Writing %u padding rows",name_.c_str(),padding->GetNumberOfRows());
         WriteRows(padding);
+        nrowsWithPadding_ += padding->GetNumberOfRows();
+         if (indexTable_) {
+            padding = 
+                 service_.GetPaddingRows(lastHeader_, header, service_.GetIndexDescription());
+            indexTable_->WriteRows(padding);
+         }
+        
     }
     // FIXME: catch errors from the table
     WriteRows(row);
+    
+    if (indexTable_) {
+      I3TableRowPtr index_row = I3TableRowPtr(new I3TableRow(service_.GetIndexDescription(),1));
+      index_row->Set<unsigned int>("Run",header->GetRunID());
+      index_row->Set<unsigned int>("Event",header->GetEventID());
+      index_row->Set<bool>("exists",true);
+      index_row->Set<unsigned int>("start",nrowsWithPadding_);
+      index_row->Set<unsigned int>("end",nrowsWithPadding_+row->GetNumberOfRows());
+      log_trace("(%s) Writing row to index table. start: %d end: %d",
+                name_.c_str(),nrowsWithPadding_,nrowsWithPadding_+row->GetNumberOfRows());
+      
+      indexTable_->WriteRows(index_row);
+    }
+    
     nevents_++;
     nrows_ += row->GetNumberOfRows();
+    nrowsWithPadding_ += row->GetNumberOfRows();
     lastHeader_ = header;
     service_.HeaderWritten(lastHeader_,row->GetNumberOfRows());
 }
@@ -86,8 +109,14 @@ void I3Table::Align() {
    I3TableRowConstPtr padding = 
         service_.GetPaddingRows(lastHeader_, I3EventHeaderConstPtr(), description_);
      if (padding) {
-        log_trace("Finalizing alignment with %u padding rows",padding->GetNumberOfRows());
+        log_trace("(%s) Finalizing alignment with %u padding rows",name_.c_str(),padding->GetNumberOfRows());
         WriteRows(padding);
+        nrowsWithPadding_ += padding->GetNumberOfRows();
+         if (indexTable_) {
+            padding = 
+                 service_.GetPaddingRows(lastHeader_, I3EventHeaderConstPtr(), service_.GetIndexDescription());
+            indexTable_->WriteRows(padding);
+         }
      }
      lastHeader_ = service_.GetLastHeader();
 }

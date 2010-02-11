@@ -31,9 +31,10 @@ I3HDFTable::I3HDFTable(I3TableService& service, const std::string& name,
 // If a description is provided, create the corresponding table
 I3HDFTable::I3HDFTable(I3TableService& service, const std::string& name,
                        I3TableRowDescriptionConstPtr description,
-                       hid_t fileId, int compress, I3TablePtr inde_table) :
+                       hid_t fileId, int compress, I3TablePtr index_table) :
     I3Table(service, name, description),
     fileId_(fileId) {
+      indexTable_ = index_table;
       CreateTable(compress);
 }
 

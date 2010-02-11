@@ -37,6 +37,7 @@ class I3TableService {
                                           I3TableRowDescriptionConstPtr description_);
                                           
         I3EventHeaderConstPtr GetLastHeader();
+        I3TableRowDescriptionConstPtr GetIndexDescription();
         // Phone home to tell the service that an event has been written
         void HeaderWritten(I3EventHeaderConstPtr lastHeader,unsigned int nrows);
         void Finish();
@@ -56,6 +57,7 @@ class I3TableService {
         
         std::vector<I3EventHeaderConstPtr> eventHeaderCache_;
         I3ConverterPtr ticConverter_;
+        I3TableRowDescriptionConstPtr indexDescription_;
 
     SET_LOGGER("I3TableService");
 

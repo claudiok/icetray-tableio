@@ -17,6 +17,13 @@
 
 I3TableService::I3TableService()  { 
     ticConverter_ = BuildConverter("I3IndexColumnsGenerator");
+    I3TableRowDescriptionPtr desc = I3TableRowDescriptionPtr(new I3TableRowDescription());
+    desc->AddField<unsigned int>("Run", "", "run number");
+    desc->AddField<unsigned int>("Event", "", "event number");
+    desc->AddField<bool>("exists", "", "object was found in the frame");
+    desc->AddField<unsigned int>("start", "", "Offset at which the rows for this event start");
+    desc->AddField<unsigned int>("end", "", "Offset at which the rows for the next event start");
+    indexDescription_ = desc;
 }
 
 /******************************************************************************/
@@ -95,6 +102,14 @@ void I3TableService::HeaderWritten(I3EventHeaderConstPtr lastHeader, unsigned in
 I3EventHeaderConstPtr I3TableService::GetLastHeader() {
    return eventHeaderCache_.back();
 }
+
+/******************************************************************************/
+
+// Get the last header the service has seen
+I3TableRowDescriptionConstPtr I3TableService::GetIndexDescription() {
+   return indexDescription_;
+}
+
 
 /******************************************************************************/
         

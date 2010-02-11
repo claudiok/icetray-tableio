@@ -55,6 +55,7 @@ class I3Table {
 
         unsigned int nevents_; // number of events written
         unsigned int nrows_;   // number of rows (>= events) written
+        unsigned int nrowsWithPadding_;   // number of rows (>= events) written, including padding
         bool connected_;       // connected to a writer
         bool tableCreated_;    // the table/tree has been created successfully
 
