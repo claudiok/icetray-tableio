@@ -307,7 +307,7 @@ std::pair<unsigned int,unsigned int> I3HDFTable::GetRangeForEvent(unsigned int i
         boost::shared_ptr<I3HDFTable> indexTable = boost::static_pointer_cast<I3HDFTable>(indexTable_);
         I3TableRowPtr indexrow = boost::const_pointer_cast<I3TableRow>(indexTable->ReadRows(index,1));
         unsigned int start = indexrow->Get<unsigned int>("start");
-        unsigned int end = indexrow->Get<unsigned int>("end");
+        unsigned int end = indexrow->Get<unsigned int>("stop");
         return std::pair<unsigned int,unsigned int>(start,end);
     } else {
         log_fatal("(%s) This table has no index, and is thus write-only.",name_.c_str());

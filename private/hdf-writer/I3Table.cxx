@@ -95,7 +95,7 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
       index_row->Set<unsigned int>("Event",header->GetEventID());
       index_row->Set<bool>("exists",true);
       index_row->Set<unsigned int>("start",nrowsWithPadding_);
-      index_row->Set<unsigned int>("end",nrowsWithPadding_+row->GetNumberOfRows());
+      index_row->Set<unsigned int>("stop",nrowsWithPadding_+row->GetNumberOfRows());
       log_trace("(%s) Writing row to index table. start: %d end: %d",
                 name_.c_str(),nrowsWithPadding_,nrowsWithPadding_+row->GetNumberOfRows());
       

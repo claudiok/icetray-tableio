@@ -22,7 +22,7 @@ I3TableService::I3TableService()  {
     desc->AddField<unsigned int>("Event", "", "event number");
     desc->AddField<bool>("exists", "", "object was found in the frame");
     desc->AddField<unsigned int>("start", "", "Offset at which the rows for this event start");
-    desc->AddField<unsigned int>("end", "", "Offset at which the rows for the next event start");
+    desc->AddField<unsigned int>("stop", "", "Offset at which the rows for the next event start");
     indexDescription_ = desc;
 }
 
