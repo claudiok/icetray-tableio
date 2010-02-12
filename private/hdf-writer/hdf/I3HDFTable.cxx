@@ -173,9 +173,15 @@ void I3HDFTable::CreateDescription() {
             log_fatal("Rank of array field /%s.%s is %d. That's deeply screwy!",name_.c_str(),field_names[i],rank);
          }
          H5Tget_array_dims(dtype,&array_size,&perm);
+         // sanity check
+         assert(field_sizes[i] % array_size == 0);
+         // for arrays, use the base type
+         dtype = H5Tget_super(dtype);
+         field_sizes[i] /= array_size;
       } else {
          array_size = 1;
       }
+ 
       
       std::ostringstream osu,osd;
       osu << "FIELD_" << i << "_UNIT";

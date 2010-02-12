@@ -28,6 +28,7 @@ TEST(resurrection) {
 
    // build up a data type
    I3TableRowDescriptionPtr desc = I3TableRowDescriptionPtr(new I3TableRowDescription());
+   desc->SetIsMultiRow(true); // we plan to write multiple rows
    desc->AddField<double>("double","double-units","A thing which is doubly precise, verily, the float is unworthy look upon.");
    desc->AddField<short>("shorty","short-units","Short is as short does. Unless things have to be aligned to 32 bits, that is.");
    desc->AddField<char>("charlatan","letter","Speak your piece, but in 8 bits or less.");
@@ -45,6 +46,8 @@ TEST(resurrection) {
 	ENSURE( thrown, "Setting a boolean field with a non-empty unit string that is not 'bool' throws an error.");
    
 	desc->AddField<bool>("farcicality","","Has this test become a farce?");
+	
+    desc->AddField<int>("vector","","A vector of ints",256);
    
    
    // create a table in the HDF file
@@ -59,7 +62,7 @@ TEST(resurrection) {
    short charval = 127;
    long longval = 9223372036854775807;
    bool boolval = true;
-   size_t i;
+   size_t i,j;
    
    for(i=0; i<nrows; i++) {
       rows->SetCurrentRow(i);
@@ -68,6 +71,8 @@ TEST(resurrection) {
       rows->Set<char>("charlatan",charval);
       rows->Set<long>("long_dooby_doo_long_long",longval);
       rows->Set<bool>("farcicality",boolval);
+      int* vec = rows->GetPointer<int>("vector");
+      for (j=0;j<256;j++) vec[j] = j;
    }
 
    I3EventHeaderConstPtr fake_header = I3EventHeaderConstPtr(new I3EventHeader());
@@ -159,6 +164,8 @@ TEST(resurrection) {
       ENSURE_EQUAL( shortval, castaway->Get<short>("shorty"), "Read short is equal to set short.");
       ENSURE_EQUAL( charval, castaway->Get<char>("charlatan"), "Read char is equal to set char.");
       ENSURE_EQUAL( boolval, castaway->Get<bool>("farcicality"), "Read bool is equal to set bool.");
+      int* vec = castaway->GetPointer<int>("vector");
+      for (j=0;j<256;j++) ENSURE_EQUAL( (int)j, vec[j], "Vector contents are the same");
    }
 
    size_t obuffer_size = desc->GetTotalByteSize();
