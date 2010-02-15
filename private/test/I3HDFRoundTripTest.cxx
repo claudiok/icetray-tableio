@@ -10,6 +10,7 @@
  */
 
 #include <I3Test.h>
+#include <limits.h>
 
 #include "H5TA.h"
 
@@ -59,8 +60,8 @@ TEST(resurrection) {
 
    double doubleval = 3.14;
    short shortval = 512;
-   short charval = 127;
-   long longval = 9223372036854775807;
+   short charval = CHAR_MAX;
+   long longval = LONG_MAX;
    bool boolval = true;
    size_t i,j;
    
@@ -135,7 +136,9 @@ TEST(resurrection) {
    for (opytype_it  = desc->GetFieldTypeCodes().begin(), zpytype_it = zombie_desc->GetFieldTypeCodes().begin(), i=0;
         opytype_it != desc->GetFieldTypeCodes().end();
         opytype_it++, zpytype_it++, i++) {
-            ENSURE_EQUAL( *opytype_it, *zpytype_it, "Python-style type codes match");
+            std::string msg = "Python-style type codes match for field ";
+            msg += desc->GetFieldNames().at(i);
+            ENSURE_EQUAL( *opytype_it, *zpytype_it, msg.c_str());
    }
    
    std::vector<hid_t>::const_iterator ohid_it,zhid_it;

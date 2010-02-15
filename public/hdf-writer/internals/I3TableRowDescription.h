@@ -47,8 +47,6 @@ public:
     I3TableRowDescription();
     virtual ~I3TableRowDescription();
 
-    // TODO logger
-        
     /* basic AddField */
     void AddField(const std::string& name, hid_t hdfType, char typeCode,
 		  size_t typeSize, const std::string& unit,
@@ -184,9 +182,15 @@ const static inline char py_code_from_hdf(hid_t hdf_type) {
 
     friend I3TableRowDescription operator|(const I3TableRowDescription& lhs, const I3TableRowDescription& rhs);
 
-
-
+    SET_LOGGER("I3TableRowDescription");
 };
+    
+// declare template specialization for bools to let other file find
+// the implementation in the .cxx file
+template<> void I3TableRowDescription::AddField<bool>(const std::string& name,
+                                                      const std::string& unit,
+                                                      const std::string& doc,
+                                                      size_t arrayLength);
 
 I3_POINTER_TYPEDEFS( I3TableRowDescription );
 

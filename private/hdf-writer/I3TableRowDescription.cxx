@@ -124,6 +124,7 @@ bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) cons
 		  const std::string& doc, 
 		  size_t arrayLength) 
     {
+        log_trace("call to template specialization AddField<bool>");
 		// Since booleans are just integers, we need to enforce this unit convention
 		std::string boolunit("bool");
 		if ((unit.size() != 0) && (unit != boolunit))
