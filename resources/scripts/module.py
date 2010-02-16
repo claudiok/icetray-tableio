@@ -73,7 +73,11 @@ class I3TableWriterModule(icetray.I3Module):
 		for item in arg:
 			converter = item.get('converter',None)
 			if not converter is None:
-				if not isinstance(converter,hdf_writer.I3Converter):
+				# if this is a list of converters, make a bundle
+				if isinstance(converter,list):
+					converter = hdf_writer.I3ConverterBundle(converter)
+					item['converter'] = converter
+				elif not isinstance(converter,hdf_writer.I3Converter):
 					raise TypeError, "In '%s': converter must be an instance of I3Converter"
 			name = item.get('name',None)
 			if not name is None:
