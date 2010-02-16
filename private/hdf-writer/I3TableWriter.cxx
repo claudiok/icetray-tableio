@@ -34,60 +34,6 @@ I3TableWriter::~I3TableWriter() {};
 
 /******************************************************************************/
 
-// register one specific object. if type and converter are empty the writer 
-// should figure out appropriate values
-void I3TableWriter::AddObject(std::string name, std::string tableName, 
-                              std::string type, std::string converterName) {
-
-    // figure out converter.
-    I3ConverterPtr converter;
-    if (converterName == "") { 
-        // no converter specified. use type to figure out which one to use
-        std::map<std::string,I3ConverterPtr>::const_iterator it;
-        it = converters_.find(type);
-        if (it != converters_.end()) { 
-            // have already such a converter -> use it
-            converter = it->second;
-        }
-        else { 
-            // don't have it -> create it and store it for later use
-            converter = BuildConverter(type);
-            converters_[type] = converter;
-        }
-    }
-    else{
-        // a converter was specified. create it.
-        // TODO: useful to create a converter cache for this case? probably not
-        converter = BuildConverter(converterName);
-    }
-    // construct the table description
-    I3TableRowDescriptionConstPtr ticDescription  = ticConverter_->GetDescription();
-    I3TableRowDescriptionConstPtr convDescription = converter->GetDescription();
-
-    if (tableName == "")
-        tableName = name;
-
-    // get the table from the service
-    I3TablePtr table = ConnectTable(tableName, (*ticDescription | *convDescription) );
-
-    // store all this in tables_ 
-    TableBundle bundle;
-    bundle.objectType = type;
-    bundle.converter = converter;
-    bundle.table = table;
-    
-	std::map<std::string,std::vector<TableBundle> >::iterator table_it = tables_.find(name);
-	if (table_it == tables_.end()) {
-		std::vector<TableBundle> tablelist(1,bundle);
-		tables_[name] = tablelist;
-	} else {
-		table_it->second.push_back(bundle);
-	}
-    // tables_[name] = bundle;
-}
-
-/******************************************************************************/
-
 // Search the converter cache for a converter that says it can handle obj
 // raise an error and if more than one answers the call (there can be only one highlander)
 I3ConverterPtr I3TableWriter::FindConverter(I3FrameObjectConstPtr obj) {

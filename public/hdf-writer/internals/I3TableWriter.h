@@ -27,11 +27,6 @@ class I3TableWriter {
         I3TableWriter(I3TableServicePtr service);
         virtual ~I3TableWriter();
         
-        // register one specific object. if type and converter are empty the writer 
-        // should figure out appropriate values
-        void AddObject(std::string name, std::string tableName, 
-                       std::string type, std::string converter);
-
         // register one specific object, lazily. if type and converter are empty the writer 
         // should figure out appropriate values
         bool AddObject(std::string name, std::string tableName, 
