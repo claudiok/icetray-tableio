@@ -9,6 +9,7 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
+#include <assert.h>
 
 #include "hdf-writer/hdf/I3HDFTable.h"
 #include "hdf-writer/internals/I3TableRow.h"
