@@ -47,6 +47,7 @@ I3TableRowDescriptionConstPtr I3ConverterBundle::GetDescription(I3FrameObjectCon
     for (it = converters_.begin(); it != converters_.end(); it++) {
         description = (*it)->GetDescription(object);
         // concatenate the descriptions
+        // FIXME: check if any field names collide and raise an error
         if (it == converters_.begin()) {
             combinedDescription = I3TableRowDescription(*description);
         } else {
@@ -71,6 +72,7 @@ I3TableRowDescriptionConstPtr I3ConverterBundle::GetDescription(const I3FrameObj
     for (it = converters_.begin(); it != converters_.end(); it++) {
         description = (*it)->GetDescription(object);
         // concatenate the descriptions
+        // FIXME: check if any field names collide and raise an error
         if (it == converters_.begin()) {
             combinedDescription = I3TableRowDescription(*description);
         } else {

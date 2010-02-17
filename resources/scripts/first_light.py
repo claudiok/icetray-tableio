@@ -39,23 +39,31 @@ class I3ParticleConverter(hdf_writer.I3Converter):
 		row['location']   = particle.location_type
 		row['fit_status'] = particle.fit_status
 		return 1
+
+from icecube import coordinate_service
 		
-class SkyBooker(I3ParticleConverter):
-	"""Demo of extending bookers, e.g. to book celestial coordinates"""
+class SkyBooker(hdf_writer.I3Converter):
+	"""Demo of a booker extension, e.g. to book celestial coordinates"""
 	def CreateDescription(self,part):
-		desc = super(SkyBooker,self).CreateDescription(part)
+		desc = hdf_writer.I3TableRowDescription()
 		desc.add_field('RA', 'd','radian','right ascension')
 		desc.add_field('Dec','d','radian','declination')
+		desc.add_field('galactic_latitude', 'd','radian','Galactic latitude')
+		desc.add_field('galactic_longitude','d','radian','Galactic longitude')
 		return desc
 	def Convert(self,particle,row,frame):
 		"""Here, we would have to get the event time from the header
 		In order to transform from detector to celestial coords."""
-		# Convert() will defer to FillRows() if it is present
-		super(SkyBooker,self).Convert(particle,row,frame)
-		# coordinate-service magic would go here
-		row['RA'] = particle.azimuth
-		row['Dec'] = particle.zenith
+		# coordinate-service magic
+		coord = coordinate_service.Coordinate(frame['I3EventHeader'],particle)
+		row['RA'] = coord.RA
+		row['Dec'] = coord.Dec
+		row['galactic_latitude'] = coord.GalacticLatitude
+		row['galactic_longitude'] = coord.GalacticLongitude
+		
 		return 1
+
+from icecube import jebclasses
 
 tray = I3Tray()
 
@@ -63,16 +71,15 @@ tabler = hdf_writer.I3HDFTableService('foo.hd5')
 
 tray.AddModule('I3Reader','reader',filename='/Users/jakob/Documents/Wisc/2010 Spring/Python Primer/foo.i3.gz')
 tray.AddModule(I3TableWriterModule,'writer',
-	tableservice = tabler,
-	keys = [dict(key='LineFit', converter=I3ParticleConverter(), name='Way_out_there_beyond_this_hick_town_Barnaby'),
-			  dict(key='LineFit', converter=SkyBooker(), name='Theres_a_slick_town_Barnaby')],
-	# types = {dataclasses.I3DOMLaunchSeriesMap: DOMLaunchBookie()},
-	# keys = ['LineFit']
-	types = {dataclasses.I3Particle: I3ParticleConverter()}#,
-	         #dataclasses.I3DOMLaunchSeriesMap: DOMLaunchBookie()}
+    tableservice = tabler,
+    keys  = [dict(key='LineFit', converter=I3ParticleConverter(), name='Way_out_there_beyond_this_hick_town_Barnaby'),
+             dict(key='LineFit', converter=[I3ParticleConverter(),SkyBooker()], name='Theres_a_slick_town_Barnaby')],
+    types = {jebclasses.I3FilterResultMap: jebclasses.converters.I3FilterResultMapConverter(),
+             dataclasses.I3DOMLaunchSeriesMap: DOMLaunchBookie()}
+    
 )
 
 tray.AddModule('TrashCan','yeswecan')
 
-tray.Execute(50)
+tray.Execute(10)
 tray.Finish()

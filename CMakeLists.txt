@@ -4,7 +4,7 @@
 
 i3_project(hdf-writer 
 	PYTHON_DIR python
-	PYTHON_DEST icecube/hdf
+	PYTHON_DEST icecube/hdf_writer
 	DOCS_DIR resources/docs
 )
 
@@ -30,7 +30,7 @@ HDFWRITER_ADD_CONVERTER(I3EventHeader DOMInfo EventInfo I3Particle
                         I3MCTree I3MCWeightDict I3Int I3Double I3Bool I3Waveform
                         I3CorsikaWeightMap I3Pulses I3MCHits I3Geometry I3Trigger
                         I3FlasherInfo TWREventInfo DEPENDS_ON dataclasses)
-HDFWRITER_ADD_CONVERTER(I3FilterMask DEPENDS_ON jebclasses)
+#HDFWRITER_ADD_CONVERTER(I3FilterMask DEPENDS_ON jebclasses)
 HDFWRITER_ADD_CONVERTER(I3RecoInfo I3CascadeCutValues DEPENDS_ON dataclasses phys-services)
 HDFWRITER_ADD_CONVERTER(I3LineFitParams DEPENDS_ON linefit)
 HDFWRITER_ADD_CONVERTER(I3TensorOfInertiaFitParams DEPENDS_ON tensor-of-inertia)
