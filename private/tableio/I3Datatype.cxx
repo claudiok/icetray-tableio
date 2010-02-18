@@ -13,7 +13,8 @@
 
 // specialization for boolean types
 template <>
-I3Datatype I3DatatypeFromNativeType_impl<bool>(const char* label) {
+I3Datatype I3DatatypeFromNativeType<bool>() {
+  std::string label("bool");
     I3Datatype dtype;
     dtype.size = sizeof(bool);
     dtype.kind = I3Datatype::Bool;

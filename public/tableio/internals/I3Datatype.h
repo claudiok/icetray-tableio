@@ -20,6 +20,8 @@
 #include <string>
 #include <cctype>
 
+#include <I3/name_of.h>
+
 // represents an atomic datatype
 struct I3Datatype {
     enum TypeClass {
@@ -32,7 +34,7 @@ struct I3Datatype {
     size_t size;
     bool is_signed;
     std::vector<std::pair<std::string,long> > enum_members;
-    const char* description;
+  std::string description;
     
     bool operator!=(const I3Datatype& rhs) const {
           return !(*this == rhs);
@@ -47,12 +49,11 @@ struct I3Datatype {
     I3Datatype(TypeClass k, size_t s, bool sign) : kind(k),size(s),is_signed(sign) {};
 };
 
-#define I3DATATYPE_FROM_NATIVE_TYPE(t) I3DatatypeFromNativeType_impl<t>(#t)
-#define I3DATATYPE_FROM_ENUM_TYPE(t, enum_members) I3DatatypeFromNativeType_impl<t>(#t, enum_members)
-
 template <typename T>
-I3Datatype I3DatatypeFromNativeType_impl(const char* label) {
-    BOOST_STATIC_ASSERT(boost::is_pod<T>::value);
+I3Datatype I3DatatypeFromNativeType() 
+{
+  std::string label = I3::name_of<T>();
+  BOOST_STATIC_ASSERT(boost::is_pod<T>::value);
 
     I3Datatype dtype;
     dtype.size = sizeof(T);
@@ -69,11 +70,11 @@ I3Datatype I3DatatypeFromNativeType_impl(const char* label) {
 };
 
 template <>
-I3Datatype I3DatatypeFromNativeType_impl<bool>(const char* label);
+I3Datatype I3DatatypeFromNativeType<bool>();
 
 template <typename T>
-static I3Datatype I3DatatypeFromNativeType_impl(const char* label, 
-                  const std::vector<std::pair< std::string, T> >& enum_labels) {
+static I3Datatype I3DatatypeFromNativeType(const std::vector<std::pair< std::string, T> >& enum_labels) 
+{
     BOOST_STATIC_ASSERT(boost::is_enum<T>::value);
 
     I3Datatype dtype;
@@ -81,7 +82,7 @@ static I3Datatype I3DatatypeFromNativeType_impl(const char* label,
     dtype.kind = I3Datatype::Enum;
     dtype.is_signed = true; // some dataclasses use signed values in enums
    
-    dtype.description = label;
+    dtype.description = I3::name_of<T>();
     // copy the enum members into the map
     typename std::vector<std::pair<std::string,T> >::const_iterator it;
     for (it = enum_labels.begin(); it != enum_labels.end(); it++) {

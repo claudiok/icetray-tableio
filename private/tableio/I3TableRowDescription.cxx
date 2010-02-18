@@ -121,8 +121,8 @@ bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) cons
 		std::string boolunit("bool");
 		if ((unit.size() != 0) && (unit != boolunit))
 			log_fatal("The unit string of a boolean field must be \"bool\".");
-	AddField(name, I3DATATYPE_FROM_NATIVE_TYPE(bool), sizeof(bool), 
-		 boolunit, doc, arrayLength);
+		AddField(name, I3DatatypeFromNativeType<bool>(), sizeof(bool), 
+			 boolunit, doc, arrayLength);
     }
 
 
