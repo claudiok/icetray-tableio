@@ -9,7 +9,7 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
-#include "hdf-writer/internals/I3ConverterFactory.h"
+#include "tableio/internals/I3ConverterFactory.h"
 
 I3ConverterPtr BuildConverter(std::string name) {
     I3ConverterPtr converter = 

@@ -10,7 +10,7 @@
  */
 
 #include <I3Test.h>
-#include "hdf-writer/internals/I3Datatype.h"
+#include "tableio/internals/I3Datatype.h"
 
 TEST_GROUP(I3DatatypeTests)
 

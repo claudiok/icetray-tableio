@@ -13,7 +13,7 @@
 #define I3CONVERTERFACTORY_H_INCLUDED
 
 #include "icetray/I3Factory.h"
-#include "hdf-writer/internals/I3Converter.h"
+#include "tableio/internals/I3Converter.h"
 
 /******************************************************************************/
 //

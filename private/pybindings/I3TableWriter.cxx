@@ -11,15 +11,9 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
-#include <hdf-writer/internals/I3TableWriter.h>
+#include <tableio/internals/I3TableWriter.h>
 
 namespace bp = boost::python;
-
-// I3TableWriter::TableSpec kw_init(bp::object name, bp::object conv) {
-// 	if ((name.ptr() == Py_None) && (conv.ptr() == Py_None)) {
-// 		return I3TableWriter::TableSpec()
-// 	}
-// }
 
 void register_I3TableWriter() {
 	bp::scope tw = bp::class_<I3TableWriter, boost::noncopyable>

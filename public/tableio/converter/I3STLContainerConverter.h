@@ -16,7 +16,7 @@
 // FIXME: vector<I3DOMLaunch> is no I3FrameObject. how to get this through the I3Converter
 //        interface?
 
-#include "hdf-writer/internals/I3ConverterFactory.h"
+#include "tableio/internals/I3ConverterFactory.h"
 #include "dataclasses/physics/I3EventHeader.h"
 
 template <class FrmObj>

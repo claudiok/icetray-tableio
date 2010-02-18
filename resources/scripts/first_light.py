@@ -1,14 +1,13 @@
 # hey look, i can a) write HDF5 files, and b) writer bookers in python!
 
-from icecube import icetray,dataclasses,dataio,hdf_writer
+from icecube import icetray,dataclasses,dataio,tableio,hdfwriter
 from I3Tray import I3Tray
-from module import I3TableWriterModule
 from test_pybindings import DOMLaunchBookie
 		
-class I3ParticleConverter(hdf_writer.I3Converter):
+class I3ParticleConverter(tableio.I3Converter):
 	booked = dataclasses.I3Particle
 	def CreateDescription(self,part):
-		desc = hdf_writer.I3TableRowDescription()
+		desc = tableio.I3TableRowDescription()
 		desc.add_field('x',      'd','m',     'x-position of particle')
 		desc.add_field('y',      'd','m',     'y-position of particle')
 		desc.add_field('z',      'd','m',     'z-position of particle')
@@ -42,10 +41,10 @@ class I3ParticleConverter(hdf_writer.I3Converter):
 
 from icecube import coordinate_service
 		
-class SkyBooker(hdf_writer.I3Converter):
+class SkyBooker(tableio.I3Converter):
 	"""Demo of a booker extension, e.g. to book celestial coordinates"""
 	def CreateDescription(self,part):
-		desc = hdf_writer.I3TableRowDescription()
+		desc = tableio.I3TableRowDescription()
 		desc.add_field('RA', 'd','radian','right ascension')
 		desc.add_field('Dec','d','radian','declination')
 		desc.add_field('galactic_latitude', 'd','radian','Galactic latitude')
@@ -67,10 +66,10 @@ from icecube import jebclasses
 
 tray = I3Tray()
 
-tabler = hdf_writer.I3HDFTableService('foo.hd5')
+tabler = hdfwriter.I3HDFTableService('foo.hd5')
 
 tray.AddModule('I3Reader','reader',filename='/Users/jakob/Documents/Wisc/2010 Spring/Python Primer/foo.i3.gz')
-tray.AddModule(I3TableWriterModule,'writer',
+tray.AddModule(tableio.I3TableWriterModule,'writer',
     tableservice = tabler,
     keys  = [dict(key='LineFit', converter=I3ParticleConverter(), name='Way_out_there_beyond_this_hick_town_Barnaby'),
              dict(key='LineFit', converter=[I3ParticleConverter(),SkyBooker()], name='Theres_a_slick_town_Barnaby')],

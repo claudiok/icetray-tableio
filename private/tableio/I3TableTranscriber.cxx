@@ -9,9 +9,9 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy: jvansanten $
  */
 
-#include <hdf-writer/internals/I3TableTranscriber.h>
-#include <hdf-writer/internals/I3TableRowDescription.h>
-#include <hdf-writer/internals/I3TableRow.h>
+#include <tableio/internals/I3TableTranscriber.h>
+#include <tableio/internals/I3TableRowDescription.h>
+#include <tableio/internals/I3TableRow.h>
 
 #include <dataclasses/physics/I3EventHeader.h>
 

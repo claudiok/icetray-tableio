@@ -13,8 +13,8 @@
 
 #include <vector>
 
-#include <hdf-writer/internals/I3TableRow.h>
-#include <hdf-writer/internals/I3TableRowDescription.h>
+#include <tableio/internals/I3TableRow.h>
+#include <tableio/internals/I3TableRowDescription.h>
 
 TEST_GROUP(I3TableRowTests);
 

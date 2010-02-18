@@ -16,7 +16,7 @@
 
 #include <string>
 
-#include "hdf-writer/internals/I3Converter.h"
+#include "tableio/internals/I3Converter.h"
 #include <boost/python.hpp>
 
 I3_FORWARD_DECLARATION(I3TableService);

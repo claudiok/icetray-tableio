@@ -16,8 +16,8 @@
 #include "icetray/I3Logging.h"
 #include "icetray/I3PointerTypedefs.h"
 
-#include "hdf-writer/internals/I3TableRowDescription.h"
-#include "hdf-writer/internals/I3MemoryChunk.h"
+#include "tableio/internals/I3TableRowDescription.h"
+#include "tableio/internals/I3MemoryChunk.h"
 
 class I3TableRow {
     public:

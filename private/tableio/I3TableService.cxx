@@ -9,9 +9,9 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
-#include "hdf-writer/internals/I3TableService.h"
-#include "hdf-writer/internals/I3TableRow.h"
-#include "hdf-writer/internals/I3ConverterFactory.h"
+#include "tableio/internals/I3TableService.h"
+#include "tableio/internals/I3TableRow.h"
+#include "tableio/internals/I3ConverterFactory.h"
 
 /******************************************************************************/
 

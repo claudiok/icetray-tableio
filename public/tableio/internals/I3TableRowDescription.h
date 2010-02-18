@@ -16,7 +16,7 @@
 #include "icetray/I3Logging.h"
 #include "icetray/I3PointerTypedefs.h"
 
-#include "hdf-writer/internals/I3Datatype.h"
+#include "tableio/internals/I3Datatype.h"
 
 #include <string>
 #include <vector>
@@ -25,7 +25,7 @@
 #include <boost/assign/list_inserter.hpp>
 #include <boost/preprocessor/seq/transform.hpp>
 
-#include "hdf-writer/internals/I3MemoryChunk.h"
+#include "tableio/internals/I3MemoryChunk.h"
 
 /*****************************************************************************/
 

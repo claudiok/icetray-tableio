@@ -9,8 +9,8 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy: jvansanten $
  */
 
-#include <hdf-writer/internals/I3TableService.h>
-#include <hdf-writer/internals/I3Table.h>
+#include <tableio/internals/I3TableService.h>
+#include <tableio/internals/I3Table.h>
 
 #ifndef	I3TABLETRANSCRIBER_H_INCLUDED
 #define I3TABLETRANSCRIBER_H_INCLUDED

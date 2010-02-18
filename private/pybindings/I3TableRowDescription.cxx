@@ -11,7 +11,7 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
-#include <hdf-writer/internals/I3TableRowDescription.h>
+#include <tableio/internals/I3TableRowDescription.h>
 
 namespace bp = boost::python;
 

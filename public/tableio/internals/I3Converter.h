@@ -18,8 +18,8 @@
 
 #include "icetray/IcetrayFwd.h"
 
-#include "hdf-writer/internals/I3TableRowDescription.h"
-#include "hdf-writer/internals/I3TableRow.h"
+#include "tableio/internals/I3TableRowDescription.h"
+#include "tableio/internals/I3TableRow.h"
 
 I3_FORWARD_DECLARATION(I3TableWriter);
 I3_FORWARD_DECLARATION(I3FrameObject);

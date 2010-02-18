@@ -9,7 +9,7 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
-#include "hdf-writer/internals/I3TableRowDescription.h"
+#include "tableio/internals/I3TableRowDescription.h"
 #include <numeric>
 
 /******************************************************************************/

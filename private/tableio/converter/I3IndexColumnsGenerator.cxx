@@ -9,8 +9,8 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
-//#include "hdf-writer/I3Converter.h"
-#include "hdf-writer/internals/I3ConverterFactory.h"
+//#include "tableio/I3Converter.h"
+#include "tableio/internals/I3ConverterFactory.h"
 #include "dataclasses/physics/I3EventHeader.h"
 
 class I3IndexColumnsGenerator : public I3ConverterImplementation<I3EventHeader> {

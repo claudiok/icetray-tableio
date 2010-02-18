@@ -1,4 +1,4 @@
-from icecube import icetray,dataclasses,hdf_writer,dataio
+from icecube import icetray,dataclasses,tableio,dataio
 import array
 import unittest
 import exceptions
@@ -12,7 +12,7 @@ except ImportError:
 	
 class I3PythonConverterTest(unittest.TestCase):
 	def setUp(self):
-		desc = hdf_writer.I3TableRowDescription()
+		desc = tableio.I3TableRowDescription()
 		
 		self.types = {
 		              'char':          'c', 
@@ -44,7 +44,7 @@ class I3PythonConverterTest(unittest.TestCase):
 		desc.add_field('trigger_type',dataclasses.I3DOMLaunch.TriggerType,'','')
 		
 		self.desc = desc
-		self.rows = hdf_writer.I3TableRow(desc,1)
+		self.rows = tableio.I3TableRow(desc,1)
 		
 			
 	def testTypeCodes(self):
@@ -126,11 +126,11 @@ class I3PythonConverterTest(unittest.TestCase):
 			self.assertAlmostEqual(a,b)
 		
 
-class DOMLaunchBookie(hdf_writer.I3Converter):
+class DOMLaunchBookie(tableio.I3Converter):
     booked = dataclasses.I3DOMLaunchSeriesMap
     dl = dataclasses.I3DOMLaunch
     def CreateDescription(self,dlsm):
-        desc = hdf_writer.I3TableRowDescription()
+        desc = tableio.I3TableRowDescription()
         # make this a "ragged" table
         desc.is_multi_row = True
         # grab an example DOMLaunch
@@ -194,7 +194,7 @@ class DOMLaunchBookie(hdf_writer.I3Converter):
 class I3TableWriterPythonModuleTest(unittest.TestCase):
 		"""Test the option-parsing magic."""
 		def setUp(self):
-			from icecube import icetray,hdf_writer,dataclasses
+			from icecube import icetray,tableio,dataclasses
 			from module import I3TableWriterModule
 			import tempfile
 			from I3Tray import I3Tray, load
@@ -212,7 +212,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 			tray.AddModule("I3Muxer","muxalot")
 			self.tray = tray
 			self.tempfile = tempfile.NamedTemporaryFile()
-			self.hdf_service = hdf_writer.I3HDFTableService(self.tempfile.name,0)
+			self.hdf_service = tableio.I3HDFTableService(self.tempfile.name,0)
 			self.target = I3TableWriterModule
 			self.bookie = DOMLaunchBookie()
 			
@@ -269,7 +269,7 @@ def test(fname='/Users/jakob/Documents/IceCube/nugen_nue_ic80_dc6.001568.000000.
 	test.desc = booker.CreateDescription(dl)
 	# return desc
 	n = booker.GetNumberOfRows(dl)
-	rows = hdf_writer.I3TableRow(test.desc,n)
+	rows = tableio.I3TableRow(test.desc,n)
 	n_written = booker.Convert(dl,rows,fr)
 	f.close()
 	return rows

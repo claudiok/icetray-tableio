@@ -1,16 +1,28 @@
-from icecube import icetray,hdf_writer
+# 
+# copyright  (C) 2010
+# The Icecube Collaboration
+# 
+# $Id$
+# 
+# @version $Revision$
+# @date $LastChangedDate$
+# @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
+# 
+
+from icecube.icetray import I3Module
+from icecube.tableio import I3TableService, I3Converter, I3ConverterBundle, I3TableWriter
 import re
 
-class I3TableWriterModule(icetray.I3Module):
+class I3TableWriterModule(I3Module):
 	def __init__(self,context):
-		icetray.I3Module.__init__(self,context)
+		I3Module.__init__(self,context)
 		self.AddParameter('TableService','The I3TableService to recieve output.',None)
 		self.AddParameter('Keys','A list or dict of FrameObject keys to convert',None)
 		self.AddParameter('Types','A list or dict of types to convert',None)
 	def _get_tableservice(self):
 		"""Get the table service (passed v3-style as a python object)"""
 		table_service = self.GetParameter('TableService')
-		if not isinstance(table_service, hdf_writer.I3TableService):
+		if not isinstance(table_service, I3TableService):
 			raise TypeError, "TableService must be an instance of I3TableService (got %s instead)" % table_service
 		self.table_service = table_service
 	
@@ -36,7 +48,7 @@ class I3TableWriterModule(icetray.I3Module):
 			raise TypeError, "Keys must be dicts, tuples, or strings."
 	
 	# FIXME (HACK): there has to be a better way to get at <type 'Boost.Python.class'>
-	bp_class = type(icetray.I3Module)
+	bp_class = type(I3Module)
 		
 	def _transform_typeitem(self,item):
 		typus = None
@@ -75,9 +87,9 @@ class I3TableWriterModule(icetray.I3Module):
 			if not converter is None:
 				# if this is a list of converters, make a bundle
 				if isinstance(converter,list):
-					converter = hdf_writer.I3ConverterBundle(converter)
+					converter = I3ConverterBundle(converter)
 					item['converter'] = converter
-				elif not isinstance(converter,hdf_writer.I3Converter):
+				elif not isinstance(converter,I3Converter):
 					raise TypeError, "In '%s': converter must be an instance of I3Converter"
 			name = item.get('name',None)
 			if not name is None:
@@ -105,9 +117,9 @@ class I3TableWriterModule(icetray.I3Module):
 		# convert whatever was passed as 'Types' to a list of dicts
 		types = self._parse_args(types,self._transform_typeitem)
 		
-		self.writer = hdf_writer.I3TableWriter(self.table_service)
-		tablespec = hdf_writer.I3TableWriter.TableSpec
-		typespec = hdf_writer.I3TableWriter.TypeSpec
+		self.writer = I3TableWriter(self.table_service)
+		tablespec = I3TableWriter.TableSpec
+		typespec = I3TableWriter.TypeSpec
 		
 		for item in keys:
 			key = item.pop('key')
@@ -124,24 +136,4 @@ class I3TableWriterModule(icetray.I3Module):
 		return True
 	def Finish(self):
 		self.writer.finish()
-		
-		
-if False == True:
-	
-	# A sketch of the interface
-	
-	from icecube import dataclasses
-	from test_pybindings import DOMLaunchBookie
-	service = hdf_writer.I3HDFTableService('foo.hdf',0)
-	
-	bookie = DOMLaunchBookie()
-	alt_bookie = DOMLaunchBookie(do_magic = True)
-	
-	#like this:
-	tray.AddModule(I3HDFWriterModule,'hdfwriter',
-			tableservice = service,
-			keys = [dict(key='InIceRawData', converter=bookie, name='HickTown_Barnaby'),
-					  dict(key='InIceRawData', converter=alt_bookie, name='SlickTown_Barnaby')],
-			types = {dataclasses.I3DOMLaunchSeriesMap: bookie}
-			)
-		
+

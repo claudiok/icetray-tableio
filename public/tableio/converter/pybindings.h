@@ -14,7 +14,7 @@
 #ifndef PYBINDINGS_H_GNEDBL5C
 #define PYBINDINGS_H_GNEDBL5C
 
-#include "hdf-writer/internals/I3Converter.h"
+#include "tableio/internals/I3Converter.h"
 
 namespace bp = boost::python;
 

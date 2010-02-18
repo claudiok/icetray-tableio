@@ -13,9 +13,9 @@
 
 #include "dataclasses/I3Double.h"
 
-#include "hdf-writer/internals/I3TableService.h"
-#include "hdf-writer/internals/I3TableWriter.h"
-#include "hdf-writer/internals/I3ConverterFactory.h"
+#include "tableio/internals/I3TableService.h"
+#include "tableio/internals/I3TableWriter.h"
+#include "tableio/internals/I3ConverterFactory.h"
 
 
 TEST_GROUP(I3DoubleConverterTests);

@@ -12,7 +12,7 @@
  */
 
 
-#include <hdf-writer/PythonConverter.h>
+#include <tableio/PythonConverter.h>
 
 namespace bp = boost::python;
 

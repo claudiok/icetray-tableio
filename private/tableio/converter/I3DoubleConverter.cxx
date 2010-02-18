@@ -9,9 +9,9 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
-//#include "hdf-writer/I3Converter.h"
-#include "hdf-writer/internals/I3ConverterFactory.h"
-#include "hdf-writer/converter/I3STLContainerConverter.h"
+//#include "tableio/I3Converter.h"
+#include "tableio/internals/I3ConverterFactory.h"
+#include "tableio/converter/I3STLContainerConverter.h"
 #include "dataclasses/I3Double.h"
 
 class I3DoubleConverter : public I3ConverterImplementation<I3Double> {
