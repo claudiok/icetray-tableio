@@ -11,6 +11,7 @@
 
 #include <I3Test.h>
 #include "tableio/internals/I3Datatype.h"
+#include "tableio/internals/I3TableRowDescription.h"
 
 TEST_GROUP(I3DatatypeTests)
 
@@ -40,4 +41,28 @@ TEST(signedness) {
     ENSURE_EQUAL( (int)btype.kind, (int)I3Datatype::Bool, "Bools are recognized");
     ENSURE_EQUAL( btype.size, sizeof(bool), "Sizes are correct" );
 
+}
+
+TEST(labeling) {
+    I3Datatype ltype = I3DatatypeFromNativeType<long>();
+    ENSURE_EQUAL( ltype.description, std::string("long"), "Labels!");
+    I3Datatype ultype = I3DatatypeFromNativeType<unsigned long>();
+    ENSURE_EQUAL( ultype.description, std::string("unsigned long"), "Labels!");
+}
+
+struct OutThere {
+    enum Yonkers { Hick, Town, Barnaby };
+};
+
+TEST(enums) {
+    MAKE_ENUM_VECTOR(members,OutThere,Yonkers,(Hick)(Town)(Barnaby));
+    I3Datatype etype = I3DatatypeFromNativeType<OutThere::Yonkers>(members);
+    ENSURE_EQUAL( (int)etype.kind, (int)I3Datatype::Enum );
+    ENSURE_EQUAL( etype.description, std::string("OutThere::Yonkers"), "Labels!");
+    ENSURE_EQUAL( etype.enum_members.at(0).second, (long)OutThere::Hick);
+    ENSURE_EQUAL( etype.enum_members.at(1).second, (long)OutThere::Town);
+    ENSURE_EQUAL( etype.enum_members.at(2).second, (long)OutThere::Barnaby);
+    ENSURE_EQUAL( etype.enum_members.at(0).first, std::string("Hick") );
+    ENSURE_EQUAL( etype.enum_members.at(1).first, std::string("Town") );
+    ENSURE_EQUAL( etype.enum_members.at(2).first, std::string("Barnaby") );
 }
