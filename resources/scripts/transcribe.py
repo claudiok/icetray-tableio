@@ -9,7 +9,7 @@
 # @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy: jvansanten $
 # 
 
-from icecube import icetray
+from icecube import icetray,tableio
 from icecube.hdfwriter import I3HDFTableService
 from icecube.tableio import I3TableTranscriber
 

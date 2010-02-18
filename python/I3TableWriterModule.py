@@ -19,6 +19,7 @@ class I3TableWriterModule(I3Module):
 		self.AddParameter('TableService','The I3TableService to recieve output.',None)
 		self.AddParameter('Keys','A list or dict of FrameObject keys to convert',None)
 		self.AddParameter('Types','A list or dict of types to convert',None)
+		self.writer = None
 	def _get_tableservice(self):
 		"""Get the table service (passed v3-style as a python object)"""
 		table_service = self.GetParameter('TableService')
@@ -135,5 +136,6 @@ class I3TableWriterModule(I3Module):
 		# print 'Run %d Event %d' % (header.RunID,header.EventID)
 		return True
 	def Finish(self):
-		self.writer.finish()
+		if self.writer is not None:
+		    self.writer.finish()
 

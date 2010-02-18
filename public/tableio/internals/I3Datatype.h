@@ -19,12 +19,13 @@
 
 // represents an atomic datatype
 struct I3Datatype {
-    enum {
+    enum TypeClass {
         Float = 0,
         Int   = 1,
         Enum  = 2,
         Bool  = 3  
-    } kind ;
+    };
+    TypeClass kind;
     size_t size;
     bool is_signed;
     std::vector<std::pair<std::string,long> > enum_members;

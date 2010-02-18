@@ -46,23 +46,6 @@ class I3PythonConverterTest(unittest.TestCase):
 		self.desc = desc
 		self.rows = tableio.I3TableRow(desc,1)
 		
-			
-	def testTypeCodes(self):
-		fields = list(self.desc.field_names)
-		typecodes = list(self.desc.field_type_codes)
-		hdftypes = list(self.desc.field_hdf_types)
-		for i,field in enumerate(fields):
-			base = field
-			if field.endswith('_vec'):
-				base = field[:-4]
-			elif field.endswith('_py'):
-				base = field[:-3]
-			if base in self.types:
-				tc_set = self.types[base]
-			elif field == 'trigger_type':
-				tc_set = 'i'
-			tc_got = typecodes[i]
-			self.assertEquals( tc_set, tc_got, "Field '%s' set up as type '%s', came back as '%s'"%(field,tc_set,tc_got) )
 	def testKeys(self):
 		fields = list(self.desc.field_names);
 		self.assertEquals( fields, self.rows.keys() )
@@ -194,8 +177,8 @@ class DOMLaunchBookie(tableio.I3Converter):
 class I3TableWriterPythonModuleTest(unittest.TestCase):
 		"""Test the option-parsing magic."""
 		def setUp(self):
-			from icecube import icetray,tableio,dataclasses
-			from module import I3TableWriterModule
+			from icecube import icetray,tableio,dataclasses,hdfwriter
+			from icecube.tableio import I3TableWriterModule
 			import tempfile
 			from I3Tray import I3Tray, load
 			load("libphys-services")
@@ -212,7 +195,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 			tray.AddModule("I3Muxer","muxalot")
 			self.tray = tray
 			self.tempfile = tempfile.NamedTemporaryFile()
-			self.hdf_service = tableio.I3HDFTableService(self.tempfile.name,0)
+			self.hdf_service = hdfwriter.I3HDFTableService(self.tempfile.name,0)
 			self.target = I3TableWriterModule
 			self.bookie = DOMLaunchBookie()
 			
