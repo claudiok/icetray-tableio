@@ -45,7 +45,7 @@ class I3TableWriter {
            boost::python::object held_type_;
            
            bool operator<(const TypeSpec& rhs) const {
-              return boost::python::extract<bool>(held_type_.attr("__lt__")(rhs.held_type_));
+              return( held_type_.ptr() < rhs.held_type_.ptr() );
            }
         
            TypeSpec(boost::python::object t_) : held_type_(t_) { }
