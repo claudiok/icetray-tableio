@@ -12,7 +12,8 @@
 #include "tableio/internals/I3Datatype.h"
 
 // specialization for boolean types
-I3Datatype I3DatatypeFromNativeType_impl(bool, const char* label) {
+template <>
+I3Datatype I3DatatypeFromNativeType_impl<bool>(const char* label) {
     I3Datatype dtype;
     dtype.size = sizeof(bool);
     dtype.kind = I3Datatype::Bool;

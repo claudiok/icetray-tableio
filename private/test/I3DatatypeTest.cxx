@@ -15,9 +15,9 @@
 TEST_GROUP(I3DatatypeTests)
 
 TEST(signedness) {
-    I3Datatype stype = I3DatatypeFromNativeType(int);
-    I3Datatype utype = I3DatatypeFromNativeType(unsigned int);
-    I3Datatype doubletype = I3DatatypeFromNativeType(double);
+    I3Datatype stype = I3DATATYPE_FROM_NATIVE_TYPE(int);
+    I3Datatype utype = I3DATATYPE_FROM_NATIVE_TYPE(unsigned int);
+    I3Datatype doubletype = I3DATATYPE_FROM_NATIVE_TYPE(double);
     
     ENSURE_EQUAL( stype.is_signed, true, "Signed types are detected");
     ENSURE_EQUAL( utype.is_signed, false, "Unsigned types are detected");
@@ -36,7 +36,7 @@ TEST(signedness) {
     ENSURE( (int)stype.kind != (int)I3Datatype::Bool,    "Ints are recognized");
     ENSURE( (int)stype.kind != (int)I3Datatype::Enum,    "Ints are recognized");
     
-    I3Datatype btype = I3DatatypeFromNativeType(bool);
+    I3Datatype btype = I3DATATYPE_FROM_NATIVE_TYPE(bool);
     ENSURE_EQUAL( (int)btype.kind, (int)I3Datatype::Bool, "Bools are recognized");
     ENSURE_EQUAL( btype.size, sizeof(bool), "Sizes are correct" );
     

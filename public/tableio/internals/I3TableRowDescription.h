@@ -59,7 +59,7 @@ public:
 		  const std::string& doc, 
 		  size_t arrayLength=1) 
     {
-	AddField(name, I3DatatypeFromNativeType(T), sizeof(T), 
+	AddField(name, I3DATATYPE_FROM_NATIVE_TYPE(T), sizeof(T), 
 		 unit, doc, arrayLength);
     }
 
@@ -79,7 +79,7 @@ public:
     //     H5Tenum_insert(enum_tid, it->first.c_str(),
     //         (enum_instance=it->second, &enum_instance));
     // }
-    I3Datatype enum_typus = I3DatatypeFromEnumType(enum_type, elements);
+    I3Datatype enum_typus = I3DATATYPE_FROM_ENUM_TYPE(enum_type, elements);
     // char typeCode = 'i';
 	AddField(name, enum_typus, sizeof(enum_type), unit, doc, arrayLength);
     }

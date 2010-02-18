@@ -47,11 +47,13 @@ struct I3Datatype {
     I3Datatype(TypeClass k, size_t s, bool sign) : kind(k),size(s),is_signed(sign) {};
 };
 
-#define I3DatatypeFromNativeType(t) I3DatatypeFromNativeType_impl<t>(t(), #t)
-#define I3DatatypeFromEnumType(t,enum_members) I3DatatypeFromNativeType_impl<t>(t(), #t, enum_members)
+#define I3DATATYPE_FROM_NATIVE_TYPE(t) I3DatatypeFromNativeType_impl<t>(#t)
+#define I3DATATYPE_FROM_ENUM_TYPE(t, enum_members) I3DatatypeFromNativeType_impl<t>(#t, enum_members)
 
 template <typename T>
-I3Datatype I3DatatypeFromNativeType_impl(T, const char* label) {
+I3Datatype I3DatatypeFromNativeType_impl(const char* label) {
+    BOOST_STATIC_ASSERT(boost::is_pod<T>::value);
+
     I3Datatype dtype;
     dtype.size = sizeof(T);
     
@@ -66,12 +68,13 @@ I3Datatype I3DatatypeFromNativeType_impl(T, const char* label) {
     return dtype;
 };
 
-I3Datatype I3DatatypeFromNativeType_impl(bool, const char* label);
+template <>
+I3Datatype I3DatatypeFromNativeType_impl<bool>(const char* label);
 
 template <typename T>
-static I3Datatype I3DatatypeFromNativeType_impl(T, const char* label, 
+static I3Datatype I3DatatypeFromNativeType_impl(const char* label, 
                   const std::vector<std::pair< std::string, T> >& enum_labels) {
-    BOOST_STATIC_ASSERT(boost::is_enum<T>());
+    BOOST_STATIC_ASSERT(boost::is_enum<T>::value);
 
     I3Datatype dtype;
     dtype.size = sizeof(T);
