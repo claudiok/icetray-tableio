@@ -97,7 +97,7 @@ static I3Datatype I3DatatypeFromNativeType_impl(const char* label) {
 
 // specialization for bools
 template <>
-static I3Datatype I3DatatypeFromNativeType_impl<bool>(const char* label) {
+I3Datatype I3DatatypeFromNativeType_impl<bool>(const char* label) {
     I3Datatype dtype;
     dtype.size = sizeof(bool);
     dtype.kind = I3Datatype::Bool;
