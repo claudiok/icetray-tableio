@@ -48,7 +48,7 @@ struct I3Datatype {
 #define I3DatatypeFromEnumType(t,enum_members) I3DatatypeFromNativeType_impl<t>(#t, enum_members)
 
 template <typename T>
-static I3Datatype I3DatatypeFromNativeType_impl(const char* label) {
+I3Datatype I3DatatypeFromNativeType_impl(const char* label) {
     I3Datatype dtype;
     dtype.size = sizeof(T);
     
