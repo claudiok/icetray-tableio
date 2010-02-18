@@ -12,6 +12,9 @@
 #ifndef I3DATATYPE_H_ZO84X7OI
 #define I3DATATYPE_H_ZO84X7OI
 
+#include <boost/type_traits.hpp>
+#include <boost/static_assert.hpp>
+
 #include <vector>
 #include <map>
 #include <string>
@@ -44,18 +47,17 @@ struct I3Datatype {
     I3Datatype(TypeClass k, size_t s, bool sign) : kind(k),size(s),is_signed(sign) {};
 };
 
-#define I3DatatypeFromNativeType(t) I3DatatypeFromNativeType_impl<t>(#t)
-#define I3DatatypeFromEnumType(t,enum_members) I3DatatypeFromNativeType_impl<t>(#t, enum_members)
+#define I3DatatypeFromNativeType(t) I3DatatypeFromNativeType_impl<t>(t(), #t)
+#define I3DatatypeFromEnumType(t,enum_members) I3DatatypeFromNativeType_impl<t>(t(), #t, enum_members)
 
 template <typename T>
-I3Datatype I3DatatypeFromNativeType_impl(const char* label) {
+I3Datatype I3DatatypeFromNativeType_impl(T, const char* label) {
     I3Datatype dtype;
     dtype.size = sizeof(T);
     
-    if (T(1)/T(2) == 0) { // it's an integer
+    if (boost::is_integral<T>()) {
         dtype.kind = I3Datatype::Int;
-        volatile T testval = (volatile T)(0)-(volatile T)(1);
-        dtype.is_signed = (testval < T(0));
+        dtype.is_signed = boost::is_signed<T>();
     } else { // it's a float
         dtype.kind = I3Datatype::Float;
         dtype.is_signed = true;
@@ -64,12 +66,13 @@ I3Datatype I3DatatypeFromNativeType_impl(const char* label) {
     return dtype;
 };
 
-template <>
-I3Datatype I3DatatypeFromNativeType_impl<bool>(const char* label);
+I3Datatype I3DatatypeFromNativeType_impl(bool, const char* label);
 
 template <typename T>
-static I3Datatype I3DatatypeFromNativeType_impl(const char* label, 
-                        const std::vector<std::pair<std::string,T> >& enum_labels) {
+static I3Datatype I3DatatypeFromNativeType_impl(T, const char* label, 
+                  const std::vector<std::pair< std::string, T> >& enum_labels) {
+    BOOST_STATIC_ASSERT(boost::is_enum<T>());
+
     I3Datatype dtype;
     dtype.size = sizeof(T);
     dtype.kind = I3Datatype::Enum;
