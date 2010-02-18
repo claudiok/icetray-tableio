@@ -9,7 +9,7 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
-#include <assert.h>
+#include <cassert>
 
 #include "tableio/internals/I3TableRow.h"
 
