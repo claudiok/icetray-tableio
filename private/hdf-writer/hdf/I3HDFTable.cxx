@@ -14,6 +14,7 @@
 #include "hdf-writer/hdf/I3HDFTable.h"
 #include "hdf-writer/internals/I3TableRow.h"
 #include "hdf-writer/internals/I3TableRowDescription.h"
+#include "H5Tpublic.h"
 
 /******************************************************************************/
 
@@ -41,13 +42,123 @@ I3HDFTable::I3HDFTable(I3TableService& service, const std::string& name,
 
 /******************************************************************************/
 
+// construct an HDF type from an I3Datatype
+hid_t I3HDFTable::GetHDFType(const I3Datatype& dtype, const size_t arrayLength) {
+    hid_t hdftype;
+    std::vector<std::pair<std::string,long> >::const_iterator enum_it;
+    switch (dtype.kind) {
+        case I3Datatype::Bool:
+            // do nothing
+        case I3Datatype::Int:
+            hdftype = H5Tcopy(H5T_NATIVE_INT);
+            H5Tset_size(hdftype,dtype.size);
+            if (dtype.is_signed) H5Tset_sign(hdftype,H5T_SGN_2);
+            else H5Tset_sign(hdftype,H5T_SGN_NONE);
+            break;
+        case I3Datatype::Float:
+            if (dtype.size == 4) {
+                hdftype = H5Tcopy(H5T_NATIVE_FLOAT);
+            } else if (dtype.size == 8) {
+                hdftype = H5Tcopy(H5T_NATIVE_DOUBLE);
+            } else if (dtype.size == 16) {
+                hdftype = H5Tcopy(H5T_NATIVE_LDOUBLE);
+            } else {
+                log_fatal("I don't know what do with %ld-byte floats.",dtype.size);
+            }
+            break;
+        case I3Datatype::Enum:
+            hdftype = H5Tcopy(H5T_NATIVE_INT);
+            H5Tset_size(hdftype,dtype.size);
+            if (dtype.is_signed) H5Tset_sign(hdftype,H5T_SGN_2);
+            else H5Tset_sign(hdftype,H5T_SGN_NONE);
+            hid_t enumtype = H5Tenum_create(hdftype);
+            H5Tclose(hdftype);
+            hdftype = enumtype;
+            for (enum_it = dtype.enum_members.begin(); enum_it != dtype.enum_members.end(); enum_it++) {
+                H5Tenum_insert(hdftype,enum_it->first.c_str(),&(enum_it->second));
+            }
+            break;     
+    }
+    if (arrayLength > 1) {
+        hsize_t rank = 1; 
+        std::vector<hsize_t> dims(1, arrayLength);
+        hid_t array_tid = H5Tarray_create(hdftype, rank, &dims.front(), NULL);
+        H5Tclose(hdftype);
+        hdftype = array_tid;
+    }
+    return hdftype;
+}
+
+/******************************************************************************/
+
+// construct an I3Datatype from an HDF type
+I3Datatype I3HDFTable::GetI3Datatype(hid_t hdftype, size_t* arrayLength ) {
+    I3Datatype dtype;
+    char* name;
+    long value;
+    hsize_t i,n,array_size;
+    int rank,perm;
+    
+    switch (H5Tget_class(hdftype)) {
+        case H5T_INTEGER:
+            dtype.kind = I3Datatype::Int;
+            dtype.size = H5Tget_size(hdftype);
+            if (H5Tget_sign(hdftype) == H5T_SGN_2) dtype.is_signed = true;
+            else dtype.is_signed = false;
+            break;
+        case H5T_FLOAT:
+            dtype.kind = I3Datatype::Float;
+            dtype.size = H5Tget_size(hdftype);
+            dtype.is_signed = true;
+            break;
+        case H5T_ENUM:
+            dtype.kind = I3Datatype::Enum;
+            dtype.size = H5Tget_size(hdftype);
+            n = H5Tget_nmembers(hdftype);
+            dtype.enum_members.reserve(n);
+            for (i = 0; i < n; i++) {
+                name = H5Tget_member_name(hdftype,i);
+                H5Tget_member_value(hdftype,i,&value);
+                dtype.enum_members.push_back(std::make_pair(std::string(name),value));
+                free(name);
+            }
+            break;
+        case H5T_ARRAY:
+            dtype = GetI3Datatype(H5Tget_super(hdftype),NULL);
+            rank = H5Tget_array_ndims(hdftype);
+            if (rank != 1) log_fatal("Rank of array is %d. This is deeply screwy!",rank);
+            H5Tget_array_dims(hdftype,&array_size,&perm);
+            *arrayLength = size_t(array_size);
+            break;
+        default:
+            log_fatal("Unknown HDF type class %d.",(int)H5Tget_class(hdftype));
+            break;
+    }
+    return dtype;
+}
+
+/******************************************************************************/
+
 // create a table based on the TableRowDescription
 void I3HDFTable::CreateTable(int& compress) {
 
     const size_t structSize = description_->GetTotalByteSize();
     const unsigned nfields = description_->GetNumberOfFields();
     const size_t* fieldOffsets = &(description_->GetFieldByteOffsets().front());
-    const hid_t* fieldTypes    = &(description_->GetFieldHdfTypes().front());
+    
+    // build HDF types from the supplied I3Datatypes
+    // TODO: when should the hid_t's be freed?
+    std::vector<hid_t> fieldHdfTypes;
+    std::vector<I3Datatype>::const_iterator t_it;
+    std::vector<size_t>::const_iterator arraySize_it;
+    const std::vector<I3Datatype>& fieldI3Datatypes = description_->GetFieldTypes();
+    const std::vector<size_t>& fieldArrayLengths = description_->GetFieldArrayLengths();
+    for (t_it = fieldI3Datatypes.begin(), arraySize_it = fieldArrayLengths.begin();
+         t_it != fieldI3Datatypes.end(); 
+         t_it++, arraySize_it++) {
+             fieldHdfTypes.push_back(GetHDFType(*t_it,*arraySize_it));
+    }
+    const hid_t* fieldTypes    = &(fieldHdfTypes.front());
   
     // converter field name strings into char**
     std::vector<const char*> fieldNameVector;
@@ -159,31 +270,16 @@ void I3HDFTable::CreateDescription() {
    
    description = I3TableRowDescriptionPtr(new I3TableRowDescription());
    
-   hid_t dtype;
-   int rank,perm;
-   hsize_t array_size;
-   
+   hid_t hdftype;
+   size_t array_size;
    std::string unit,doc;
    
    for (hsize_t i=0; i < nfields; i++) {
-      dtype = H5Tget_member_type(table_dtype,i);
+      hdftype = H5Tget_member_type(table_dtype,i);
       
-      if (H5Tget_class( dtype ) == H5T_ARRAY) {
-         rank = H5Tget_array_ndims(dtype);
-         if ( rank != 1 ) {
-            log_fatal("Rank of array field /%s.%s is %d. That's deeply screwy!",name_.c_str(),field_names[i],rank);
-         }
-         H5Tget_array_dims(dtype,&array_size,&perm);
-         // sanity check
-         assert(field_sizes[i] % array_size == 0);
-         // for arrays, use the base type
-         dtype = H5Tget_super(dtype);
-         field_sizes[i] /= array_size;
-      } else {
-         array_size = 1;
-      }
- 
-      
+      array_size = 1;
+      I3Datatype dtype = GetI3Datatype(hdftype, &array_size);
+
       std::ostringstream osu,osd;
       osu << "FIELD_" << i << "_UNIT";
       osd << "FIELD_" << i << "_DOC";
@@ -192,7 +288,7 @@ void I3HDFTable::CreateDescription() {
       doc  = ReadAttributeString(fileId_,name_,osd.str());
 
       // FIXME: set pytype as well
-      description->AddField(std::string(field_names[i]),dtype,'\0',field_sizes[i],unit.c_str(),doc.c_str(),array_size);
+      description->AddField(std::string(field_names[i]),dtype,dtype.size,unit.c_str(),doc.c_str(),array_size);
       
       // don't release the datatype, as this will invalidate the ID
       // The I3TableRowDescription holding the ID should release it when it is destroyed

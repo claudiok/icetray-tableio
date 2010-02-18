@@ -19,6 +19,8 @@ INCLUDE(AddConverter.cmake)
 SET(${PROJECT_NAME}_PROJECTS icetray)
 # core source files of the writer
 SET(${PROJECT_NAME}_SOURCEFILES private/hdf-writer/*.cxx private/hdf-writer/tools/*.cxx private/hdf-writer/converter/*.cxx private/hdf-writer/hdf/*.cxx )
+# SET(${PROJECT_NAME}_SOURCEFILES private/hdf-writer/*.cxx private/hdf-writer/tools/*.cxx private/hdf-writer/converter/*.cxx)
+
 
 # ====================================================================================
 # = Add your converters here. They will only be built if the dependencies are found. =

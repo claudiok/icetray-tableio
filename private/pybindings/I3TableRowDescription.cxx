@@ -136,7 +136,7 @@ void register_I3TableRowDescription() {
       boost::shared_ptr<I3TableRowDescription>,
       boost::shared_ptr<I3TableRowDescription const> >
       ("I3TableRowDescription")
-      #define RO_VEC_PROPERTIES (FieldNames)(FieldHdfTypes)(FieldTypeCodes)(FieldTypeSizes)(FieldByteOffsets)(FieldChunkOffsets)(FieldArrayLengths)(FieldUnits)(FieldDocStrings)
+      #define RO_VEC_PROPERTIES (FieldNames)(FieldTypes)(FieldTypeSizes)(FieldByteOffsets)(FieldChunkOffsets)(FieldArrayLengths)(FieldUnits)(FieldDocStrings)
       #define RO_PROPERTIES (TotalByteSize)(TotalChunkSize)(NumberOfFields)
       #define PROPERTIES (IsMultiRow)
       BOOST_PP_SEQ_FOR_EACH(WRAP_PROP_RO_INTERNAL_REFERENCE,I3TableRowDescription,RO_VEC_PROPERTIES)

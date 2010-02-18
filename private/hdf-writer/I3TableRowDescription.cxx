@@ -18,14 +18,7 @@ I3TableRowDescription::I3TableRowDescription() : isMultiRow_(false) {}
 
 /******************************************************************************/
 
-I3TableRowDescription::~I3TableRowDescription() {
-	// Release the HDF5 type ids when no longer needed
-	std::vector<hid_t>::const_iterator hid_it;
-	for(hid_it = fieldHdfTypes_.begin(); hid_it != fieldHdfTypes_.end(); hid_it++) {
-		// FIXME: we should only release mutable dtypes...how to tell the difference?
-		// H5Tclose(*hid_it);
-	}
-}
+I3TableRowDescription::~I3TableRowDescription() {}
 
 /******************************************************************************/
 
@@ -33,13 +26,13 @@ const std::vector<std::string>& I3TableRowDescription::GetFieldNames() const {
     return fieldNames_;
 }
 
-const std::vector<hid_t>&  I3TableRowDescription::GetFieldHdfTypes() const {
-    return fieldHdfTypes_;
+const std::vector<I3Datatype>&  I3TableRowDescription::GetFieldTypes() const {
+    return fieldTypes_;
 }
 
-const std::vector<char>&  I3TableRowDescription::GetFieldTypeCodes() const {
-    return fieldTypeCodes_;
-}
+// const std::vector<char>&  I3TableRowDescription::GetFieldTypeCodes() const {
+//     return fieldTypeCodes_;
+// }
 
 const std::vector<size_t>& I3TableRowDescription::GetFieldTypeSizes() const {
     return fieldTypeSizes_;
@@ -85,7 +78,7 @@ bool I3TableRowDescription::CanBeFilledInto(I3TableRowDescriptionConstPtr other)
     bool compatible = true;
     for (int i; i < nfields; ++i) {
         if ( (fieldNames_.at(i) != other->GetFieldNames().at(i) ) ||
-             (fieldHdfTypes_.at(i) != other->GetFieldHdfTypes().at(i) ) ||
+             (fieldTypes_.at(i) != other->GetFieldTypes().at(i) ) ||
              (fieldTypeSizes_.at(i) != other->GetFieldTypeSizes().at(i) ) ) // redundant...
             compatible = false;
     }
@@ -104,7 +97,7 @@ bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) cons
    
    for (int i; i < nfields; ++i) {
        if ( (fieldNames_.at(i) != other->GetFieldNames().at(i) ) ||
-            (fieldHdfTypes_.at(i) != other->GetFieldHdfTypes().at(i) ) ||
+            (fieldTypes_.at(i) != other->GetFieldTypes().at(i) ) ||
             (fieldUnits_.at(i) != other->GetFieldUnits().at(i) ) ||
             (fieldDocStrings_.at(i) != other->GetFieldDocStrings().at(i) )          
           ) {
@@ -124,23 +117,22 @@ bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) cons
 		  const std::string& doc, 
 		  size_t arrayLength) 
     {
-        log_trace("call to template specialization AddField<bool>");
 		// Since booleans are just integers, we need to enforce this unit convention
 		std::string boolunit("bool");
 		if ((unit.size() != 0) && (unit != boolunit))
 			log_fatal("The unit string of a boolean field must be \"bool\".");
-	AddField(name, hdf_type(bool()), py_code(bool()), sizeof(bool), 
+	AddField(name, I3DatatypeFromNativeType(bool), sizeof(bool), 
 		 boolunit, doc, arrayLength);
     }
 
 
 /******************************************************************************/
 
-void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType, char typeCode,
+void I3TableRowDescription::AddField(const std::string& name, I3Datatype type,
                                      size_t typeSize, const std::string& unit,
                                      const std::string& doc, size_t arrayLength) {
 
-    log_trace("adding field %s with type %d of size %d", name.c_str(), hdfType, (int)typeSize);
+    // log_trace("adding field %s with type %d of size %d", name.c_str(), hdfType, (int)typeSize);
     size_t chunkOffset=0;
     size_t byteOffset=0;
     if (fieldChunkOffsets_.size() > 0) {
@@ -150,18 +142,25 @@ void I3TableRowDescription::AddField(const std::string& name, hid_t hdfType, cha
     size_t nfields = fieldNameToIndex_.size();
     fieldNames_.push_back(name);
     fieldNameToIndex_[name] = nfields;
-    if (arrayLength == 1)
-        fieldHdfTypes_.push_back(hdfType);
-    else {
-        hsize_t rank = 1; 
-        std::vector<hsize_t> dims(1, arrayLength);
-        hid_t array_tid = H5Tarray_create(hdfType, rank, &dims.front(), NULL);
-        fieldHdfTypes_.push_back(array_tid);
-    }
+    // if (arrayLength == 1)
+    //     fieldHdfTypes_.push_back(hdfType);
+    // else {
+    //     hsize_t rank = 1; 
+    //     std::vector<hsize_t> dims(1, arrayLength);
+    //     hid_t array_tid = H5Tarray_create(hdfType, rank, &dims.front(), NULL);
+    //     fieldHdfTypes_.push_back(array_tid);
+    // }
     // special case for ambigous integers that may be booleans
-    if ( unit == std::string("bool") ) typeCode = 'o';
-    else if (typeCode == 0) typeCode = py_code_from_hdf(hdfType);
-    fieldTypeCodes_.push_back(typeCode);
+    if ( unit == std::string("bool") ) { 
+       // typeCode = 'o';
+       type.kind = I3Datatype::Bool;
+    }
+    fieldTypes_.push_back(type);
+    
+    log_trace("Adding field '%s', size: %ld, typecode: %c)",name.c_str(),type.size,type.PythonTypeCode());
+   
+    // else if (typeCode == 0) typeCode = py_code_from_hdf(hdfType);
+    // fieldTypeCodes_.push_back(typeCode);
     fieldTypeSizes_.push_back(typeSize);
     fieldArrayLengths_.push_back(arrayLength);
     fieldChunkOffsets_.push_back(chunkOffset);
@@ -209,8 +208,8 @@ I3TableRowDescription operator|(const I3TableRowDescription& lhs,
         // values that are just copied:
         newlhs.fieldNames_.push_back( fieldName );
         newlhs.fieldTypeSizes_.push_back( rhs.fieldTypeSizes_.at(i) );
-        newlhs.fieldHdfTypes_.push_back( rhs.fieldHdfTypes_.at(i) );
-        newlhs.fieldTypeCodes_.push_back( rhs.fieldTypeCodes_.at(i) );
+        newlhs.fieldTypes_.push_back( rhs.fieldTypes_.at(i) );
+        // newlhs.fieldTypeCodes_.push_back( rhs.fieldTypeCodes_.at(i) );
         newlhs.fieldArrayLengths_.push_back( rhs.fieldArrayLengths_.at(i) );
         newlhs.fieldUnits_.push_back( rhs.fieldUnits_.at(i) );
         newlhs.fieldDocStrings_.push_back( rhs.fieldDocStrings_.at(i) );

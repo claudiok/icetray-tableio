@@ -10,7 +10,6 @@
  */
 
 #include "I3Test.h"
-#include "H5TA.h"
 
 #include "dataclasses/physics/I3Particle.h"
 
@@ -38,8 +37,15 @@ TEST(simple_creation) {
     ENSURE_EQUAL( desc.GetFieldColumn("doubleval"), static_cast<unsigned int>(1), "index lookup");
     ENSURE_EQUAL( desc.GetFieldNames().at(0), "intval", "fieldnames vector works");
     ENSURE_EQUAL( desc.GetFieldNames().at(1), "doubleval", "fieldnames vector works");
-    ENSURE_EQUAL( desc.GetFieldHdfTypes().at(0), H5T_NATIVE_INT, "hdfTypes vector works");
-    ENSURE_EQUAL( desc.GetFieldHdfTypes().at(1), H5T_NATIVE_DOUBLE, "hdfTypes vector works");
+    
+    ENSURE_EQUAL( (int)desc.GetFieldTypes().at(0).kind, (int)I3Datatype::Int, "Types vector works");
+    ENSURE_EQUAL( desc.GetFieldTypes().at(0).size, sizeof(int), "Types vector works");
+    ENSURE_EQUAL( desc.GetFieldTypes().at(0).is_signed, true, "Types vector works");
+    
+    ENSURE_EQUAL( (int)desc.GetFieldTypes().at(1).kind, (int)I3Datatype::Float, "Types vector works");
+    ENSURE_EQUAL( desc.GetFieldTypes().at(1).size, sizeof(double), "Types vector works");
+    ENSURE_EQUAL( desc.GetFieldTypes().at(1).is_signed, true, "Types vector works");
+    
     ENSURE_EQUAL( desc.GetFieldTypeSizes().at(0), sizeof(int), "typeSizes vector works");
     ENSURE_EQUAL( desc.GetFieldTypeSizes().at(1), sizeof(double), "typeSizes vector works");
     ENSURE_EQUAL( desc.GetFieldArrayLengths().at(0), static_cast<size_t>(1), "fieldArrayLengths vector works");
@@ -90,7 +96,7 @@ TEST(array_creation) {
     ENSURE_EQUAL( desc.GetNumberOfFields(), static_cast<unsigned int>(3), "number of fields is three");
 
     // TODO test hdf array types
-    ENSURE_EQUAL( desc.GetFieldHdfTypes().at(2), H5T_NATIVE_LONG, "hdfTypes vector works");
+    ENSURE_EQUAL( desc.GetFieldTypes().at(2).size, sizeof(long), "hdfTypes vector works");
     ENSURE_EQUAL( desc.GetFieldTypeSizes().at(0), sizeof(int), "typeSizes vector works");
     ENSURE_EQUAL( desc.GetFieldTypeSizes().at(1), sizeof(double), "typeSizes vector works");
     ENSURE_EQUAL( desc.GetFieldTypeSizes().at(2), sizeof(long), "typeSizes vector works");

@@ -13,6 +13,7 @@
 #define I3HDFTABLE_H_INCLUDED
 
 #include "hdf-writer/internals/I3Table.h"
+#include "hdf-writer/internals/I3Datatype.h"
 #include "H5TA.h"
 
 I3_FORWARD_DECLARATION(I3TableService);
@@ -29,6 +30,9 @@ class I3HDFTable : public I3Table {
                    hid_t fileId, I3TablePtr index = I3TablePtr());
         virtual ~I3HDFTable();
         static std::string ReadAttributeString(hid_t fileID, std::string& where, std::string attribute);
+        static hid_t GetHDFType(const I3Datatype& dtype, const size_t arrayLength);
+        static I3Datatype GetI3Datatype(hid_t dtype, size_t* arrayLength);
+        
         virtual I3TableRowConstPtr ReadRows(size_t start, size_t nrows);
 
     protected:

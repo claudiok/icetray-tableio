@@ -11,7 +11,6 @@
 
 #include <I3Test.h>
 
-#include "H5TA.h"
 #include <vector>
 
 #include <hdf-writer/internals/I3TableRow.h>

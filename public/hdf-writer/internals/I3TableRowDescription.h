@@ -16,8 +16,7 @@
 #include "icetray/I3Logging.h"
 #include "icetray/I3PointerTypedefs.h"
 
-// hdf5 includes
-#include "H5TA.h"
+#include "hdf-writer/internals/I3Datatype.h"
 
 #include <string>
 #include <vector>
@@ -48,7 +47,7 @@ public:
     virtual ~I3TableRowDescription();
 
     /* basic AddField */
-    void AddField(const std::string& name, hid_t hdfType, char typeCode,
+    void AddField(const std::string& name, I3Datatype type,
 		  size_t typeSize, const std::string& unit,
 		  const std::string& doc,
 		  size_t arrayLength);
@@ -60,7 +59,7 @@ public:
 		  const std::string& doc, 
 		  size_t arrayLength=1) 
     {
-	AddField(name, hdf_type(T()), py_code(T()), sizeof(T), 
+	AddField(name, I3DatatypeFromNativeType(T), sizeof(T), 
 		 unit, doc, arrayLength);
     }
 
@@ -73,23 +72,24 @@ public:
 		      size_t arrayLength=1) {
             
 	// TODO check enumsize <= DATAENTRYSIZE
-	typename std::vector<std::pair<std::string,enum_type> >::const_iterator it;
-	enum_type enum_instance;
-	hid_t enum_tid = H5Tcreate(H5T_ENUM, sizeof(enum_type));
-	for (it = elements.begin(); it != elements.end(); ++it) {
-	    H5Tenum_insert(enum_tid, it->first.c_str(),
-			   (enum_instance=it->second, &enum_instance));
-	}
-	char typeCode = 'i';
-	AddField(name, enum_tid, typeCode, sizeof(enum_type), unit, doc, arrayLength);
+    // typename std::vector<std::pair<std::string,enum_type> >::const_iterator it;
+    // enum_type enum_instance;
+    // hid_t enum_tid = H5Tcreate(H5T_ENUM, sizeof(enum_type));
+    // for (it = elements.begin(); it != elements.end(); ++it) {
+    //     H5Tenum_insert(enum_tid, it->first.c_str(),
+    //         (enum_instance=it->second, &enum_instance));
+    // }
+    I3Datatype enum_typus = I3DatatypeFromEnumType(enum_type, elements);
+    // char typeCode = 'i';
+	AddField(name, enum_typus, sizeof(enum_type), unit, doc, arrayLength);
     }
 
     bool CanBeFilledInto(shared_ptr<const I3TableRowDescription> other) const;
         
     // getter and setter - remove them? no real encapsulation anyway
     const std::vector<std::string>& GetFieldNames() const;
-    const std::vector<hid_t>&  GetFieldHdfTypes() const;
-    const std::vector<char>& GetFieldTypeCodes() const;
+    const std::vector<I3Datatype>&  GetFieldTypes() const;
+    // const std::vector<char>& GetFieldTypeCodes() const;
     // units of bytes
     const std::vector<size_t>& GetFieldTypeSizes() const;
     const std::vector<size_t>& GetFieldByteOffsets() const;
@@ -113,8 +113,8 @@ public:
 private:
     std::vector<std::string> fieldNames_;
     std::map<std::string, size_t> fieldNameToIndex_;
-    std::vector<hid_t> fieldHdfTypes_;
-    std::vector<char> fieldTypeCodes_;
+    std::vector<I3Datatype> fieldTypes_;
+    // std::vector<char> fieldTypeCodes_;
     std::vector<size_t> fieldTypeSizes_;
     std::vector<size_t> fieldArrayLengths_;
     std::vector<size_t> fieldByteOffsets_;
@@ -123,10 +123,11 @@ private:
     std::vector<std::string> fieldDocStrings_;
 
 
-        
-#define CODEMAP_DEF(TYPE, CODE, TYPECODE)				\
-    const static inline hid_t hdf_type(TYPE) { return  CODE; }		\
+/*     
+#define CODEMAP_DEF(TYPE, CODE, TYPECODE)                \
     const static inline char  py_code(TYPE)  { return TYPECODE; }
+    // const static inline hid_t hdf_type(TYPE) { return  CODE; }       
+    
     
     CODEMAP_DEF(float, H5T_NATIVE_FLOAT, 'f');
     CODEMAP_DEF(double, H5T_NATIVE_DOUBLE, 'd');
@@ -143,7 +144,9 @@ private:
     CODEMAP_DEF(bool, H5T_NATIVE_CHAR, 'o'); // HBOOL is really an int
 
   #undef CODEMAP_DEF
+*/
 
+/*
 const static inline char py_code_from_hdf(hid_t hdf_type) { 
    // grab the native datatype of the atom 
    if ( H5Tget_class(hdf_type) == H5T_ENUM ) { 
@@ -179,6 +182,7 @@ const static inline char py_code_from_hdf(hid_t hdf_type) {
    H5Tclose(n); 
    return code; 
 }
+*/
 
     friend I3TableRowDescription operator|(const I3TableRowDescription& lhs, const I3TableRowDescription& rhs);
 

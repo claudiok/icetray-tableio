@@ -6,13 +6,13 @@
  *
  * @version $Revision$
  * @date $LastChangedDate$
- * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy: jvansanten $
+ * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy: jvansanten $
  */
+
+
 
 #include <I3Test.h>
 #include <limits.h>
-
-#include "H5TA.h"
 
 #include <hdf-writer/internals/I3TableRow.h>
 #include <hdf-writer/internals/I3TableRowDescription.h>
@@ -132,27 +132,16 @@ TEST(resurrection) {
             ENSURE_EQUAL( *osize_it, *zsize_it, "Field array offsets match");
    }
    
-   std::vector<char>::const_iterator opytype_it,zpytype_it;
-   for (opytype_it  = desc->GetFieldTypeCodes().begin(), zpytype_it = zombie_desc->GetFieldTypeCodes().begin(), i=0;
-        opytype_it != desc->GetFieldTypeCodes().end();
-        opytype_it++, zpytype_it++, i++) {
-            std::string msg = "Python-style type codes match for field ";
-            msg += desc->GetFieldNames().at(i);
-            ENSURE_EQUAL( *opytype_it, *zpytype_it, msg.c_str());
-   }
-   
-   std::vector<hid_t>::const_iterator ohid_it,zhid_it;
-   for (ohid_it  = desc->GetFieldHdfTypes().begin(), zhid_it = zombie_desc->GetFieldHdfTypes().begin(), i=0;
-        ohid_it != desc->GetFieldHdfTypes().end();
+   std::vector<I3Datatype>::const_iterator ohid_it,zhid_it;
+   for (ohid_it  = desc->GetFieldTypes().begin(), zhid_it = zombie_desc->GetFieldTypes().begin(), i=0;
+        ohid_it != desc->GetFieldTypes().end();
         ohid_it++, zhid_it++, i++) {
-         // does HDF5 know about these data types?
-         H5I_type_t t_orig   = H5Iget_type( *ohid_it );
-         H5I_type_t t_zombie = H5Iget_type( *zhid_it );
-      
-         ENSURE_EQUAL( t_orig , H5I_DATATYPE,  "Original datatype exists and is valid" );
-         ENSURE_EQUAL( t_zombie, H5I_DATATYPE, "Zombie datatype exists and is valid" );
          
-         ENSURE( H5Tequal(*ohid_it, *zhid_it) , "Field HDF types match");
+         ENSURE_EQUAL( ohid_it->size, zhid_it->size, "Field I3Datatypes match");
+         ENSURE_EQUAL( (int)ohid_it->kind, (int)zhid_it->kind, "Field I3Datatypes match");
+         ENSURE_EQUAL( ohid_it->is_signed, zhid_it->is_signed, "Field I3Datatypes match");
+         
+         
    }
    
    // ReadRows is public only for I3HDFTable
