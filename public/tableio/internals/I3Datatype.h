@@ -40,39 +40,8 @@ struct I3Datatype {
                   (is_signed == rhs.is_signed) &&
                   (enum_members == rhs.enum_members));
     };
-    // spit out an array.array-style type code
-    // FIXME: can we just make pybindings for I3Datatype?
-    char PythonTypeCode() const {
-        char code = '\0';
-        switch (kind) {
-            case I3Datatype::Float:
-                if (size == sizeof(float)) {
-                    code = 'f';
-                } else if (size == sizeof(double)) {
-                    code = 'd';
-                }
-                break;
-            case I3Datatype::Bool:
-                code = 'o';
-                break;
-            case I3Datatype::Enum:
-                // fall through
-            case I3Datatype::Int:
-                // FIXME: what to do about degenerate case 'c'?
-                if (size == sizeof(char)) {
-                    code = 'b';
-                } else if (size == sizeof(short)) {
-                    code = 'h';
-                } else if (size == sizeof(int)) {
-                    code = 'i';
-                } else if (size == sizeof(long)) {
-                    code = 'l';
-                }
-                if (!is_signed) code = std::toupper(code);
-                break;
-        }
-        return code;
-    };
+    I3Datatype() {};
+    I3Datatype(TypeClass k, size_t s, bool sign) : kind(k),size(s),is_signed(sign) {};
 };
 
 #define I3DatatypeFromNativeType(t) I3DatatypeFromNativeType_impl<t>(#t)
@@ -95,16 +64,8 @@ static I3Datatype I3DatatypeFromNativeType_impl(const char* label) {
     return dtype;
 };
 
-// specialization for bools
 template <>
-I3Datatype I3DatatypeFromNativeType_impl<bool>(const char* label) {
-    I3Datatype dtype;
-    dtype.size = sizeof(bool);
-    dtype.kind = I3Datatype::Bool;
-    dtype.is_signed = false;
-    dtype.description = label;
-    return dtype;
-};
+I3Datatype I3DatatypeFromNativeType_impl<bool>(const char* label);
 
 template <typename T>
 static I3Datatype I3DatatypeFromNativeType_impl(const char* label, 
@@ -122,7 +83,5 @@ static I3Datatype I3DatatypeFromNativeType_impl(const char* label,
     }
     return dtype;
 };
-
-
 
 #endif

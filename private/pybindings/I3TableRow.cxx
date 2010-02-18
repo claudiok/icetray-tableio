@@ -13,6 +13,7 @@
 
 #include <tableio/internals/I3TableRow.h>
 #include <dataclasses/I3Vector.h>
+#include "type_helpers.h"
 
 namespace bp = boost::python;
 
@@ -65,7 +66,7 @@ void set_field(I3TableRow& self, const std::string& field, bp::object value, boo
    int index = desc->GetFieldColumn(field);
    if (index < 0) log_fatal("Tried to set value for unknown column '%s'",field.c_str());
    
-   char type_code = desc->GetFieldTypes().at(index).PythonTypeCode();
+   char type_code = PyArrayTypecode(desc->GetFieldTypes().at(index));
    bool success = false;
    // =====================================
    // = Case 1: field holds a scalar type =
@@ -197,7 +198,7 @@ bp::object getitem(I3TableRow& self, const std::string& field) {
    unsigned int index = desc->GetFieldColumn(field);
    if (index < 0) log_fatal("Tried to get value for unknown column '%s'",field.c_str());
    
-   char type_code = desc->GetFieldTypes().at(index).PythonTypeCode();
+   char type_code = PyArrayTypecode(desc->GetFieldTypes().at(index));
    
    // =======================================
    // = Case 1: memory chunk holds a scalar =

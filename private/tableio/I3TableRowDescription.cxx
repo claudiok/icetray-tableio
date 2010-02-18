@@ -156,9 +156,7 @@ void I3TableRowDescription::AddField(const std::string& name, I3Datatype type,
        type.kind = I3Datatype::Bool;
     }
     fieldTypes_.push_back(type);
-    
-    log_trace("Adding field '%s', size: %ld, typecode: %c)",name.c_str(),type.size,type.PythonTypeCode());
-   
+       
     // else if (typeCode == 0) typeCode = py_code_from_hdf(hdfType);
     // fieldTypeCodes_.push_back(typeCode);
     fieldTypeSizes_.push_back(typeSize);
