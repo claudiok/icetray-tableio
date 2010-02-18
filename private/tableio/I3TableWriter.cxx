@@ -14,6 +14,7 @@
 #include "tableio/internals/I3TableWriter.h"
 #include "tableio/internals/I3TableService.h"
 #include "tableio/internals/I3ConverterFactory.h"
+#include <I3/name_of.h>
 
 /******************************************************************************/
 
@@ -34,19 +35,26 @@ I3TableWriter::~I3TableWriter() {};
 
 /******************************************************************************/
 
+template <typename T>
+std::string name_of(const boost::shared_ptr<T> obj) {
+    return I3::name_of(typeid(*(obj.get())));
+}
+
+/******************************************************************************/
+
 // Search the converter cache for a converter that says it can handle obj
 // raise an error and if more than one answers the call (there can be only one highlander)
 I3ConverterPtr I3TableWriter::FindConverter(I3FrameObjectConstPtr obj) {
 	I3ConverterPtr converter_ptr;
 	std::vector<I3ConverterPtr>::const_iterator it_conv;
 	for(it_conv = converterCache_.begin(); it_conv != converterCache_.end(); it_conv++) {
-		log_trace("Asking converter '%s' what it thinks of '%s'",typeid(*(it_conv->get())).name(),typeid(*(obj.get())).name());
+		log_trace("Asking converter '%s' what it thinks of '%s'",name_of(*it_conv).c_str(),name_of(obj).c_str());
 		bool match = it_conv->get()->CanConvert(obj);
 		if (match && (converter_ptr != NULL)) {
 			log_fatal("Ambiguity in the converter registry. Converters '%s' and '%s' both want to handle '%s'",
-						typeid(*(converter_ptr.get())).name(),typeid(*(it_conv->get())).name(),typeid(*(obj.get())).name());
+						name_of(converter_ptr).c_str(),name_of(*it_conv).c_str(),name_of(obj).c_str());
 		} else if (match) {
-			log_trace("Converter '%s' can convert '%s'",typeid(*(it_conv->get())).name(),typeid(*(obj.get())).name());
+			log_trace("Converter '%s' can convert '%s'",name_of(*it_conv).c_str(),name_of(obj).c_str());
 			converter_ptr = *it_conv;
 		}
 	}
@@ -64,12 +72,12 @@ bool I3TableWriter::AddObject(std::string name, std::string tableName,
     if (converter == NULL) {
       converter = FindConverter(obj);
       if (converter == NULL) {
-         log_fatal("No converter found for '%s' of type '%s'",name.c_str(),typeid(*(obj.get())).name());
+         log_fatal("No converter found for '%s' of type '%s'",name.c_str(),name_of(obj).c_str());
       }
      } else {
       // check the converter anyhow
       if (!converter->CanConvert(obj)) {
-         log_fatal("Converter for key '%s' of type '%s' can't convert the object.",name.c_str(),typeid(*(obj.get())).name());
+         log_fatal("Converter for key '%s' of type '%s' can't convert the object.",name.c_str(),name_of(obj).c_str());
       }
     }
 
@@ -120,7 +128,7 @@ bool I3TableWriter::AddObject(std::string name, std::string tableName,
 
        // store all this in tables_ 
        TableBundle bundle;
-       bundle.objectType = typeid(*(obj.get())).name(); // FIXME: this field can be dropped
+       bundle.objectType = name_of(obj); // FIXME: this field can be dropped
        bundle.converter = converter;
        bundle.table = table;
    
