@@ -61,13 +61,13 @@ class I3TableRow {
         
         // get a pointer to the beginning of field for the given row
         template<class T>
-        T* GetPointerToRow(unsigned int, unsigned int row);
+        T* GetPointerToRow(unsigned int index, unsigned int row);
 
         // get a void pointer to whole memory block
         void const* GetPointer() const;
         
         // get a void pointer to a particular row
-        void const* GetPointerToRow(unsigned int row) const;
+        void const* GetPointerToField(unsigned int index, unsigned int row) const;
         
         I3TableRowDescriptionConstPtr GetDescription() const;
 
