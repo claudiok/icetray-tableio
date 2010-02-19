@@ -85,6 +85,12 @@ void const* I3TableRow::GetPointer() const {
     return static_cast<void*>(data_); // TODO const?
 }
 
+void const* I3TableRow::GetPointerToRow(unsigned int row) const {
+    if (row >= nrows_) log_fatal("Tried to get pointer to a row not in range [0,%d)",nrows_);
+    return static_cast<void*>( &data_[description_->GetTotalChunkSize()*row] ); // TODO const?
+}
+
+
 /******************************************************************************/
 
 I3TableRowDescriptionConstPtr I3TableRow::GetDescription() const {

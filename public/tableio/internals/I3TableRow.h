@@ -51,12 +51,24 @@ class I3TableRow {
         template<class T>
         T* GetPointer(const std::string& fieldName);
         
+        // get a pointer to the beginning of field for the current row
+        template<class T>
+        T* GetPointer(unsigned int index);
+        
         // get a pointer to the beginning of field for the given row
         template<class T>
         T* GetPointerToRow(const std::string& fieldName, unsigned int row);
+        
+        // get a pointer to the beginning of field for the given row
+        template<class T>
+        T* GetPointerToRow(unsigned int, unsigned int row);
 
         // get a void pointer to whole memory block
         void const* GetPointer() const;
+        
+        // get a void pointer to a particular row
+        void const* GetPointerToRow(unsigned int row) const;
+        
         I3TableRowDescriptionConstPtr GetDescription() const;
 
         unsigned int GetNumberOfRows() const;
@@ -113,13 +125,26 @@ T* I3TableRow::GetPointer(const std::string& fieldName) {
 }
 
 template<class T>
+T* I3TableRow::GetPointer(unsigned int index) {
+    return GetPointerToRow<T>(index, currentRow_);
+}
+
+
+template<class T>
 T* I3TableRow::GetPointerToRow(const std::string& fieldName, unsigned int row) {
     int index;
     if ( (index = description_->GetFieldColumn(fieldName)) == -1 ) 
         log_fatal("trying to get the address of unknown field %s", fieldName.c_str());
 
+    return GetPointerToRow<T>(index, row);
+}
+
+template<class T>
+T* I3TableRow::GetPointerToRow(unsigned int index, unsigned int row) {
     if (sizeof(T) != description_->GetFieldTypeSizes().at(index) )
-        log_fatal("size mismatch between the requested type (%d) and field '%s' (%d)",(int)sizeof(T),fieldName.c_str(),(int)description_->GetFieldTypeSizes().at(index));
+        log_fatal("size mismatch between the requested type (%d) and field '%s' (%d)",
+                  (int)sizeof(T),description_->GetFieldNames().at(index).c_str(),
+                  (int)description_->GetFieldTypeSizes().at(index));
 
     if ( !(( 0 <= row) && (row < nrows_)) )
         log_fatal("requested pointer to row %d which is not in [0,%d]", row, nrows_);
@@ -130,9 +155,9 @@ T* I3TableRow::GetPointerToRow(const std::string& fieldName, unsigned int row) {
                 fieldName.c_str());
     */
     
-    //return ( reinterpret_cast<T*>( &data_[description_->GetFieldOffsets().at(index)]) );
     return ( reinterpret_cast<T*>( &data_[description_->GetTotalChunkSize()*row + 
                                           description_->GetFieldChunkOffsets().at(index)]) );
 }
+
 
 #endif

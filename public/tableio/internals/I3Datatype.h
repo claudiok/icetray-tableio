@@ -75,7 +75,7 @@ I3Datatype I3DatatypeFromNativeType<bool>();
 template <typename T>
 static I3Datatype I3DatatypeFromNativeType(const std::vector<std::pair< std::string, T> >& enum_labels) 
 {
-    BOOST_STATIC_ASSERT(boost::is_enum<T>::value);
+    // BOOST_STATIC_ASSERT(boost::is_enum<T>::value);
 
     I3Datatype dtype;
     dtype.size = sizeof(T);
