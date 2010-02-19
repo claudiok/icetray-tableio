@@ -66,7 +66,9 @@ from icecube import jebclasses
 
 tray = I3Tray()
 
-tabler = hdfwriter.I3HDFTableService('foo.hd5')
+from icecube import textwriter
+# tabler = hdfwriter.I3HDFTableService('foo.hd5')
+tabler = textwriter.I3CSVTableService('foocsv')
 
 tray.AddModule('I3Reader','reader',filename='/Users/jakob/Documents/Wisc/2010 Spring/Python Primer/foo.i3.gz')
 tray.AddModule(tableio.I3TableWriterModule,'writer',

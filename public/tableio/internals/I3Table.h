@@ -62,6 +62,13 @@ class I3Table {
         bool tableCreated_;    // the table/tree has been created successfully
 
         I3EventHeaderConstPtr lastHeader_;
+        
+        enum AlignmentType {
+            MultiRow,   // Some objects can span multiple rows
+            Strict      // All objects are written to exactly one row
+        };
+        
+        virtual AlignmentType GetAlignmentType();
 
     private:
         I3Table();

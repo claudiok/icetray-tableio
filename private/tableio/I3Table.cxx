@@ -48,6 +48,12 @@ void I3Table::SetConnectedToWriter(bool connected) {
 }
 
 /******************************************************************************/
+
+I3Table::AlignmentType I3Table::GetAlignmentType() {
+    return MultiRow;
+}
+
+/******************************************************************************/
         
 I3TableRowDescriptionConstPtr I3Table::GetDescription() {
     return description_;
@@ -66,13 +72,17 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
     
     // sanity check: padding behavior is different for ragged tables
     unsigned int nrows = row->GetNumberOfRows(); 
+    // only pad the data table itself if this is a non-ragged dataset
+    // or if the table type is aligned by construction
+    bool do_padding = ((GetAlignmentType() == Strict) || 
+                      ((GetAlignmentType() == MultiRow) && (!description_->GetIsMultiRow())));
     if ((nrows != 1) && (!description_->GetIsMultiRow())) {
         log_fatal("(%s) Converter reported %d rows for a single-row object! Multi-row objects must be marked by their converters.",name_.c_str(),nrows);
     }
     
     I3TableRowConstPtr padding;
-    // only pad the data table itself if this is a non-ragged dataset
-    if (!description_->GetIsMultiRow()) {
+    
+    if (do_padding) {
         padding = service_.GetPaddingRows(lastHeader_, header, description_);
         if (padding) {
             log_trace("(%s) Writing %u padding rows",name_.c_str(),padding->GetNumberOfRows());
@@ -116,9 +126,12 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
 // is there a better way to do this?
 // FIXME 2: this should only be called at the end, otherwise rows could be duplicated
 void I3Table::Align() {
-    I3TableRowConstPtr padding;
+    I3TableRowConstPtr padding;    
     // only pad the data table itself if this is a non-ragged dataset
-    if (!description_->GetIsMultiRow()) {
+    // or if the table type is aligned by construction
+    bool do_padding = ((GetAlignmentType() == Strict) || 
+                      ((GetAlignmentType() == MultiRow) && (!description_->GetIsMultiRow())));
+    if (do_padding) {
         padding = service_.GetPaddingRows(lastHeader_, I3EventHeaderConstPtr(), description_);
         if (padding) {
             log_trace("(%s) Finalizing alignment with %u padding rows",name_.c_str(),padding->GetNumberOfRows());
