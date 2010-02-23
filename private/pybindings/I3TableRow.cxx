@@ -14,154 +14,41 @@
 #include <tableio/internals/I3TableRow.h>
 #include <dataclasses/I3Vector.h>
 #include "type_helpers.h"
-
-namespace bp = boost::python;
-
-// ==============================================
-// = Copy vector contents into the memory chunk =
-// ==============================================
-template <typename T>
-void set_vector(I3TableRow& self, const std::string& field, std::vector<T> value, bool all = false) {
-   // TODO: support 'all' parameter
-   I3TableRowDescriptionConstPtr desc = self.GetDescription();
-   // are we going to hose our memory?
-   if ( value.size() > desc->GetFieldArrayLengths().at(desc->GetFieldColumn(field)) )
-      log_fatal("Length mismatch between vector (%d) and array field (%d).",(int)value.size(),(int)desc->GetFieldArrayLengths().at(desc->GetFieldColumn(field)));
-   // alright, copy the vector contents to the block
-   T* block = self.GetPointer<T>(field);
-   std::copy(value.begin(),value.end(),block);
-}
-
-// =======================================================
-// = Copy the contents of a buffer into the memory chunk =
-// =======================================================
-template <typename T>
-void set_from_address(I3TableRow& self, const std::string& field, const void* location, size_t length, bool all = false) {
-   I3TableRowDescriptionConstPtr desc = self.GetDescription();
-   size_t size = sizeof(T);
-   size_t array_length = desc->GetFieldArrayLengths().at(desc->GetFieldColumn(field));
-   if (length > size*array_length)
-      log_fatal("Size mismatch between memory block (%d) and field (%d) for '%s'",(int)length,(int)(size*array_length),field.c_str());
-   T* block = self.GetPointer<T>(field);
-   memcpy(block,location,length);
-}
-
-// =============================
-// = Helpful templating macros =
-// ============================= 
-#define EXTRACT_SCALAR_SET(code,type) \
-(type_code == code) { type val = bp::extract<type>(value); self.Set(field,val,all); success = true; }
-#define EXTRACT_BUFFER(code,type) \
-(type_code == code) { set_from_address<type>(self,field,location,length,all); success = true; }
-#define EXTRACT_SCALAR(code,type) \
-(type_code == code) { return get_object<type>(self,field); }
-#define EXTRACT_LIST(code,type) \
-(type_code == code) { return get_object_array<type>(self,field); }
+#include "I3TableRow_detail.h"
 
 // ========================================================
 // = A python-friendly interface to I3TableRowSet<type>() =
 // ========================================================
 void set_field(I3TableRow& self, const std::string& field, bp::object value, bool all = false) {
-   I3TableRowDescriptionConstPtr desc = self.GetDescription();
-   int index = desc->GetFieldColumn(field);
-   if (index < 0) log_fatal("Tried to set value for unknown column '%s'",field.c_str());
+    
+    I3TableRowDescriptionConstPtr desc = self.GetDescription();
+    size_t index = desc->GetFieldColumn(field);
+    if (index >= desc->GetNumberOfFields()) {
+        PyErr_SetString(PyExc_KeyError,field.c_str());
+        bp::throw_error_already_set();
+    }
    
    I3Datatype dtype = desc->GetFieldTypes().at(index);
    size_t array_length = desc->GetFieldArrayLengths().at(index);
    
    bool success = false;
-   // =====================================
+   
    // = Case 1: field holds a scalar type =
-   // =====================================
    if (array_length == 1) {
-       bool bv; long lv;
        success = true;
-       switch (dtype.kind) {
-            case I3Datatype::Bool:
-                bv = bp::extract<bool>(value); self.Set(field,bv,all);
-                break;
-            case I3Datatype::Enum:
-                // fall through to the normal integers
-            case I3Datatype::Int:
-                if (dtype.is_signed) {
-                    if (dtype.size == 1)      { int8_t v  = bp::extract<int8_t >(value); self.Set(field,v,all); }
-                    else if (dtype.size == 2) { int16_t v = bp::extract<int16_t>(value); self.Set(field,v,all); }
-                    else if (dtype.size == 4) { int32_t v = bp::extract<int32_t>(value); self.Set(field,v,all); }
-                    else if (dtype.size == 8) { int64_t v = bp::extract<int64_t>(value); self.Set(field,v,all); }
-                    else log_fatal("%zu-byte integers are not supported.",dtype.size);
-                } else {
-                    if (dtype.size == 1)      { uint8_t v  = bp::extract<uint8_t >(value); self.Set(field,v,all); }
-                    else if (dtype.size == 2) { uint16_t v = bp::extract<uint16_t>(value); self.Set(field,v,all); }
-                    else if (dtype.size == 4) { uint32_t v = bp::extract<uint32_t>(value); self.Set(field,v,all); }
-                    else if (dtype.size == 8) { uint64_t v = bp::extract<uint64_t>(value); self.Set(field,v,all); }
-                    else log_fatal("%zu-byte integers are not supported.",dtype.size);
-                }
-                break;
-            case I3Datatype::Float:
-                if (dtype.size == 4) { float v = bp::extract<float>(value); self.Set(field,v,all); }
-                else if (dtype.size == 8) { double v = bp::extract<double>(value); self.Set(field,v,all); }
-                else log_fatal("%zu-byte floats are not supported.",dtype.size);
-                break;
-            default:
-                success = false;
-                log_fatal("I don't know how to handle your datatype.");
-       }
-   // =====================================
+       set_index<I3DatatypeDispatcher<set_scalar> >(self,dtype,index,value,all);
+   
    // = Case 2: field holds a vector type =
-   // =====================================
    } else { // handle vectors
-      bool is_array = (value.attr("__class__").attr("__name__") == std::string("array"));
-      bool is_ndarray = (value.attr("__class__").attr("__name__") == std::string("ndarray"));
-      boost::shared_ptr<I3Datatype> arr_dtype;
-      // ==============================================================
-      // = Case 2.1: passed object is an array.array or numpy.ndarray =
-      // ==============================================================
-      if (is_array || is_ndarray) {
-         if (is_array) {
-            char arr_typecode = PyString_AsString(bp::object(value.attr("typecode")).ptr())[0];
-            arr_dtype = I3Datatype_from_PyArrayTypecode(arr_typecode);
-         } else {
-            arr_dtype = I3Datatype_from_NumpyDtype(value.attr("dtype"));
-         }
-         // ==============================================
-         // = Check the type and byte order of the array =
-         // ==============================================
-         if (!arr_dtype) log_fatal("Type of array could not be recognized.");
-         if (*arr_dtype != dtype) log_fatal("Type of array does not match field '%s'.",field.c_str());
-    
-         // hang on to your hats, here we go!
-         const void* location;
-         Py_ssize_t length;
-         PyObject_AsReadBuffer(value.ptr(),&location,&length);
-         if (length <= 0) return; // nothing to be done
-         // =======================================================
-         // = Copy the buffer (an array in native representation) 
-         //   directly into the memory chunk                      =
-         // =======================================================
-         if (static_cast<size_t>(length) > dtype.size*array_length)
-            log_fatal("Size mismatch between memory block (%zu) and field (%zu) for '%s'",
-                       length,(dtype.size*array_length),field.c_str());
-         void* pointy = self.GetPointerToField(index,self.GetCurrentRow());
-         memcpy(pointy,location,length);
-         success = true;
-      // =================================================
-      // = Case 2.2: passed object is a wrapped I3Vector =
-      // =================================================  
-      } else {
-         bp::extract<I3VectorInt> extract_int(value);
-         bp::extract<I3VectorDouble> extract_double(value);
-         if (extract_int.check()) {
-            success = true;
-            set_vector(self,field,static_cast<std::vector<int> >(extract_int()),all);
-         } else if (extract_double.check()) {
-            success = true;
-            set_vector(self,field,static_cast<std::vector<double> >(extract_double()),all);
-         }
-      }
+       // = Case 2.1: passed object is an array.array or numpy.ndarray =
+       success = try_set_ndarray(self,dtype,index,array_length,value,all);
+       
+       // = Case 2.2: passed object is a wrapped I3Vector =
+       if (!success) {
+           success = set_index<I3VectorDispatcher<set_vector> >(self,dtype,index,value,all);           
+       }  
    }
-   // =======================================================
    // = If nothing could handle the value, raise ValueError =
-   // =======================================================
    if (!success) {
       std::ostringstream msg;
       std::string classname = bp::extract<std::string>(value.attr("__class__").attr("__name__"));
@@ -171,33 +58,9 @@ void set_field(I3TableRow& self, const std::string& field, bp::object value, boo
    }
 }
 
-BOOST_PYTHON_FUNCTION_OVERLOADS(set_overloads,set_field,3,4)
+BOOST_PYTHON_FUNCTION_OVERLOADS(set_overloads,set_field,3,4);
 
 
-
-// ============================================
-// = Get a scalar value from the memory chunk =
-// ============================================
-template <typename T>
-bp::object get_object(I3TableRow& self, const std::string& field) {
-   return bp::object(self.Get<T>(field));
-}
-
-// =============================================
-// = Fill contents of memory chunk into a list =
-// =============================================
-// FIXME: we should return an array of some sort instead
-// how do you construct an array.array from Python/C or boost::python?
-template <typename T>
-bp::object get_object_array(I3TableRow& self, const std::string& field) {
-   bp::list l;
-   I3TableRowDescriptionConstPtr desc = self.GetDescription();
-   size_t index = desc->GetFieldColumn(field);
-   size_t length = desc->GetFieldArrayLengths().at(index);
-   T* block = self.GetPointer<T>(field);
-   for (size_t i=0; i<length; i++) l.append(block[i]);
-   return l;
-}
 
 // =========================================================
 // = A python-friendly interface to I3TableRow.Get<type>() =
@@ -211,42 +74,14 @@ bp::object getitem(I3TableRow& self, const std::string& field) {
        bp::throw_error_already_set();
    }
    
-   char type_code = PyArrayTypecode_from_I3Datatype(desc->GetFieldTypes().at(index));
+   I3Datatype dtype = desc->GetFieldTypes().at(index);
    
-   // =======================================
    // = Case 1: memory chunk holds a scalar =
-   // =======================================
    if (desc->GetFieldArrayLengths().at(index) == 1) { // handle scalars
-         if      EXTRACT_SCALAR('c',char)
-         else if EXTRACT_SCALAR('b',signed char)
-         else if EXTRACT_SCALAR('B',unsigned char)
-         else if EXTRACT_SCALAR('h',signed short)
-         else if EXTRACT_SCALAR('H',unsigned short)
-         else if EXTRACT_SCALAR('i',signed int)
-         else if EXTRACT_SCALAR('I',unsigned int)
-         else if EXTRACT_SCALAR('l',signed long)
-         else if EXTRACT_SCALAR('L',unsigned long)
-         else if EXTRACT_SCALAR('f',float)
-         else if EXTRACT_SCALAR('d',double)
-         else if EXTRACT_SCALAR('o',bool)
-         else log_fatal("Couldn\'t interpret type code '%c' ",type_code);
-   // =======================================
+       return get_object<get_scalar>(self,dtype,index);
    // = Case 2: memory chunk holds a vector =
-   // =======================================
    } else {
-         if      EXTRACT_LIST('c',char)
-         else if EXTRACT_LIST('b',signed char)
-         else if EXTRACT_LIST('B',unsigned char)
-         else if EXTRACT_LIST('h',signed short)
-         else if EXTRACT_LIST('H',unsigned short)
-         else if EXTRACT_LIST('i',signed int)
-         else if EXTRACT_LIST('I',unsigned int)
-         else if EXTRACT_LIST('l',signed long)
-         else if EXTRACT_LIST('L',unsigned long)
-         else if EXTRACT_LIST('f',float)
-         else if EXTRACT_LIST('d',double)
-         else if EXTRACT_LIST('o',bool)
-         else log_fatal("Couldn\'t interpret type code '%c' ",type_code);
+       return get_object<get_list>(self,dtype,index);
    }
 }
 

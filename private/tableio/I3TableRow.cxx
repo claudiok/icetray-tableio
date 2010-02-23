@@ -139,18 +139,21 @@ size_t I3TableRow::GetCurrentRow() {
 
 /******************************************************************************/
 
-// Explictly case booleans to true/false
+// Explictly cast booleans to true/false
 template<>
 void I3TableRow::Set<bool>(const std::string& fieldName, bool value, bool all) {
-   if (all) SetAll(fieldName,(value!=false));
-   else SetCurrent(fieldName,(value!=false));
+    size_t index = description_->GetFieldColumn(fieldName);
+    if (index >= description_->GetNumberOfFields())
+        log_fatal("Tried to set unknown field '%s'",fieldName.c_str());
+   if (all) SetAll(index,(value!=false));
+   else SetCurrent(index,(value!=false));
 }
 
 /******************************************************************************/
 
 // For the times when you really want to blow your leg off...
 template<>
-void* I3TableRow::GetPointerToRow(const std::string& fieldName, size_t row) {
+void* I3TableRow::GetPointer(const std::string& fieldName, size_t row) {
     size_t index;
     if ( (index = description_->GetFieldColumn(fieldName)) >= description_->GetNumberOfFields() ) 
         log_fatal("trying to get the address of unknown field %s", fieldName.c_str());
