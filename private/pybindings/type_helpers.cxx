@@ -137,6 +137,38 @@ boost::shared_ptr<I3Datatype> I3Datatype_from_PyArrayTypecode(char code) {
     return dtype;
 };
 
+boost::shared_ptr<I3Datatype> I3Datatype_from_NumpyDtype(boost::python::object np_dtype) {
+    I3DatatypePtr dtype(new I3Datatype());
+    // sanity check on byte order
+    char byteorder = PyString_AsString(bp::object(np_dtype.attr("byteorder")).ptr())[0];
+    if (!(byteorder == '|') && !(byteorder == '=')) {
+        // log_error("Array must be in native byte order (not '%c')",byteorder);
+        return I3DatatypePtr();
+    }
+    char kind = PyString_AsString(bp::object(np_dtype.attr("kind")).ptr())[0];
+    size_t size = bp::extract<size_t>(np_dtype.attr("itemsize"));
+    dtype->size = size;
+    switch (kind) {
+        case 'i':
+            dtype->kind = I3Datatype::Int;
+            dtype->is_signed = true;
+            break;
+        case 'u':
+            dtype->kind = I3Datatype::Int;
+            dtype->is_signed = false;
+            break;
+        case 'f':
+            dtype->kind = I3Datatype::Float;
+            dtype->is_signed = true;
+        case 'b':
+            dtype->kind = I3Datatype::Bool;
+        default:
+            // return NULL for everything else
+            dtype = I3DatatypePtr();
+    }
+    return dtype;
+};
+
 namespace I3Datatypes {
     using namespace I3Datatypes;
     NativeType GetNativeType(const I3Datatype& dtype) {

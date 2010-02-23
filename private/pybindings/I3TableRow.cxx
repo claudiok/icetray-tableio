@@ -66,74 +66,84 @@ void set_field(I3TableRow& self, const std::string& field, bp::object value, boo
    int index = desc->GetFieldColumn(field);
    if (index < 0) log_fatal("Tried to set value for unknown column '%s'",field.c_str());
    
-   char type_code = PyArrayTypecode_from_I3Datatype(desc->GetFieldTypes().at(index));
+   I3Datatype dtype = desc->GetFieldTypes().at(index);
+   size_t array_length = desc->GetFieldArrayLengths().at(index);
+   
    bool success = false;
    // =====================================
    // = Case 1: field holds a scalar type =
    // =====================================
-   if (desc->GetFieldArrayLengths().at(index) == 1) {
-       if (type_code != 0) {
-         if      EXTRACT_SCALAR_SET('c',char)
-         else if EXTRACT_SCALAR_SET('b',signed char)
-         else if EXTRACT_SCALAR_SET('B',unsigned char)
-         else if EXTRACT_SCALAR_SET('h',signed short)
-         else if EXTRACT_SCALAR_SET('H',unsigned short)
-         else if EXTRACT_SCALAR_SET('i',signed int)
-         else if EXTRACT_SCALAR_SET('I',unsigned int)
-         else if EXTRACT_SCALAR_SET('l',signed long)
-         else if EXTRACT_SCALAR_SET('L',unsigned long)
-         else if EXTRACT_SCALAR_SET('f',float)
-         else if EXTRACT_SCALAR_SET('d',double)
-         else if EXTRACT_SCALAR_SET('o',bool)
-         else log_fatal("Couldn\'t interpret type code '%c' ",type_code);
-      }
+   if (array_length == 1) {
+       bool bv; long lv;
+       success = true;
+       switch (dtype.kind) {
+            case I3Datatype::Bool:
+                bv = bp::extract<bool>(value); self.Set(field,bv,all);
+                break;
+            case I3Datatype::Enum:
+                // fall through to the normal integers
+            case I3Datatype::Int:
+                if (dtype.is_signed) {
+                    if (dtype.size == 1)      { int8_t v  = bp::extract<int8_t >(value); self.Set(field,v,all); }
+                    else if (dtype.size == 2) { int16_t v = bp::extract<int16_t>(value); self.Set(field,v,all); }
+                    else if (dtype.size == 4) { int32_t v = bp::extract<int32_t>(value); self.Set(field,v,all); }
+                    else if (dtype.size == 8) { int64_t v = bp::extract<int64_t>(value); self.Set(field,v,all); }
+                    else log_fatal("%zu-byte integers are not supported.",dtype.size);
+                } else {
+                    if (dtype.size == 1)      { uint8_t v  = bp::extract<uint8_t >(value); self.Set(field,v,all); }
+                    else if (dtype.size == 2) { uint16_t v = bp::extract<uint16_t>(value); self.Set(field,v,all); }
+                    else if (dtype.size == 4) { uint32_t v = bp::extract<uint32_t>(value); self.Set(field,v,all); }
+                    else if (dtype.size == 8) { uint64_t v = bp::extract<uint64_t>(value); self.Set(field,v,all); }
+                    else log_fatal("%zu-byte integers are not supported.",dtype.size);
+                }
+                break;
+            case I3Datatype::Float:
+                if (dtype.size == 4) { float v = bp::extract<float>(value); self.Set(field,v,all); }
+                else if (dtype.size == 8) { double v = bp::extract<double>(value); self.Set(field,v,all); }
+                else log_fatal("%zu-byte floats are not supported.",dtype.size);
+                break;
+            default:
+                success = false;
+                log_fatal("I don't know how to handle your datatype.");
+       }
    // =====================================
    // = Case 2: field holds a vector type =
    // =====================================
    } else { // handle vectors
       bool is_array = (value.attr("__class__").attr("__name__") == std::string("array"));
       bool is_ndarray = (value.attr("__class__").attr("__name__") == std::string("ndarray"));
+      boost::shared_ptr<I3Datatype> arr_dtype;
       // ==============================================================
       // = Case 2.1: passed object is an array.array or numpy.ndarray =
       // ==============================================================
       if (is_array || is_ndarray) {
-         char arr_typecode = 0x20;
-         char arr_byteorder = 0x20;
          if (is_array) {
-            arr_typecode = PyString_AsString(bp::object(value.attr("typecode")).ptr())[0];
-            arr_byteorder = '='; // array is always native
+            char arr_typecode = PyString_AsString(bp::object(value.attr("typecode")).ptr())[0];
+            arr_dtype = I3Datatype_from_PyArrayTypecode(arr_typecode);
          } else {
-            arr_typecode = PyString_AsString(bp::object(value.attr("dtype").attr("char")).ptr())[0];
-            arr_byteorder = PyString_AsString(bp::object(value.attr("dtype").attr("byteorder")).ptr())[0];
+            arr_dtype = I3Datatype_from_NumpyDtype(value.attr("dtype"));
          }
          // ==============================================
          // = Check the type and byte order of the array =
          // ==============================================
-         if (arr_typecode != type_code) 
-            log_fatal("Type of array ('%c') does not match field '%s' ('%c')",arr_typecode,field.c_str(),type_code);
-         if (!(arr_byteorder == '|') && !(arr_byteorder == '='))
-            log_fatal("Array must be in native byte order (not '%c')",arr_byteorder);
+         if (!arr_dtype) log_fatal("Type of array could not be recognized.");
+         if (*arr_dtype != dtype) log_fatal("Type of array does not match field '%s'.",field.c_str());
+    
          // hang on to your hats, here we go!
          const void* location;
          Py_ssize_t length;
          PyObject_AsReadBuffer(value.ptr(),&location,&length);
+         if (length <= 0) return; // nothing to be done
          // =======================================================
          // = Copy the buffer (an array in native representation) 
          //   directly into the memory chunk                      =
          // =======================================================
-         if      EXTRACT_BUFFER('c',char)
-         else if EXTRACT_BUFFER('b',signed char)
-         else if EXTRACT_BUFFER('B',unsigned char)
-         else if EXTRACT_BUFFER('h',signed short)
-         else if EXTRACT_BUFFER('H',unsigned short)
-         else if EXTRACT_BUFFER('i',signed int)
-         else if EXTRACT_BUFFER('I',unsigned int)
-         else if EXTRACT_BUFFER('l',signed long)
-         else if EXTRACT_BUFFER('L',unsigned long)
-         else if EXTRACT_BUFFER('f',float)
-         else if EXTRACT_BUFFER('d',double)
-         else if EXTRACT_BUFFER('o',bool)
-         else log_fatal("Couldn\'t interpret type code '%c' ",type_code);
+         if (static_cast<size_t>(length) > dtype.size*array_length)
+            log_fatal("Size mismatch between memory block (%zu) and field (%zu) for '%s'",
+                       length,(dtype.size*array_length),field.c_str());
+         void* pointy = self.GetPointerToField(index,self.GetCurrentRow());
+         memcpy(pointy,location,length);
+         success = true;
       // =================================================
       // = Case 2.2: passed object is a wrapped I3Vector =
       // =================================================  

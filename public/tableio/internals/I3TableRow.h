@@ -69,6 +69,10 @@ class I3TableRow {
         // get a void pointer to a particular row
         void const* GetPointerToField(size_t index, size_t row) const;
         
+        // and a non-const version of same
+        void* GetPointerToField(size_t index, size_t row);
+        
+        
         I3TableRowDescriptionConstPtr GetDescription() const;
 
         size_t GetNumberOfRows() const;

@@ -119,19 +119,19 @@ class DOMLaunchBookie(tableio.I3Converter):
         # grab an example DOMLaunch
         dl = self._get_nonempty(dlsm)
         # unrolling fields
-        desc.add_field('string','h','','String number')
-        desc.add_field('om','H','','OM number')
-        desc.add_field('index','H','','Index within the vector')
+        desc.add_field('string',tableio.types.Int16,'','String number')
+        desc.add_field('om',tableio.types.UInt16,'','OM number')
+        desc.add_field('index',tableio.types.UInt16,'','Index within the vector')
         # DOMLaunch fields
-        desc.add_field('start_time','f','ns','')
-        desc.add_field('pedestal_sub',bool,'','Has the pedestal been subtracted?')
-        desc.add_field('lc_bit',bool,'','')
-        desc.add_field('trigger_type',self.dl.TriggerType,'','')
-        desc.add_field('trigger_mode',self.dl.TriggerMode,'','')
-        desc.add_field('raw_charge_stamp',int,'','',len(dl.GetRawChargeStamp()))
+        desc.add_field('start_time',tableio.types.Float32,'ns','')
+        desc.add_field('pedestal_sub',tableio.types.Bool,'','Has the pedestal been subtracted?')
+        desc.add_field('lc_bit',tableio.types.Bool,'','')
+        desc.add_field('trigger_type',tableio.I3Datatype(self.dl.TriggerType),'','')
+        desc.add_field('trigger_mode',tableio.I3Datatype(self.dl.TriggerMode),'','')
+        desc.add_field('raw_charge_stamp',tableio.types.Int32,'','',len(dl.GetRawChargeStamp()))
         for i in xrange(3):
-            desc.add_field('raw_atwd_%d'%i,'i','counts','Uncalibrated ATWD digitizer counts',128)
-        desc.add_field('raw_fadc','H','counts','Uncalibrated fADC digitizer counts',256)
+            desc.add_field('raw_atwd_%d'%i,tableio.types.Int32,'counts','Uncalibrated ATWD digitizer counts',128)
+        desc.add_field('raw_fadc',tableio.types.UInt16,'counts','Uncalibrated fADC digitizer counts',256)
         return desc
     def _get_nonempty(self,dlsm):
         dl = None

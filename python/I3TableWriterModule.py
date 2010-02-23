@@ -128,13 +128,18 @@ class I3TableWriterModule(I3Module):
 		for item in types:
 			typus = item.pop('type')
 			self.writer.add_type(typespec(typus),tablespec(**item))
-
-	def Physics(self,frame):
+	def handle_frame(self,frame):
 		self.writer.convert(frame)
 		self.PushFrame(frame)
-		# header = frame['I3EventHeader']
-		# print 'Run %d Event %d' % (header.RunID,header.EventID)
 		return True
+	# def Geometry(self,frame):
+	# 	return self.handle_frame(frame)
+	# def Calibration(self,frame):
+	# 	return self.handle_frame(frame)
+	# def DetectorStatus(self,frame):
+	# 	return self.handle_frame(frame)
+	def Physics(self,frame):
+		return self.handle_frame(frame)
 	def Finish(self):
 		if self.writer is not None:
 		    self.writer.finish()

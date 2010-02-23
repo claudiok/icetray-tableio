@@ -91,6 +91,11 @@ void const* I3TableRow::GetPointerToField(size_t index, size_t row) const {
 				      description_->GetFieldChunkOffsets().at(index)] );
 }
 
+void* I3TableRow::GetPointerToField(size_t index, size_t row) {
+    if (row >= nrows_) log_fatal("Tried to get pointer to a row not in range [0,%zu)", nrows_);
+    return static_cast<void*>( &data_[description_->GetTotalChunkSize()*row +
+				      description_->GetFieldChunkOffsets().at(index)] );
+}
 
 /******************************************************************************/
 

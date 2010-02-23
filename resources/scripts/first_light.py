@@ -8,20 +8,20 @@ class I3ParticleConverter(tableio.I3Converter):
 	booked = dataclasses.I3Particle
 	def CreateDescription(self,part):
 		desc = tableio.I3TableRowDescription()
-		desc.add_field('x',      'd','m',     'x-position of particle')
-		desc.add_field('y',      'd','m',     'y-position of particle')
-		desc.add_field('z',      'd','m',     'z-position of particle')
-		desc.add_field('time',   'd','ns',    'origin time of particle')
-		desc.add_field('zenith', 'd','radian','zenith angle of particle origin')
-		desc.add_field('azimuth','d','radian','azimuthal angle of particle origin')
-		desc.add_field('energy', 'd','GeV',   'energy of particle')
-		desc.add_field('speed',  'd','Gm/s',  'particle speed')
-		desc.add_field('length', 'd','m',     'length of track')
+		desc.add_field('x',      tableio.types.Float64,'m',     'x-position of particle')
+		desc.add_field('y',      tableio.types.Float64,'m',     'y-position of particle')
+		desc.add_field('z',      tableio.types.Float64,'m',     'z-position of particle')
+		desc.add_field('time',   tableio.types.Float64,'ns',    'origin time of particle')
+		desc.add_field('zenith', tableio.types.Float64,'radian','zenith angle of particle origin')
+		desc.add_field('azimuth',tableio.types.Float64,'radian','azimuthal angle of particle origin')
+		desc.add_field('energy', tableio.types.Float64,'GeV',   'energy of particle')
+		desc.add_field('speed',  tableio.types.Float64,'Gm/s',  'particle speed')
+		desc.add_field('length', tableio.types.Float64,'m',     'length of track')
 		# skip: major_id/minor_id
-		desc.add_field('type',      self.booked.ParticleType,'','')
-		desc.add_field('shape',     self.booked.ParticleShape,'','')
-		desc.add_field('location',  self.booked.LocationType,'','')
-		desc.add_field('fit_status',self.booked.FitStatus,'','')
+		desc.add_field('type',      tableio.I3Datatype(self.booked.ParticleType),'','')
+		desc.add_field('shape',     tableio.I3Datatype(self.booked.ParticleShape),'','')
+		desc.add_field('location',  tableio.I3Datatype(self.booked.LocationType),'','')
+		desc.add_field('fit_status',tableio.I3Datatype(self.booked.FitStatus),'','')
 		return desc
 	def Convert(self,particle,row,frame):
 		row['x']          = particle.x
@@ -45,10 +45,10 @@ class SkyBooker(tableio.I3Converter):
 	"""Demo of a booker extension, e.g. to book celestial coordinates"""
 	def CreateDescription(self,part):
 		desc = tableio.I3TableRowDescription()
-		desc.add_field('RA', 'd','radian','right ascension')
-		desc.add_field('Dec','d','radian','declination')
-		desc.add_field('galactic_latitude', 'd','radian','Galactic latitude')
-		desc.add_field('galactic_longitude','d','radian','Galactic longitude')
+		desc.add_field('RA', tableio.types.Float64,'radian','right ascension')
+		desc.add_field('Dec',tableio.types.Float64,'radian','declination')
+		desc.add_field('galactic_latitude', tableio.types.Float64,'radian','Galactic latitude')
+		desc.add_field('galactic_longitude',tableio.types.Float64,'radian','Galactic longitude')
 		return desc
 	def Convert(self,particle,row,frame):
 		"""Here, we would have to get the event time from the header
@@ -62,25 +62,24 @@ class SkyBooker(tableio.I3Converter):
 		
 		return 1
 
-from icecube import jebclasses
+# from icecube import jebclasses
 
 tray = I3Tray()
 
 from icecube import textwriter
-# tabler = hdfwriter.I3HDFTableService('foo.hd5')
-tabler = textwriter.I3CSVTableService('foocsv')
+tabler = hdfwriter.I3HDFTableService('foo.hd5',0)
+#tabler = textwriter.I3CSVTableService('foocsv')
 
 tray.AddModule('I3Reader','reader',filename='/Users/jakob/Documents/Wisc/2010 Spring/Python Primer/foo.i3.gz')
 tray.AddModule(tableio.I3TableWriterModule,'writer',
     tableservice = tabler,
     keys  = [dict(key='LineFit', converter=I3ParticleConverter(), name='Way_out_there_beyond_this_hick_town_Barnaby'),
              dict(key='LineFit', converter=[I3ParticleConverter(),SkyBooker()], name='Theres_a_slick_town_Barnaby')],
-    types = {jebclasses.I3FilterResultMap: jebclasses.converters.I3FilterResultMapConverter(),
-             dataclasses.I3DOMLaunchSeriesMap: DOMLaunchBookie()}
-    
+    types = {dataclasses.I3DOMLaunchSeriesMap: DOMLaunchBookie()}
+    # types = {jebclasses.I3FilterResultMap: jebclasses.converters.I3FilterResultMapConverter()}
 )
 
 tray.AddModule('TrashCan','yeswecan')
 
-tray.Execute(10)
+tray.Execute(20)
 tray.Finish()
