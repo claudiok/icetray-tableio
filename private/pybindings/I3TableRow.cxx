@@ -182,10 +182,10 @@ template <typename T>
 bp::object get_object_array(I3TableRow& self, const std::string& field) {
    bp::list l;
    I3TableRowDescriptionConstPtr desc = self.GetDescription();
-   unsigned int index = desc->GetFieldColumn(field);
-   unsigned int length = desc->GetFieldArrayLengths().at(index);
+   size_t index = desc->GetFieldColumn(field);
+   size_t length = desc->GetFieldArrayLengths().at(index);
    T* block = self.GetPointer<T>(field);
-   for (unsigned int i=0; i<length; i++) l.append(block[i]);
+   for (size_t i=0; i<length; i++) l.append(block[i]);
    return l;
 }
 
@@ -195,7 +195,7 @@ bp::object get_object_array(I3TableRow& self, const std::string& field) {
 bp::object getitem(I3TableRow& self, const std::string& field) {
    
    I3TableRowDescriptionConstPtr desc = self.GetDescription();
-   unsigned int index = desc->GetFieldColumn(field);
+   size_t index = desc->GetFieldColumn(field);
    if (index < 0) log_fatal("Tried to get value for unknown column '%s'",field.c_str());
    
    char type_code = PyArrayTypecode(desc->GetFieldTypes().at(index));
@@ -259,7 +259,7 @@ static boost::shared_ptr<I3TableRow> int_init( I3TableRowDescriptionPtr desc, in
       PyErr_SetString(PyExc_ValueError, "num_rows must be >= 0");
       throw bp::error_already_set();
    } 
-   return boost::shared_ptr<I3TableRow>(new I3TableRow(desc,static_cast<unsigned int>(num_rows)));
+   return boost::shared_ptr<I3TableRow>(new I3TableRow(desc,static_cast<size_t>(num_rows)));
 } 
 
 // ================================

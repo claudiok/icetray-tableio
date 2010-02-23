@@ -39,7 +39,7 @@ class I3TableService {
         I3EventHeaderConstPtr GetLastHeader();
         I3TableRowDescriptionConstPtr GetIndexDescription();
         // Phone home to tell the service that an event has been written
-        void HeaderWritten(I3EventHeaderConstPtr lastHeader,unsigned int nrows);
+        void HeaderWritten(I3EventHeaderConstPtr lastHeader,size_t nrows);
         void Finish();
 
     protected:

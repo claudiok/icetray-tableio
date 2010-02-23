@@ -22,9 +22,9 @@
 template <class FrmObj>
 class I3STLVectorConverter : public I3ConverterImplementation<std::vector<FrmObj> > {
     private:
-        unsigned int GetNumberOfRows(std::vector<FrmObj>& vect) {
+        size_t GetNumberOfRows(std::vector<FrmObj>& vect) {
             typename std::vector<FrmObj>::const_iterator it;
-            unsigned int totalsize = 0;
+            size_t totalsize = 0;
             for(it = vect.begin(); it != vect.end(); ++it) 
                 totalsize += itemConverter_->GetNumberOfRows(*it);
 
@@ -35,7 +35,7 @@ class I3STLVectorConverter : public I3ConverterImplementation<std::vector<FrmObj
             I3TableRowDescriptionPtr desc_vector = 
                 I3TableRowDescriptionPtr(new I3TableRowDescription() );
             desc_vector->isMultiRow_ = true;
-            desc_vector->AddField<unsigned int>("vector_index", "", "index in vector");
+            desc_vector->AddField<tableio_size_t>("vector_index", "", "index in vector");
 
             // create the converter for the elements of the vector
             // FIXME: pass params?
@@ -61,15 +61,15 @@ class I3STLVectorConverter : public I3ConverterImplementation<std::vector<FrmObj
             return desc;
         }
 
-        unsigned int FillRows(const std::vector<FrmObj>& vec, I3TableRowPtr rows) {
-            unsigned int nrows = rows->GetNumberOfRows();
+        size_t FillRows(const std::vector<FrmObj>& vec, I3TableRowPtr rows) {
+            size_t nrows = rows->GetNumberOfRows();
             assert( (nrows - rows->GetCurrentRow()) >= vec.size());
 
             typename std::vector<FrmObj>::const_iterator it;
-            unsigned int currentRow = rows->GetCurrentRow();
+            size_t currentRow = rows->GetCurrentRow();
 
-            unsigned int v_index = 0;
-            unsigned int i_row = currentRow;
+            size_t v_index = 0;
+            size_t i_row = currentRow;
             for (it = vec.begin(); it != vec.end(); ++it) {
                 rows->SetCurrentRow(i_row);
                 
@@ -80,9 +80,9 @@ class I3STLVectorConverter : public I3ConverterImplementation<std::vector<FrmObj
 
                 // for all rows the itemConverter has changed the vector_index
                 // field must be set to current index
-                for (unsigned int j_row = 0; j_row < rowsWritten; ++j_row) {
+                for (size_t j_row = 0; j_row < rowsWritten; ++j_row) {
                     rows->SetCurrentRow(i_row+j_row);
-                    rows->Set<unsigned int>("vector_index", v_index);
+                    rows->Set<tableio_size_t>("vector_index", static_cast<tableio_size_t>(v_index));
                 }
 
                 i_row += rowsWritten;

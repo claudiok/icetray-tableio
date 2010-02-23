@@ -23,14 +23,14 @@ void I3TableRow::init() {
 
     // initialize memory block with zeros - TODO useful?
     char* pointy = reinterpret_cast<char*>(&data_[0]);
-    for (unsigned int i=0; i < totalByteSize; ++i)
+    for (size_t i = 0; i < totalByteSize; ++i)
         pointy[i] = 0;
 }
 
 /******************************************************************************/
 
 I3TableRow::I3TableRow(I3TableRowDescriptionConstPtr description, 
-                       unsigned int nrows) :
+                       size_t nrows) :
     description_(description),
     nrows_(nrows),
     currentRow_(0)
@@ -85,8 +85,8 @@ void const* I3TableRow::GetPointer() const {
     return static_cast<void*>(data_); // TODO const?
 }
 
-void const* I3TableRow::GetPointerToField(unsigned int index, unsigned int row) const {
-    if (row >= nrows_) log_fatal("Tried to get pointer to a row not in range [0,%d)", nrows_);
+void const* I3TableRow::GetPointerToField(size_t index, size_t row) const {
+    if (row >= nrows_) log_fatal("Tried to get pointer to a row not in range [0,%zu)", nrows_);
     return static_cast<void*>( &data_[description_->GetTotalChunkSize()*row +
 				      description_->GetFieldChunkOffsets().at(index)] );
 }
@@ -100,13 +100,13 @@ I3TableRowDescriptionConstPtr I3TableRow::GetDescription() const {
 
 /******************************************************************************/
 
-unsigned int I3TableRow::GetNumberOfRows() const {
+size_t I3TableRow::GetNumberOfRows() const {
     return nrows_;
 }
 
 /******************************************************************************/
 
-void I3TableRow::SetNumberOfRows(unsigned int nrows) {
+void I3TableRow::SetNumberOfRows(size_t nrows) {
     assert(description_); // FIXME change to log_fatal?
     
     if (nrows_ == nrows)
@@ -120,15 +120,15 @@ void I3TableRow::SetNumberOfRows(unsigned int nrows) {
 
 /******************************************************************************/
 
-void I3TableRow::SetCurrentRow(unsigned int row) {
+void I3TableRow::SetCurrentRow(size_t row) {
     if ( (row < 0) || (nrows_ <= row) )
-        log_fatal("try to set current row to %d outside of [0,%d)", row, nrows_);
+        log_fatal("try to set current row to %zu outside of [0,%zu)", row, nrows_);
     currentRow_ = row;
 }
 
 /******************************************************************************/
 
-unsigned int I3TableRow::GetCurrentRow() {
+size_t I3TableRow::GetCurrentRow() {
     return currentRow_;
 }
 
@@ -145,13 +145,13 @@ void I3TableRow::Set<bool>(const std::string& fieldName, bool value, bool all) {
 
 // For the times when you really want to blow your leg off...
 template<>
-void* I3TableRow::GetPointerToRow(const std::string& fieldName, unsigned int row) {
-    int index;
-    if ( (index = description_->GetFieldColumn(fieldName)) == -1 ) 
+void* I3TableRow::GetPointerToRow(const std::string& fieldName, size_t row) {
+    size_t index;
+    if ( (index = description_->GetFieldColumn(fieldName)) >= description_->GetNumberOfFields() ) 
         log_fatal("trying to get the address of unknown field %s", fieldName.c_str());
 
     if ( !(( 0 <= row) && (row < nrows_)) )
-        log_fatal("requested pointer to row %d which is not in [0,%d]", row, nrows_);
+        log_fatal("requested pointer to row %zu which is not in [0,%zu]", row, nrows_);
     
     /*
     if (description_->GetFieldArrayLengths().at(index) > 1 )

@@ -18,14 +18,14 @@ class I3ConverterBundle : public I3Converter {
     public:
         I3ConverterBundle(std::vector<I3ConverterPtr>& converters);
         // virtual ~I3ConverterBundle();
-        virtual unsigned int GetNumberOfRows(I3FrameObjectConstPtr object);
+        virtual size_t GetNumberOfRows(I3FrameObjectConstPtr object);
         virtual I3TableRowDescriptionConstPtr GetDescription(I3FrameObjectConstPtr object);
         virtual I3TableRowDescriptionConstPtr GetDescription(const I3FrameObject& object);
-        virtual unsigned int Convert(I3FrameObjectConstPtr object, 
+        virtual size_t Convert(I3FrameObjectConstPtr object, 
                                      I3TableRowPtr rows, 
                                      I3FramePtr frame=I3FramePtr());
         
-        virtual unsigned int Convert(const I3FrameObject& object, 
+        virtual size_t Convert(const I3FrameObject& object, 
                                      I3TableRowPtr rows, 
                                      I3FramePtr frame=I3FramePtr());
 

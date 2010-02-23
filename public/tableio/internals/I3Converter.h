@@ -34,7 +34,7 @@ class I3Converter {
          * Allows to show an I3FrameObject to this converter to get the number
          * of rows that this converter will produce
          */
-        virtual unsigned int GetNumberOfRows(I3FrameObjectConstPtr object)=0;
+        virtual size_t GetNumberOfRows(I3FrameObjectConstPtr object)=0;
 
         /**
          * return a I3TableRowDescription that specifies which table columns this converter
@@ -61,11 +61,11 @@ class I3Converter {
          * be passed along
          * returns the number of rows it wrote
          */
-        virtual unsigned int Convert(I3FrameObjectConstPtr object, 
+        virtual size_t Convert(I3FrameObjectConstPtr object, 
                                      I3TableRowPtr rows, 
                                      I3FramePtr frame=I3FramePtr()) = 0;
         
-        virtual unsigned int Convert(const I3FrameObject& object, 
+        virtual size_t Convert(const I3FrameObject& object, 
                                      I3TableRowPtr rows, 
                                      I3FramePtr frame=I3FramePtr()) = 0;
 
@@ -96,11 +96,11 @@ I3_POINTER_TYPEDEFS( I3Converter );
 template<class FrmObj>
 class I3ConverterImplementation : public I3Converter {
     public:
-        unsigned int GetNumberOfRows(I3FrameObjectConstPtr object) {
+        size_t GetNumberOfRows(I3FrameObjectConstPtr object) {
             return GetNumberOfRows(dynamic_cast<const FrmObj&>(*object));
         }
         
-        unsigned int Convert(const I3FrameObject& object, I3TableRowPtr rows, 
+        size_t Convert(const I3FrameObject& object, I3TableRowPtr rows, 
                              I3FramePtr frame) {
             const FrmObj& typedObject = dynamic_cast<const FrmObj&>(object);
 
@@ -110,12 +110,12 @@ class I3ConverterImplementation : public I3Converter {
 
             currentFrame_ = frame;
 
-            unsigned int nrows = FillRows( typedObject, rows );
+            size_t nrows = FillRows( typedObject, rows );
             currentFrame_.reset();
             return nrows;
         }
         
-        unsigned int Convert(I3FrameObjectConstPtr object, I3TableRowPtr rows, I3FramePtr frame) {
+        size_t Convert(I3FrameObjectConstPtr object, I3TableRowPtr rows, I3FramePtr frame) {
             return Convert( *object, rows, frame);
         }
 
@@ -137,15 +137,15 @@ class I3ConverterImplementation : public I3Converter {
 
     protected:
         virtual I3TableRowDescriptionPtr CreateDescription(const FrmObj& object) = 0;
-        virtual unsigned int GetNumberOfRows(const FrmObj& object);
-        virtual unsigned int FillRows(const FrmObj& object, I3TableRowPtr rows) = 0;
+        virtual size_t GetNumberOfRows(const FrmObj& object);
+        virtual size_t FillRows(const FrmObj& object, I3TableRowPtr rows) = 0;
 };
 
 /******************************************************************************/
 
 // provide a default implemenation for GetNumberOfRows. covers all one-row-per-object converters.
 template <class FrmObj>
-unsigned int I3ConverterImplementation<FrmObj>::GetNumberOfRows(const FrmObj& object) {
+size_t I3ConverterImplementation<FrmObj>::GetNumberOfRows(const FrmObj& object) {
     return 1;
 }
 
@@ -158,5 +158,10 @@ bool I3ConverterImplementation<FrmObj>::CanConvert(I3FrameObjectConstPtr object)
 }
 
 /******************************************************************************/
+
+// The unsigned integer type to use when writing size_t out
+// to a table. This should be the largest pointer size of any platform
+// on which IceTray runs (64 bits for the forseeable future).
+typedef uint64_t tableio_size_t;
 
 #endif

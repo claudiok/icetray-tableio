@@ -98,10 +98,10 @@ public:
     const std::vector<std::string>& GetFieldUnits() const;
     const std::vector<std::string>& GetFieldDocStrings() const;
 
-    unsigned int GetFieldColumn(const std::string& fieldName) const;
+    size_t GetFieldColumn(const std::string& fieldName) const;
     size_t GetTotalByteSize() const;
     size_t GetTotalChunkSize() const;
-    unsigned int GetNumberOfFields() const;
+    size_t GetNumberOfFields() const;
 
     // Will this description be used for an object flattened across multiple rows?
     bool isMultiRow_;

@@ -18,10 +18,10 @@ I3ConverterBundle::I3ConverterBundle(std::vector<I3ConverterPtr>& converters)
 
 //***************************************************************************//
 
-unsigned int I3ConverterBundle::GetNumberOfRows(I3FrameObjectConstPtr object) {
+size_t I3ConverterBundle::GetNumberOfRows(I3FrameObjectConstPtr object) {
     std::vector<I3ConverterPtr>::iterator it;
-    unsigned int global_numrows = 0;
-    unsigned int numrows = 0;
+    size_t global_numrows = 0;
+    size_t numrows = 0;
     
     for (it = converters_.begin(); it != converters_.end(); it++) {
         numrows = (*it)->GetNumberOfRows(object);
@@ -86,12 +86,12 @@ I3TableRowDescriptionConstPtr I3ConverterBundle::GetDescription(const I3FrameObj
 
 //***************************************************************************//
 
-unsigned int I3ConverterBundle::Convert(I3FrameObjectConstPtr object, 
+size_t I3ConverterBundle::Convert(I3FrameObjectConstPtr object, 
                                           I3TableRowPtr rows, 
                                           I3FramePtr frame) {
     std::vector<I3ConverterPtr>::iterator it;
-    unsigned int global_numrows = 0;
-    unsigned int numrows = 0;
+    size_t global_numrows = 0;
+    size_t numrows = 0;
     
     for (it = converters_.begin(); it != converters_.end(); it++) {
        numrows = (*it)->Convert(object,rows,frame);
@@ -105,12 +105,12 @@ unsigned int I3ConverterBundle::Convert(I3FrameObjectConstPtr object,
 //***************************************************************************//
 
 // FIXME: this is just a copy of the pointer-taking method
-unsigned int I3ConverterBundle::Convert(const I3FrameObject& object, 
+size_t I3ConverterBundle::Convert(const I3FrameObject& object, 
                                           I3TableRowPtr rows, 
                                           I3FramePtr frame) {
     std::vector<I3ConverterPtr>::iterator it;
-    unsigned int global_numrows = 0;
-    unsigned int numrows = 0;
+    size_t global_numrows = 0;
+    size_t numrows = 0;
     
     for (it = converters_.begin(); it != converters_.end(); it++) {
        numrows = (*it)->Convert(object,rows,frame);

@@ -18,11 +18,11 @@
 I3TableService::I3TableService()  { 
     ticConverter_ = BuildConverter("I3IndexColumnsGenerator");
     I3TableRowDescriptionPtr desc = I3TableRowDescriptionPtr(new I3TableRowDescription());
-    desc->AddField<unsigned int>("Run", "", "run number");
-    desc->AddField<unsigned int>("Event", "", "event number");
+    desc->AddField<uint32_t>("Run", "", "run number");
+    desc->AddField<uint32_t>("Event", "", "event number");
     desc->AddField<bool>("exists", "", "object was found in the frame");
-    desc->AddField<unsigned int>("start", "", "Offset at which the rows for this event start");
-    desc->AddField<unsigned int>("stop", "", "Offset at which the rows for the next event start");
+    desc->AddField<tableio_size_t>("start", "", "Offset at which the rows for this event start");
+    desc->AddField<tableio_size_t>("stop", "", "Offset at which the rows for the next event start");
     indexDescription_ = desc;
 }
 
@@ -83,7 +83,7 @@ bool I3TableService::EventHeadersEqual(const I3EventHeader& header1,
 /******************************************************************************/
 
 // A table phones home to report that it has written a new event
-void I3TableService::HeaderWritten(I3EventHeaderConstPtr lastHeader, unsigned int nrows) {
+void I3TableService::HeaderWritten(I3EventHeaderConstPtr lastHeader, size_t nrows) {
    if (lastHeader == NULL) return;
    else {
       if (eventHeaderCache_.size() == 0) {
@@ -122,7 +122,7 @@ I3TableRowConstPtr I3TableService::GetPaddingRows(I3EventHeaderConstPtr lastHead
      return I3TableRowConstPtr();
    }
 
-   unsigned nrows = 0;
+   size_t nrows = 0;
    std::vector<I3EventHeaderConstPtr>::reverse_iterator rit;
 
    if (!lastHeader) { // this table is reporting for the first time
@@ -166,11 +166,11 @@ I3TableRowConstPtr I3TableService::GetPaddingRows(I3EventHeaderConstPtr lastHead
 
    }
       
-   log_trace("nrows = %u",nrows);
+   log_trace("nrows = %zu",nrows);
    if (nrows == 0) return I3TableRowPtr();
    I3TableRowPtr rows = I3TableRowPtr(new I3TableRow(description_, nrows));
    I3FramePtr frame; // assume ticConv doesn't need the frame
-   for (unsigned int i=0; i< nrows; ++i) {
+   for (size_t i=0; i< nrows; ++i) {
       rows->SetCurrentRow(i);
       ticConverter_->Convert(*rit, rows,frame);
       rit--;

@@ -23,7 +23,7 @@ class I3DoubleConverter : public I3ConverterImplementation<I3Double> {
             return desc;
         }
 
-        unsigned int FillRows(const I3Double& object, I3TableRowPtr rows) {
+        size_t FillRows(const I3Double& object, I3TableRowPtr rows) {
             rows->Set<double>("value", object.value);
             return 1;
         }

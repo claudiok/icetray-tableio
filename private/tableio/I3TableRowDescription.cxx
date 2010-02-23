@@ -60,23 +60,23 @@ const std::vector<std::string>& I3TableRowDescription::GetFieldDocStrings() cons
 
 /******************************************************************************/
         
-unsigned int I3TableRowDescription::GetFieldColumn(const std::string& fieldName) const {
+size_t I3TableRowDescription::GetFieldColumn(const std::string& fieldName) const {
     std::map<std::string,size_t>::const_iterator iter;
     iter = fieldNameToIndex_.find(fieldName);
     if (iter != fieldNameToIndex_.end()) {
         return iter->second;
     }
     else {
-        return -1;
+        return GetNumberOfFields();
     }
 }
 
 /******************************************************************************/
 
 bool I3TableRowDescription::CanBeFilledInto(I3TableRowDescriptionConstPtr other) const {
-    int nfields = GetNumberOfFields();
+    size_t nfields = GetNumberOfFields();
     bool compatible = true;
-    for (int i; i < nfields; ++i) {
+    for (size_t i =0; i < nfields; ++i) {
         if ( (fieldNames_.at(i) != other->GetFieldNames().at(i) ) ||
              (fieldTypes_.at(i) != other->GetFieldTypes().at(i) ) ||
              (fieldTypeSizes_.at(i) != other->GetFieldTypeSizes().at(i) ) ) // redundant...
@@ -89,13 +89,13 @@ bool I3TableRowDescription::CanBeFilledInto(I3TableRowDescriptionConstPtr other)
 /******************************************************************************/
 
 bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) const {
-   int nfields = GetNumberOfFields();
-   int o_nfields = other->GetNumberOfFields();
+   size_t nfields = GetNumberOfFields();
+   size_t o_nfields = other->GetNumberOfFields();
    if (nfields != o_nfields) return false;
 	if (isMultiRow_ != other->isMultiRow_) return false;
    bool equal = true;
    
-   for (int i; i < nfields; ++i) {
+   for (size_t i = 0; i < nfields; ++i) {
        if ( (fieldNames_.at(i) != other->GetFieldNames().at(i) ) ||
             (fieldTypes_.at(i) != other->GetFieldTypes().at(i) ) ||
             (fieldUnits_.at(i) != other->GetFieldUnits().at(i) ) ||
@@ -132,7 +132,6 @@ void I3TableRowDescription::AddField(const std::string& name, I3Datatype type,
                                      size_t typeSize, const std::string& unit,
                                      const std::string& doc, size_t arrayLength) {
 
-    // log_trace("adding field %s with type %d of size %d", name.c_str(), hdfType, (int)typeSize);
     size_t chunkOffset=0;
     size_t byteOffset=0;
     if (fieldChunkOffsets_.size() > 0) {
@@ -182,7 +181,7 @@ size_t I3TableRowDescription::GetTotalByteSize() const {
 
 /******************************************************************************/
         
-unsigned int I3TableRowDescription::GetNumberOfFields() const {
+size_t I3TableRowDescription::GetNumberOfFields() const {
     return fieldNames_.size(); 
 }
 
@@ -191,8 +190,8 @@ unsigned int I3TableRowDescription::GetNumberOfFields() const {
 I3TableRowDescription operator|(const I3TableRowDescription& lhs, 
                                 const I3TableRowDescription& rhs) {
     I3TableRowDescription newlhs = I3TableRowDescription(lhs);
-    int nfields = rhs.GetNumberOfFields();
-    for (int i=0; i < nfields; i++) {
+    size_t nfields = rhs.GetNumberOfFields();
+    for (size_t i = 0; i < nfields; i++) {
         size_t byteOffset=0;
         size_t chunkOffset=0;
         if (newlhs.GetNumberOfFields() > 0)

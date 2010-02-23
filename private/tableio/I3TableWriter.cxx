@@ -84,7 +84,7 @@ bool I3TableWriter::AddObject(std::string name, std::string tableName,
     // check to see whether the object contains anything at all
     // if it's empty, (e.g. an empty DOMLaunchSeriesMap, the converter 
     // might not have the information it needs to build the description
-    unsigned int nrows = converter->GetNumberOfRows(obj);
+    size_t nrows = converter->GetNumberOfRows(obj);
     // we assume that the converter needs a live object to build its description
     // if the object is empty, there's no harm in delaying instantiation of the table
     if (nrows == 0) return false;
@@ -209,7 +209,6 @@ void I3TableWriter::Convert(I3FramePtr frame) {
 
 
     I3EventHeaderConstPtr header = frame->Get<I3EventHeaderConstPtr>(); // the name is _not_ canonical
-    // I3EventHeaderConstPtr header = frame->Get<I3EventHeaderConstPtr>(std::string("I3EventHeader"));
     if (!header) {
        log_error("This frame is missing an I3EventHeader and will not be booked!");
        return;
@@ -340,7 +339,7 @@ void I3TableWriter::Convert(I3FramePtr frame) {
             const std::string& objName = tlist_it->first;
             const TableBundle& bundle = *t_it;
             
-            unsigned int nrows = 0;
+            size_t nrows = 0;
             
             I3FrameObjectConstPtr obj = frame->Get<I3FrameObjectConstPtr>(objName);
             if (!obj) {
@@ -355,12 +354,12 @@ void I3TableWriter::Convert(I3FramePtr frame) {
                 I3TableRowPtr rows = bundle.table->CreateRow(nrows);
             
                 // the converter can then fill them
-                unsigned int rowsWritten = bundle.converter->Convert(obj, rows, frame);
+                size_t rowsWritten = bundle.converter->Convert(obj, rows, frame);
             
                 assert(rowsWritten == nrows);
             
                 // fill the table index columns
-                for (unsigned int i=0; i < nrows; ++i) {
+                for (size_t i=0; i < nrows; ++i) {
                     rows->SetCurrentRow(i);
                     ticConverter_->Convert(header, rows, frame);
                     rows->Set<bool>("exists", true);

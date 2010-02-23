@@ -24,7 +24,7 @@ void register_I3Converter() {
 		(I3TableRowDescriptionConstPtr (PythonConverter::*)()) &PythonConverter::GetDescription)
 	.def("CreateDescription",(I3TableRowDescriptionPtr (PythonConverter::*)(I3FrameObjectConstPtr))
                     &PythonConverter::CreateDescription)
-	.def("Convert",(unsigned int (PythonConverter::*)(I3FrameObjectConstPtr, 
+	.def("Convert",(size_t (PythonConverter::*)(I3FrameObjectConstPtr, 
 	                                                  I3TableRowPtr, 
 	                                                  I3FramePtr))
 	               &PythonConverter::Convert)

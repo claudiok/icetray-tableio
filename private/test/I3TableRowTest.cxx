@@ -20,8 +20,8 @@ TEST_GROUP(I3TableRowTests);
 
 TEST(creation) {
     I3TableRowDescriptionPtr base_d = I3TableRowDescriptionPtr( new I3TableRowDescription());
-    base_d->AddField<unsigned int>("Run", "", "doc");
-    base_d->AddField<unsigned int>("Event", "", "doc");
+    base_d->AddField<uint32_t>("Run", "", "doc");
+    base_d->AddField<uint32_t>("Event", "", "doc");
 
     for(int i=0; i<10000; ++i) {
         I3TableRow row(base_d);
@@ -30,15 +30,15 @@ TEST(creation) {
 
 TEST(assignment) {
     I3TableRowDescriptionPtr base_d = I3TableRowDescriptionPtr( new I3TableRowDescription());
-    base_d->AddField<unsigned int>("Run", "", "doc");
-    base_d->AddField<unsigned int>("Event", "", "doc");
+    base_d->AddField<uint32_t>("Run", "", "doc");
+    base_d->AddField<uint32_t>("Event", "", "doc");
 
     I3TableRow row(base_d);
-    row.Set<unsigned int>("Run",  1);
-    row.Set<unsigned int>("Event",  2);
+    row.Set<uint32_t>("Run",  1);
+    row.Set<uint32_t>("Event",  2);
     
-    ENSURE_EQUAL(row.Get<unsigned int>("Run"), static_cast<unsigned int>(1), "reread values");
-    ENSURE_EQUAL(row.Get<unsigned int>("Event"), static_cast<unsigned int>(2), "reread values");
+    ENSURE_EQUAL(row.Get<uint32_t>("Run"), static_cast<uint32_t>(1), "reread values");
+    ENSURE_EQUAL(row.Get<uint32_t>("Event"), static_cast<uint32_t>(2), "reread values");
 }
 
 TEST(type_checking) {
@@ -94,14 +94,14 @@ TEST(bool_casting) {
 
 TEST(array_assignment) {
     I3TableRowDescriptionPtr base_d = I3TableRowDescriptionPtr( new I3TableRowDescription());
-    base_d->AddField<unsigned int>("Run", "", "doc");
-    base_d->AddField<unsigned int>("Event", "", "doc");
+    base_d->AddField<uint32_t>("Run", "", "doc");
+    base_d->AddField<uint32_t>("Event", "", "doc");
     base_d->AddField<double>("Waveform", "mV", "doc", 128);
     base_d->AddField<bool>("Saturated", "", "doc");
 
     I3TableRow row(base_d);
-    row.Set<unsigned int>("Run", 1);
-    row.Set<unsigned int>("Event", 2);
+    row.Set<uint32_t>("Run", 1);
+    row.Set<uint32_t>("Event", 2);
     double* wf = row.GetPointer<double>("Waveform");
     for (int i = 0; i < 128; ++i) {
         wf[i] = 3.0*i + 2 ;
@@ -110,8 +110,8 @@ TEST(array_assignment) {
     row.Set<bool>("Saturated", true);
     
     // reread it
-    ENSURE_EQUAL(row.Get<unsigned int>("Run"), static_cast<unsigned int>(1), "reread values");
-    ENSURE_EQUAL(row.Get<unsigned int>("Event"), static_cast<unsigned int>(2), "reread values");
+    ENSURE_EQUAL(row.Get<uint32_t>("Run"), static_cast<uint32_t>(1), "reread values");
+    ENSURE_EQUAL(row.Get<uint32_t>("Event"), static_cast<uint32_t>(2), "reread values");
 
     wf = row.GetPointer<double>("Waveform");
     for (int i = 0; i < 128; ++i) {
@@ -125,14 +125,14 @@ TEST(array_assignment) {
 
 TEST(copy_constructor) {
     I3TableRowDescriptionPtr base_d = I3TableRowDescriptionPtr( new I3TableRowDescription());
-    base_d->AddField<unsigned int>("Run", "", "doc");
-    base_d->AddField<unsigned int>("Event", "", "doc");
+    base_d->AddField<uint32_t>("Run", "", "doc");
+    base_d->AddField<uint32_t>("Event", "", "doc");
     base_d->AddField<double>("Waveform", "mV", "doc", 128);
     base_d->AddField<bool>("Saturated", "", "doc");
 
     I3TableRow row(base_d);
-    row.Set<unsigned int>("Run", 1);
-    row.Set<unsigned int>("Event", 2);
+    row.Set<uint32_t>("Run", 1);
+    row.Set<uint32_t>("Event", 2);
     double* wf1 = 0;
     double* wf2 = 0;
     wf1 = row.GetPointer<double>("Waveform");
@@ -143,8 +143,8 @@ TEST(copy_constructor) {
     row.Set<bool>("Saturated", true);
 
     I3TableRow row2 (row);
-    ENSURE_EQUAL( row.Get<unsigned int>("Run"), row2.Get<unsigned int>("Run"), "fields equal");
-    ENSURE_EQUAL( row.Get<unsigned int>("Event"), row2.Get<unsigned int>("Event"), "fields equal");
+    ENSURE_EQUAL( row.Get<uint32_t>("Run"), row2.Get<uint32_t>("Run"), "fields equal");
+    ENSURE_EQUAL( row.Get<uint32_t>("Event"), row2.Get<uint32_t>("Event"), "fields equal");
     ENSURE_EQUAL( row.Get<bool>("Saturated"), row2.Get<bool>("Saturated"), "fields equal");
     wf1 = row.GetPointer<double>("Waveform");
     wf2 = row2.GetPointer<double>("Waveform");

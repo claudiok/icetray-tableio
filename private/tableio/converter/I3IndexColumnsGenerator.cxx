@@ -18,15 +18,15 @@ class I3IndexColumnsGenerator : public I3ConverterImplementation<I3EventHeader> 
         I3TableRowDescriptionPtr CreateDescription(const I3EventHeader& object) {
             I3TableRowDescriptionPtr desc = 
                 I3TableRowDescriptionPtr(new I3TableRowDescription() );
-            desc->AddField<unsigned int>("Run", "", "run number");
-            desc->AddField<unsigned int>("Event", "", "event number");
+            desc->AddField<uint32_t>("Run", "", "run number");
+            desc->AddField<uint32_t>("Event", "", "event number");
             desc->AddField<bool>("exists", "", "object was found in the frame");
             return desc;
         }
 
-        unsigned int FillRows(const I3EventHeader& header, I3TableRowPtr rows) {
-            rows->Set<unsigned int>("Run", header.GetRunID());
-            rows->Set<unsigned int>("Event", header.GetEventID());
+        size_t FillRows(const I3EventHeader& header, I3TableRowPtr rows) {
+            rows->Set<uint32_t>("Run", header.GetRunID());
+            rows->Set<uint32_t>("Event", header.GetEventID());
             rows->Set<bool>("exists", false); // to be overwritten by someone else, e.g. I3TableWriter
             return 1;
         }

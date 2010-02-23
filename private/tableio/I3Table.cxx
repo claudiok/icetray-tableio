@@ -13,6 +13,7 @@
 #include "tableio/internals/I3TableRow.h"
 #include "tableio/internals/I3TableRowDescription.h"
 #include "tableio/internals/I3TableService.h"
+#include "tableio/internals/I3Converter.h"
 
 /******************************************************************************/
 
@@ -71,13 +72,13 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
     assert(row->GetDescription() == description_);
     
     // sanity check: padding behavior is different for ragged tables
-    unsigned int nrows = row->GetNumberOfRows(); 
+    size_t nrows = row->GetNumberOfRows(); 
     // only pad the data table itself if this is a non-ragged dataset
     // or if the table type is aligned by construction
     bool do_padding = ((GetAlignmentType() == Strict) || 
                       ((GetAlignmentType() == MultiRow) && (!description_->GetIsMultiRow())));
     if ((nrows != 1) && (!description_->GetIsMultiRow())) {
-        log_fatal("(%s) Converter reported %d rows for a single-row object! Multi-row objects must be marked by their converters.",name_.c_str(),nrows);
+        log_fatal("(%s) Converter reported %zu rows for a single-row object! Multi-row objects must be marked by their converters.",name_.c_str(),nrows);
     }
     
     I3TableRowConstPtr padding;
@@ -85,7 +86,7 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
     if (do_padding) {
         padding = service_.GetPaddingRows(lastHeader_, header, description_);
         if (padding) {
-            log_trace("(%s) Writing %u padding rows",name_.c_str(),padding->GetNumberOfRows());
+            log_trace("(%s) Writing %zu padding rows",name_.c_str(),padding->GetNumberOfRows());
             WriteRows(padding);
             nrowsWithPadding_ += padding->GetNumberOfRows();
         }
@@ -101,12 +102,12 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
     
     if (indexTable_) {
       I3TableRowPtr index_row = I3TableRowPtr(new I3TableRow(service_.GetIndexDescription(),1));
-      index_row->Set<unsigned int>("Run",header->GetRunID());
-      index_row->Set<unsigned int>("Event",header->GetEventID());
+      index_row->Set<uint32_t>("Run",header->GetRunID());
+      index_row->Set<uint32_t>("Event",header->GetEventID());
       index_row->Set<bool>("exists",true);
-      index_row->Set<unsigned int>("start",nrowsWithPadding_);
-      index_row->Set<unsigned int>("stop",nrowsWithPadding_+row->GetNumberOfRows());
-      log_trace("(%s) Writing row to index table. start: %d end: %d",
+      index_row->Set<tableio_size_t>("start",static_cast<tableio_size_t>(nrowsWithPadding_));
+      index_row->Set<tableio_size_t>("stop",static_cast<tableio_size_t>(nrowsWithPadding_+row->GetNumberOfRows()));
+      log_trace("(%s) Writing row to index table. start: %zu end: %zu",
                 name_.c_str(),nrowsWithPadding_,nrowsWithPadding_+row->GetNumberOfRows());
       
       indexTable_->WriteRows(index_row);
@@ -134,7 +135,7 @@ void I3Table::Align() {
     if (do_padding) {
         padding = service_.GetPaddingRows(lastHeader_, I3EventHeaderConstPtr(), description_);
         if (padding) {
-            log_trace("(%s) Finalizing alignment with %u padding rows",name_.c_str(),padding->GetNumberOfRows());
+            log_trace("(%s) Finalizing alignment with %zu padding rows",name_.c_str(),padding->GetNumberOfRows());
             WriteRows(padding);
             nrowsWithPadding_ += padding->GetNumberOfRows();
         }
@@ -160,8 +161,8 @@ I3TableRowConstPtr I3Table::GetRowForEvent(unsigned int RunID, unsigned int Even
 	}
 }
 
-I3TableRowConstPtr I3Table::GetRowForEvent(unsigned int index) {
-    std::pair<unsigned int,unsigned int> range;
+I3TableRowConstPtr I3Table::GetRowForEvent(size_t index) {
+    std::pair<size_t,size_t> range;
     
     range = GetRangeForEvent(index);
     if (range.second == 0) {
@@ -172,9 +173,9 @@ I3TableRowConstPtr I3Table::GetRowForEvent(unsigned int index) {
 }
 
 
-std::pair<unsigned int,unsigned int> I3Table::GetRangeForEvent(unsigned int index) {
+std::pair<size_t,size_t> I3Table::GetRangeForEvent(size_t index) {
     log_fatal("This table is write-only.");
-    return std::pair<unsigned int,unsigned int>();
+    return std::pair<size_t,size_t>();
 }
 
 
@@ -189,13 +190,13 @@ I3TableRowConstPtr I3Table::ReadRows(size_t start, size_t nrows) {
 
 /******************************************************************************/
 
-unsigned int I3Table::GetNumberOfEvents() const {
+size_t I3Table::GetNumberOfEvents() const {
    return nevents_; 
 }
 
 /******************************************************************************/
 
-unsigned int I3Table::GetNumberOfRows() const {
+size_t I3Table::GetNumberOfRows() const {
     return nrows_;
 }
 
@@ -207,7 +208,7 @@ std::string I3Table::GetName() const {
 
 /******************************************************************************/
         
-I3TableRowPtr I3Table::CreateRow(unsigned int nrows) {
+I3TableRowPtr I3Table::CreateRow(size_t nrows) {
     return I3TableRowPtr( new I3TableRow(description_, nrows) );
 }
 

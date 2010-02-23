@@ -21,15 +21,15 @@
 
 class I3TableRow {
     public:
-        I3TableRow(I3TableRowDescriptionConstPtr description, unsigned int nrows=1);
+        I3TableRow(I3TableRowDescriptionConstPtr description, size_t nrows=1);
         I3TableRow(const I3TableRow& rhs);
         I3TableRow& operator=(const I3TableRow& rhs);
 
         virtual ~I3TableRow(); // TODO measure gain by making the destructor not virtual
         
         // set the current row one which following Set and Get calls operate
-        void SetCurrentRow(unsigned int row);
-        unsigned int GetCurrentRow();
+        void SetCurrentRow(size_t row);
+        size_t GetCurrentRow();
         
         // set the value of a field
         template<class T>
@@ -53,26 +53,26 @@ class I3TableRow {
         
         // get a pointer to the beginning of field for the current row
         template<class T>
-        T* GetPointer(unsigned int index);
+        T* GetPointer(size_t index);
         
         // get a pointer to the beginning of field for the given row
         template<class T>
-        T* GetPointerToRow(const std::string& fieldName, unsigned int row);
+        T* GetPointerToRow(const std::string& fieldName, size_t row);
         
         // get a pointer to the beginning of field for the given row
         template<class T>
-        T* GetPointerToRow(unsigned int index, unsigned int row);
+        T* GetPointerToRow(size_t index, size_t row);
 
         // get a void pointer to whole memory block
         void const* GetPointer() const;
         
         // get a void pointer to a particular row
-        void const* GetPointerToField(unsigned int index, unsigned int row) const;
+        void const* GetPointerToField(size_t index, size_t row) const;
         
         I3TableRowDescriptionConstPtr GetDescription() const;
 
-        unsigned int GetNumberOfRows() const;
-        void SetNumberOfRows(unsigned int nrows);
+        size_t GetNumberOfRows() const;
+        void SetNumberOfRows(size_t nrows);
 
 
     private:
@@ -80,8 +80,8 @@ class I3TableRow {
         void init();
 
         I3TableRowDescriptionConstPtr description_;
-        unsigned int nrows_;
-        unsigned int currentRow_;
+        size_t nrows_;
+        size_t currentRow_;
         I3MemoryChunk* data_;
 
 };
@@ -104,7 +104,7 @@ void I3TableRow::SetCurrent(const std::string& fieldName, T value) {
 
 template<class T>
 void I3TableRow::SetAll(const std::string& fieldName, T value) {
-    for (unsigned int row = 0; row < nrows_; ++row) {
+    for (size_t row = 0; row < nrows_; ++row) {
        T*  pointer = GetPointerToRow<T>(fieldName, row); 
        *pointer = value;
     }
@@ -125,29 +125,29 @@ T* I3TableRow::GetPointer(const std::string& fieldName) {
 }
 
 template<class T>
-T* I3TableRow::GetPointer(unsigned int index) {
+T* I3TableRow::GetPointer(size_t index) {
     return GetPointerToRow<T>(index, currentRow_);
 }
 
 
 template<class T>
-T* I3TableRow::GetPointerToRow(const std::string& fieldName, unsigned int row) {
-    int index;
-    if ( (index = description_->GetFieldColumn(fieldName)) == -1 ) 
+T* I3TableRow::GetPointerToRow(const std::string& fieldName, size_t row) {
+    size_t index;
+    if ( (index = description_->GetFieldColumn(fieldName)) >= description_->GetNumberOfFields() ) 
         log_fatal("trying to get the address of unknown field %s", fieldName.c_str());
 
     return GetPointerToRow<T>(index, row);
 }
 
 template<class T>
-T* I3TableRow::GetPointerToRow(unsigned int index, unsigned int row) {
+T* I3TableRow::GetPointerToRow(size_t index, size_t row) {
     if (sizeof(T) != description_->GetFieldTypeSizes().at(index) )
-        log_fatal("size mismatch between the requested type (%d) and field '%s' (%d)",
-                  (int)sizeof(T),description_->GetFieldNames().at(index).c_str(),
-                  (int)description_->GetFieldTypeSizes().at(index));
+        log_fatal("size mismatch between the requested type (%zu) and field '%s' (%zu)",
+                  sizeof(T),description_->GetFieldNames().at(index).c_str(),
+                  description_->GetFieldTypeSizes().at(index));
 
     if ( !(( 0 <= row) && (row < nrows_)) )
-        log_fatal("requested pointer to row %d which is not in [0,%d]", row, nrows_);
+        log_fatal("requested pointer to row %zu which is not in [0,%zu]", row, nrows_);
     
     /*
     if (description_->GetFieldArrayLengths().at(index) > 1 )

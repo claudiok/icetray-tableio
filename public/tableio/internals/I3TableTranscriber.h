@@ -19,7 +19,7 @@ class I3TableTranscriber {
     public:
         I3TableTranscriber(I3TableServicePtr input, I3TableServicePtr output);
         void Execute();
-        void Execute(unsigned int nframes);
+        void Execute(size_t nframes);
         
         void Finish();
         
@@ -34,7 +34,7 @@ class I3TableTranscriber {
         I3TableServicePtr outputService_;
         // std::map<std::string, I3TablePtr> inputTables_;
         std::vector<std::pair<I3TablePtr,I3TablePtr> > transcriptions_;
-        unsigned int nEvents_;
+        size_t nEvents_;
     SET_LOGGER("I3TableTranscriber");
 };
 

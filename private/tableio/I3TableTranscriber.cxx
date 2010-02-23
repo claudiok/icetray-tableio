@@ -22,9 +22,9 @@ I3TableTranscriber::I3TableTranscriber(I3TableServicePtr input, I3TableServicePt
         std::vector<std::string> inputTables = inputService_->GetTableNames();
         std::map<std::string, I3TablePtr> inputTableMap;
         I3TablePtr table;
-        unsigned int nEvents = 0;
+        size_t nEvents = 0;
         std::string nEvents_reference;
-        unsigned int nrows = 0;
+        size_t nrows = 0;
         for (it = inputTables.begin(); it != inputTables.end(); it++) {
             table = inputService_->GetTable(*it, I3TableRowDescriptionConstPtr());
             nrows = table->GetNumberOfRows();
@@ -35,7 +35,7 @@ I3TableTranscriber::I3TableTranscriber(I3TableServicePtr input, I3TableServicePt
                 // have the same number of rows
                 if (nEvents != 0) {
                     if (nrows != nEvents) {
-                        log_fatal("Input tables '%s' '%s' have different sizes (%u vs. %u)",
+                        log_fatal("Input tables '%s' '%s' have different sizes (%zu vs. %zu)",
                             nEvents_reference.c_str(),table->GetName().c_str(),nEvents,nrows);
                     }
                 } else {
@@ -72,10 +72,10 @@ void I3TableTranscriber::Execute() {
     Execute(nEvents_);
 }
 
-void I3TableTranscriber::Execute(unsigned int nframes) {
+void I3TableTranscriber::Execute(size_t nframes) {
     // don't overrun the table
     if (nframes > nEvents_) nframes = nEvents_;
-    unsigned int i;
+    size_t i;
     std::vector<std::pair<I3TablePtr,I3TablePtr> >::iterator pair_it;
     I3TablePtr in,out;
     I3EventHeaderPtr header;
@@ -83,7 +83,7 @@ void I3TableTranscriber::Execute(unsigned int nframes) {
     
     // loop over the given number of row-groups
     for (i = 0; i<nframes; i++) {
-        log_trace("Transcribing event #%u",i+1);
+        log_trace("Transcribing event #%zu",i+1);
         for (pair_it = transcriptions_.begin(); pair_it != transcriptions_.end(); pair_it++) {
             in = pair_it->first;
             out = pair_it->second;
@@ -96,7 +96,7 @@ void I3TableTranscriber::Execute(unsigned int nframes) {
             header = I3EventHeaderPtr(new I3EventHeader());
             header->SetRunID(rows->Get<unsigned int>("Run"));
             header->SetEventID(rows->Get<unsigned int>("Event"));
-            log_trace("R%u/E%u '%s': %u row(s)",
+            log_trace("R%u/E%u '%s': %zu row(s)",
                 header->GetRunID(),header->GetEventID(),in->GetName().c_str(),rows->GetNumberOfRows());
             
             out->AddRow(header,rows);
