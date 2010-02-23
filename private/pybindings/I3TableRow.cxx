@@ -66,7 +66,7 @@ void set_field(I3TableRow& self, const std::string& field, bp::object value, boo
    int index = desc->GetFieldColumn(field);
    if (index < 0) log_fatal("Tried to set value for unknown column '%s'",field.c_str());
    
-   char type_code = PyArrayTypecode(desc->GetFieldTypes().at(index));
+   char type_code = PyArrayTypecode_from_I3Datatype(desc->GetFieldTypes().at(index));
    bool success = false;
    // =====================================
    // = Case 1: field holds a scalar type =
@@ -196,9 +196,12 @@ bp::object getitem(I3TableRow& self, const std::string& field) {
    
    I3TableRowDescriptionConstPtr desc = self.GetDescription();
    size_t index = desc->GetFieldColumn(field);
-   if (index < 0) log_fatal("Tried to get value for unknown column '%s'",field.c_str());
+   if (index >= desc->GetNumberOfFields()) {
+       PyErr_SetString(PyExc_KeyError,field.c_str());
+       bp::throw_error_already_set();
+   }
    
-   char type_code = PyArrayTypecode(desc->GetFieldTypes().at(index));
+   char type_code = PyArrayTypecode_from_I3Datatype(desc->GetFieldTypes().at(index));
    
    // =======================================
    // = Case 1: memory chunk holds a scalar =

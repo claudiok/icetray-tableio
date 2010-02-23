@@ -11,7 +11,9 @@
 
 #include "tableio/internals/I3Datatype.h"
 
-char PyArrayTypecode(const I3Datatype& dtype);
+char PyArrayTypecode_from_I3Datatype(const I3Datatype& dtype);
+boost::shared_ptr<I3Datatype> I3Datatype_from_PyArrayTypecode(char code);
+boost::shared_ptr<I3Datatype> I3Datatype_from_PyObject(boost::python::object obj);
 
 namespace I3Datatypes {
   enum NativeType {
