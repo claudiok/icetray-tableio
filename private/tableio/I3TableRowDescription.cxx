@@ -121,7 +121,7 @@ bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) cons
 		std::string boolunit("bool");
 		if ((unit.size() != 0) && (unit != boolunit))
 			log_fatal("The unit string of a boolean field must be \"bool\".");
-		AddField(name, I3DatatypeFromNativeType<bool>(), sizeof(bool), 
+		AddField(name, I3DatatypeFromNativeType<bool>(), 
 			 boolunit, doc, arrayLength);
     }
 
@@ -129,8 +129,8 @@ bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) cons
 /******************************************************************************/
 
 void I3TableRowDescription::AddField(const std::string& name, I3Datatype type,
-                                     size_t typeSize, const std::string& unit,
-                                     const std::string& doc, size_t arrayLength) {
+                                     const std::string& unit, const std::string& doc,
+                                     size_t arrayLength) {
 
     size_t chunkOffset=0;
     size_t byteOffset=0;
@@ -141,24 +141,15 @@ void I3TableRowDescription::AddField(const std::string& name, I3Datatype type,
     size_t nfields = fieldNameToIndex_.size();
     fieldNames_.push_back(name);
     fieldNameToIndex_[name] = nfields;
-    // if (arrayLength == 1)
-    //     fieldHdfTypes_.push_back(hdfType);
-    // else {
-    //     hsize_t rank = 1; 
-    //     std::vector<hsize_t> dims(1, arrayLength);
-    //     hid_t array_tid = H5Tarray_create(hdfType, rank, &dims.front(), NULL);
-    //     fieldHdfTypes_.push_back(array_tid);
-    // }
+
     // special case for ambigous integers that may be booleans
-    if ( unit == std::string("bool") ) { 
-       // typeCode = 'o';
-       type.kind = I3Datatype::Bool;
-    }
+    if ( unit == std::string("bool") ) type.kind = I3Datatype::Bool;
     fieldTypes_.push_back(type);
-       
-    // else if (typeCode == 0) typeCode = py_code_from_hdf(hdfType);
-    // fieldTypeCodes_.push_back(typeCode);
-    fieldTypeSizes_.push_back(typeSize);
+    
+    // check that the type actually fits in the memory chunk
+    if (type.size > I3MEMORYCHUNK_SIZE)
+        log_fatal("Type '%s' is larger than the memory chunk size!",type.description.c_str());
+    fieldTypeSizes_.push_back(type.size);
     fieldArrayLengths_.push_back(arrayLength);
     fieldChunkOffsets_.push_back(chunkOffset);
     fieldByteOffsets_.push_back(byteOffset);

@@ -48,8 +48,7 @@ public:
 
     /* basic AddField */
     void AddField(const std::string& name, I3Datatype type,
-		  size_t typeSize, const std::string& unit,
-		  const std::string& doc,
+		  const std::string& unit, const std::string& doc,
 		  size_t arrayLength);
 
     /* convenience AddField */
@@ -59,7 +58,7 @@ public:
 		  const std::string& doc, 
 		  size_t arrayLength=1) 
     {
-      AddField(name, I3DatatypeFromNativeType<T>(), sizeof(T), 
+      AddField(name, I3DatatypeFromNativeType<T>(), 
 		 unit, doc, arrayLength);
     }
 
@@ -71,17 +70,8 @@ public:
 		      const std::string& doc,
 		      size_t arrayLength=1) {
             
-	// TODO check enumsize <= DATAENTRYSIZE
-    // typename std::vector<std::pair<std::string,enum_type> >::const_iterator it;
-    // enum_type enum_instance;
-    // hid_t enum_tid = H5Tcreate(H5T_ENUM, sizeof(enum_type));
-    // for (it = elements.begin(); it != elements.end(); ++it) {
-    //     H5Tenum_insert(enum_tid, it->first.c_str(),
-    //         (enum_instance=it->second, &enum_instance));
-    // }
-      I3Datatype enum_typus = I3DatatypeFromNativeType<enum_type>(elements);
-    // char typeCode = 'i';
-	AddField(name, enum_typus, sizeof(enum_type), unit, doc, arrayLength);
+    I3Datatype enum_typus = I3DatatypeFromNativeType<enum_type>(elements);
+    AddField(name, enum_typus, unit, doc, arrayLength);
     }
 
     bool CanBeFilledInto(shared_ptr<const I3TableRowDescription> other) const;
