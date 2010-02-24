@@ -22,3 +22,39 @@ I3Datatype I3DatatypeFromNativeType<bool>() {
     dtype.description = label;
     return dtype;
 };
+
+bool I3Datatype::operator!=(const I3Datatype& rhs) const {
+      return !(*this == rhs);
+};
+
+bool I3Datatype::operator==(const I3Datatype& rhs) const {
+      return ((kind == rhs.kind) &&
+              (size == rhs.size) &&
+              (is_signed == rhs.is_signed) &&
+              (enum_members == rhs.enum_members));
+};
+
+std::string I3Datatype::TypeClassAsString() const {
+    std::string out;
+    switch(kind) {
+        case Float: out = "Float"; break;
+        case Int:   out = "Int"; break;
+        case Enum:  out = "Enum"; break;
+        case Bool:  out = "Bool"; break;
+    }
+    return out;
+};
+
+std::string I3Datatype::AsString() const {
+    std::ostringstream out;
+    out << "I3Datatype(";
+    out << "kind=" << TypeClassAsString();
+    out << " size=" << size;
+    out << " signed=";
+    
+    if (is_signed) out << "True";
+    else out << "False";
+    
+    out << ")";
+    return out.str();
+};

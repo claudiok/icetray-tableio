@@ -35,16 +35,11 @@ struct I3Datatype {
     bool is_signed;
     std::vector<std::pair<std::string,long> > enum_members;
   std::string description;
-    
-    bool operator!=(const I3Datatype& rhs) const {
-          return !(*this == rhs);
-    };
-    bool operator==(const I3Datatype& rhs) const {
-          return ((kind == rhs.kind) &&
-                  (size == rhs.size) &&
-                  (is_signed == rhs.is_signed) &&
-                  (enum_members == rhs.enum_members));
-    };
+  bool operator!=(const I3Datatype& rhs) const;
+  bool operator==(const I3Datatype& rhs) const;
+  std::string TypeClassAsString() const;
+  std::string AsString() const;
+
     I3Datatype() {};
     I3Datatype(TypeClass k, size_t s, bool sign) : kind(k),size(s),is_signed(sign) {};
 };

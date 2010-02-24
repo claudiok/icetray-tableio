@@ -16,7 +16,29 @@
  namespace bp = boost::python;
 
 /****************************************************************************/
+// helpful error messages
 
+void throw_unless_match(I3Datatype& value_dtype, I3Datatype& field_dtype) {
+    if (value_dtype != field_dtype) {
+        std::ostringstream mesg;
+        mesg << "Can't copy values of type " << value_dtype.AsString() << " to a field with type " << field_dtype.AsString() << ".";
+        PyErr_SetString(PyExc_TypeError,mesg.str().c_str());
+        bp::throw_error_already_set();
+    }
+}
+
+void throw_unless_fits(size_t array_size, size_t field_size) {
+    if (array_size > field_size) {
+        std::ostringstream mesg;
+        mesg << "Can't fit a " << array_size << "-element vector into a " << field_size << "-element array-field.";
+        PyErr_SetString(PyExc_ValueError,mesg.str().c_str());
+        bp::throw_error_already_set();
+    }
+}
+
+/****************************************************************************/
+
+// A visitor for setting scalar values
  struct set_scalar {
      I3TableRow& self;
      size_t index;
@@ -41,6 +63,7 @@
  
  /****************************************************************************/
 
+// A visitor for setting from wrapped I3Vectors
  struct set_vector {
      I3TableRow& self;
      size_t index;
@@ -51,12 +74,17 @@
          : self(s), index(i), value(v), all(a), success(true) {};
      template <typename T>
      void call() {
-         // T v = bp::extract<T>(value);
          std::vector<T> v = bp::extract<I3Vector<T> >(value);
          I3TableRowDescriptionConstPtr desc = self.GetDescription();
-         // self.Set(index,v,all);
-         if ( v.size() > desc->GetFieldArrayLengths().at(index) )
-            log_fatal("Length mismatch between vector (%zu) and array field (%zu).",v.size(),desc->GetFieldArrayLengths().at(index));
+         
+         // check that datatypes match
+         I3Datatype dtype = desc->GetFieldTypes().at(index);
+         I3Datatype vec_dtype = I3DatatypeFromNativeType<T>();
+         throw_unless_match(vec_dtype,dtype);
+         
+         // check for an overflow
+         throw_unless_fits(v.size(), desc->GetFieldArrayLengths().at(index));
+        
          T* block = self.GetPointer<T>(index);
          std::copy(v.begin(),v.end(),block);
      };
@@ -70,6 +98,7 @@
  
  /****************************************************************************/
 
+// a function to set field values with a visitor and dispatcher
  template<typename Dispatcher>
  bool set_index(I3TableRow& self, I3Datatype& dtype, size_t index, bp::object value, bool all) {
      Dispatcher dispatcher;
@@ -102,8 +131,8 @@
         // = Check the type and byte order of the array =
         // ==============================================
         if (!arr_dtype) log_fatal("Type of array could not be recognized.");
-        if (*arr_dtype != dtype) log_fatal("Type of array does not match field");
-
+        throw_unless_match(*arr_dtype,dtype);
+       
         // hang on to your hats, here we go!
         const void* location;
         Py_ssize_t length;
@@ -113,9 +142,8 @@
             // = Copy the buffer (an array in native representation) 
             //   directly into the memory chunk                      =
             // =======================================================
-            if (static_cast<size_t>(length) > dtype.size*array_length)
-               log_fatal("Size mismatch between memory block (%zu) and field (%zu)",
-                          length,(dtype.size*array_length));
+            throw_unless_fits(static_cast<size_t>(length)/(dtype.size),array_length);
+            
             size_t start,stop,i;
             void* pointy;
             if (all) {
@@ -123,7 +151,7 @@
                 stop = self.GetNumberOfRows();
             } else {
                 start = self.GetCurrentRow();
-                stop = start;
+                stop = start+1;
             }
             for (i = start; i < stop; i++) {
                 pointy = self.GetPointerToField(index,i);
@@ -189,6 +217,7 @@ struct get_list {
 
 };
 
+// Get the value of a field using the specified visitor struct
 template<typename T>
 bp::object get_object(I3TableRow& self,I3Datatype& dtype,size_t index) {
     I3DatatypeDispatcher<T> dispatcher;

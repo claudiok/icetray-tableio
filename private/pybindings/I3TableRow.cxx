@@ -16,18 +16,22 @@
 #include "type_helpers.h"
 #include "I3TableRow_detail.h"
 
-// ========================================================
-// = A python-friendly interface to I3TableRowSet<type>() =
-// ========================================================
-void set_field(I3TableRow& self, const std::string& field, bp::object value, bool all = false) {
-    
-    I3TableRowDescriptionConstPtr desc = self.GetDescription();
+size_t index_for_field(I3TableRowDescriptionConstPtr desc, const std::string& field) {
     size_t index = desc->GetFieldColumn(field);
     if (index >= desc->GetNumberOfFields()) {
         PyErr_SetString(PyExc_KeyError,field.c_str());
         bp::throw_error_already_set();
     }
-   
+    return index;
+}
+
+// ========================================================
+// = A python-friendly interface to I3TableRowSet<type>() =
+// ========================================================
+void set_field(I3TableRow& self, const std::string& field, bp::object value, bool all = false) {
+    
+   I3TableRowDescriptionConstPtr desc = self.GetDescription();
+   size_t index = index_for_field(desc,field);
    I3Datatype dtype = desc->GetFieldTypes().at(index);
    size_t array_length = desc->GetFieldArrayLengths().at(index);
    
@@ -68,12 +72,7 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(set_overloads,set_field,3,4);
 bp::object getitem(I3TableRow& self, const std::string& field) {
    
    I3TableRowDescriptionConstPtr desc = self.GetDescription();
-   size_t index = desc->GetFieldColumn(field);
-   if (index >= desc->GetNumberOfFields()) {
-       PyErr_SetString(PyExc_KeyError,field.c_str());
-       bp::throw_error_already_set();
-   }
-   
+   size_t index = index_for_field(desc,field);
    I3Datatype dtype = desc->GetFieldTypes().at(index);
    
    // = Case 1: memory chunk holds a scalar =
