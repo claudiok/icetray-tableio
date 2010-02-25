@@ -127,3 +127,4 @@ size_t I3ConverterBundle::Convert(const I3FrameObject& object,
 bool I3ConverterBundle::CanConvert(I3FrameObjectConstPtr object) {
     return converters_.front()->CanConvert(object);
 };
+
