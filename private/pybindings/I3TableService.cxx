@@ -15,20 +15,19 @@
 
 namespace bp = boost::python;
 
-class I3TableServiceWrapper : I3TableService, bp::wrapper<I3TableService> {
+struct I3TableServiceWrapper : I3TableService, bp::wrapper<I3TableService> {
         virtual I3TablePtr CreateTable(const std::string& tableName, 
                                        I3TableRowDescriptionConstPtr description) {
-        return this->get_override("CreateTable")(tableName,description);
-			};
+            return this->get_override("CreateTable")(tableName,description);
+        };
         virtual void CloseFile() {
-			this->get_override("CloseFile")();
-};
-   
-};
+            this->get_override("CloseFile")();
+        };
+   };
 
 void register_I3TableService() {
 
-	// expose the virtual base class
-	bp::class_<I3TableService, boost::noncopyable>("I3TableService",bp::no_init);
-
+	// expose the the python-inheritable wrapper class instead of the virtual base class
+    bp::class_<I3TableServiceWrapper, boost::shared_ptr<I3TableServiceWrapper>, boost::noncopyable>("I3TableService")
+    ;
 }
