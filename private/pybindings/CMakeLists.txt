@@ -8,6 +8,7 @@ i3_add_pybindings(tableio
   I3TableTranscriber.cxx
   I3Datatype.cxx
   type_helpers.cxx
+  dataclasses_converters.cxx
   module.cxx
   USE_TOOLS boost python log4cplus
   USE_PROJECTS icetray tableio
