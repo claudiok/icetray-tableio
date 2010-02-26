@@ -78,6 +78,7 @@ class I3TableRow {
         size_t GetNumberOfRows() const;
         void SetNumberOfRows(size_t nrows);
 
+        void SetEnumsAreInts( bool flag ) { enums_are_ints_ = flag; };
 
     private:
         // set field with name fieldName to value for all rows
@@ -88,6 +89,11 @@ class I3TableRow {
         template<class T>
         void SetCurrent(size_t index, T value);
         
+        // check if the templated type is compatible with the
+        // field at index
+        template<class T>
+        bool CheckType(size_t index);
+        
         I3TableRow();
         void init();
 
@@ -95,12 +101,27 @@ class I3TableRow {
         size_t nrows_;
         size_t currentRow_;
         I3MemoryChunk* data_;
+        bool enums_are_ints_;
 
 };
 
 I3_POINTER_TYPEDEFS( I3TableRow );
 
 /******************************************************************************/
+
+template<class T>
+bool I3TableRow::CheckType(size_t index) {
+    bool compatible = false;
+    I3Datatype requested_dtype = I3DatatypeFromNativeType<T>();
+    I3Datatype this_dtype = description_->GetFieldTypes().at(index);
+    compatible = this_dtype.CompatibleWith(requested_dtype,enums_are_ints_);
+    if (!compatible) {
+        log_fatal("The requested type %s is not compatible with %s, the type of field '%s'.",
+                    requested_dtype.AsString().c_str(),this_dtype.AsString().c_str(),
+                    description_->GetFieldNames().at(index).c_str());
+    }
+    return compatible;
+}
 
 template<class T>
 void I3TableRow::Set(const std::string& fieldName, T value, bool all = false) {
@@ -173,10 +194,8 @@ T* I3TableRow::GetPointer(const std::string& fieldName, size_t row) {
 
 template<class T>
 T* I3TableRow::GetPointer(size_t index, size_t row) {
-    if (sizeof(T) != description_->GetFieldTypeSizes().at(index) )
-        log_fatal("size mismatch between the requested type (%zu) and field '%s' (%zu)",
-                  sizeof(T),description_->GetFieldNames().at(index).c_str(),
-                  description_->GetFieldTypeSizes().at(index));
+    
+    CheckType<T>(index);
 
     if ( !(( 0 <= row) && (row < nrows_)) )
         log_fatal("requested pointer to row %zu which is not in [0,%zu]", row, nrows_);

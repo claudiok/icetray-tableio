@@ -37,6 +37,7 @@ struct I3Datatype {
   std::string description;
   bool operator!=(const I3Datatype& rhs) const;
   bool operator==(const I3Datatype& rhs) const;
+  bool CompatibleWith(const I3Datatype& rhs, bool enums_are_ints = false) const;
   std::string TypeClassAsString() const;
   std::string AsString() const;
 
@@ -56,6 +57,9 @@ I3Datatype I3DatatypeFromNativeType()
     if (boost::is_integral<T>()) {
         dtype.kind = I3Datatype::Int;
         dtype.is_signed = boost::is_signed<T>();
+    } else if (boost::is_enum<T>()) {
+        dtype.kind = I3Datatype::Enum;
+        dtype.is_signed = boost::is_signed<T>();
     } else { // it's a float
         dtype.kind = I3Datatype::Float;
         dtype.is_signed = true;
@@ -70,7 +74,7 @@ I3Datatype I3DatatypeFromNativeType<bool>();
 template <typename T>
 static I3Datatype I3DatatypeFromNativeType(const std::vector<std::pair< std::string, T> >& enum_labels) 
 {
-    // BOOST_STATIC_ASSERT(boost::is_enum<T>::value);
+    BOOST_STATIC_ASSERT(boost::is_enum<T>::value);
 
     I3Datatype dtype;
     dtype.size = sizeof(T);

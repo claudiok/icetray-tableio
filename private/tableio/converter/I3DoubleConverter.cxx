@@ -29,7 +29,8 @@ class I3DoubleConverter : public I3ConverterImplementation<I3Double> {
         }
 };
 
+// template<> const std::string I3STLVectorConverter<I3Double>::converterName_ = "I3Double";
+
 I3_CONVERTER(I3DoubleConverter, I3Double);
 I3_CONVERTER(I3STLVectorConverter<I3Double>, std::vector<I3Double>);
-
 

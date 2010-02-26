@@ -12,6 +12,8 @@
 #include "I3Test.h"
 
 #include "dataclasses/I3Double.h"
+#include "dataclasses/I3Bool.h"
+
 
 #include "tableio/internals/I3TableService.h"
 #include "tableio/internals/I3TableWriter.h"
@@ -36,6 +38,48 @@ TEST(factory_creation) {
     }
     ENSURE(thrown, "description not set yet");
 }
+
+TEST(type_id) {
+    I3ConverterPtr converter = BuildConverter("I3Double");
+    boost::shared_ptr<const I3Double> pi(new I3Double(3.14));
+    boost::shared_ptr<const I3Bool> falsehood(new I3Bool(false));
+    
+    ENSURE( converter->CanConvert(pi), "typeid works.");
+    ENSURE( !converter->CanConvert(falsehood), "typeid works.");
+    
+}
+
+TEST(vector_factory_creation) {
+    I3ConverterPtr converter = BuildConverter("std::vector<I3Double>");
+    ENSURE(converter != 0, "factory didn't return a null pointer");
+
+    // every converter has the chance to see the frame object
+    // it is responsible for before returning the description.
+    // hence a call to GetDescription() should now fail
+    bool thrown = false;
+    try {
+        converter->GetDescription();
+    }
+    catch(...) {
+        thrown = true;
+    }
+    ENSURE(thrown, "description not set yet");
+}
+
+TEST(vector_conversion) {
+    I3ConverterPtr converter = BuildConverter("std::vector<I3Double>");
+    
+    boost::shared_ptr<std::vector<I3Double> > vec( new std::vector<I3Double>);
+    // std::vector<I3Double> vec;
+    vec->push_back(I3Double(3.14));
+    vec->push_back(I3Double(2.71));
+    vec->push_back(I3Double(1.41));
+    // 
+    // ENSURE_EQUAL( converter->GetNumberOfRows(vec), size_t(3) );
+    // ENSURE( converter->GetDescription(vec), "get description");
+    
+}
+
 
 TEST(convert_one_row) {
     I3ConverterPtr converter = BuildConverter("I3Double");

@@ -34,6 +34,18 @@ bool I3Datatype::operator==(const I3Datatype& rhs) const {
               (enum_members == rhs.enum_members));
 };
 
+// return true if the types can be safely reinterpret_cast'd() into
+// each other. Note that this doesn't check the members of the enum
+bool I3Datatype::CompatibleWith(const I3Datatype& rhs, bool enums_are_ints ) const {
+    bool rep = (size == rhs.size) && (is_signed == rhs.is_signed);
+    bool type = (kind == rhs.kind);
+    if (enums_are_ints && 
+        ((kind == I3Datatype::Enum || kind == I3Datatype::Int) &&
+         (rhs.kind == I3Datatype::Enum || rhs.kind == I3Datatype::Int)))
+         type = true;
+    return (rep && type); 
+};
+
 std::string I3Datatype::TypeClassAsString() const {
     std::string out;
     switch(kind) {

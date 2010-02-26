@@ -43,7 +43,7 @@ TEST(assignment) {
 
 TEST(type_checking) {
     I3TableRowDescriptionPtr desc = I3TableRowDescriptionPtr( new I3TableRowDescription());
-    desc->AddField<int>("field", "unit", "doc");
+    desc->AddField<int32_t>("field", "unit", "doc");
     I3TableRow row(desc);
 
     bool thrown = false;
@@ -53,18 +53,59 @@ TEST(type_checking) {
 
     row.Set<int>("field", 2);
     thrown = false;
-    try { row.Get<bool>("field"); } // use wrong type 
+    try { row.Get<uint32_t>("field"); } // use wrong type 
+    catch(...) { thrown = true; }
+    ENSURE_EQUAL(thrown, true, "the above operation should throw an exception");
+    
+    try { row.Get<uint32_t>("field"); } // use wrong type 
     catch(...) { thrown = true; }
     ENSURE_EQUAL(thrown, true, "the above operation should throw an exception");
     
     // type checking works over the size of the field
-    // hence it cannot catch attempts to use Set and Get with a wrong type which
-    // has the correct length
-    // assumption here: sizeof(float) == sizeof(int)
+    // and its representation properties (integer-ness, signedness)
+    // so attempts to get a field of the same size but
+    // different properties should fail
     thrown = false;
     try { row.Get<float>("field"); } // use wrong type
     catch(...) { thrown = true; }
-    ENSURE_EQUAL(thrown, false, "type checking fails");
+    ENSURE_EQUAL(thrown, true, "type checking works!");
+}
+
+// this enum will be represented as a 32-bit signed integer
+struct Foo {
+enum DummyEnummy {
+    foo = -INT32_MAX ,bar = INT32_MAX
+};
+};
+#define DUMMY_ENUMMY (foo)(bar)
+
+TEST(enum_checking) {
+    I3TableRowDescriptionPtr desc = I3TableRowDescriptionPtr( new I3TableRowDescription());
+    desc->AddField<int32_t>("field", "unit", "doc");
+    MAKE_ENUM_VECTOR(dummies,Foo,Foo::DummyEnummy,DUMMY_ENUMMY);
+    desc->AddEnumField<Foo::DummyEnummy>("enum", dummies, "unit", "doc");
+    
+    I3TableRow row(desc);
+    bool thrown;
+    
+    ENSURE_EQUAL( sizeof(Foo::DummyEnummy), sizeof(int32_t) );
+    
+    thrown = false;
+    try { row.Set<Foo::DummyEnummy>("field",Foo::foo); }
+    catch(...) { thrown = true; }
+    ENSURE_EQUAL(thrown, true, "Should not be able to set int field with enum type");
+    
+    thrown = false;
+    try { row.Set<int32_t>("enum",0); }
+    catch(...) { thrown = true; }
+    ENSURE_EQUAL(thrown, true, "Should not be able to set enum field with int type");
+    
+    thrown = false;
+    try { row.Set<Foo::DummyEnummy>("enum",Foo::foo); }
+    catch(...) { thrown = true; }
+    ENSURE_EQUAL(thrown, false, "Enum field passes.");
+    
+    
 }
 
 TEST(bool_casting) {

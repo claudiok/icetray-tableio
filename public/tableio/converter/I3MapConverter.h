@@ -29,17 +29,63 @@ namespace converter
   template <typename T>
   struct convert { };
 
+
   template <>
   struct convert<I3DOMLaunch> 
   { 
     static void AddFields(I3TableRowDescriptionPtr desc)
     {
-      desc->AddField<double>("StartTime", "ns/10", "start time");
+      desc->AddField<double>("start_time","ns/10","Time at which the DOM was triggered");
+      desc->AddField<bool>("pedestal_sub","bool","Has the pedestal been subtracted from the waveform?");
+      desc->AddField<bool>("lc_bit","bool","Was the local-cooincidence condition satistfied?");
+      
+      MAKE_ENUM_VECTOR(atwdselect,I3DOMLaunch,I3DOMLaunch::ATWDselect,I3DOMLAUNCH_H_I3DOMLaunch_ATWDselect);
+      desc->AddEnumField<I3DOMLaunch::ATWDselect>("which_atwd",atwdselect,"","Which ATWD chip recorded this launch?");     
+      MAKE_ENUM_VECTOR(trigger_type,I3DOMLaunch,I3DOMLaunch::TriggerType,I3DOMLAUNCH_H_I3DOMLaunch_TriggerType);
+      desc->AddEnumField<I3DOMLaunch::TriggerType>("trigger_type",trigger_type,"","");     
+      MAKE_ENUM_VECTOR(trigger_mode,I3DOMLaunch,I3DOMLaunch::TriggerMode,I3DOMLAUNCH_H_I3DOMLaunch_TriggerMode);
+      desc->AddEnumField<I3DOMLaunch::TriggerMode>("trigger_mode",trigger_mode,"","");
+      
+      desc->AddField<uint16_t>("raw_atwd_0","counts","Raw digitizer counts from ATWD channel 0",128);
+      desc->AddField<uint16_t>("raw_atwd_1","counts","Raw digitizer counts from ATWD channel 1",128);
+      desc->AddField<uint16_t>("raw_atwd_2","counts","Raw digitizer counts from ATWD channel 2",128);
+      desc->AddField<uint16_t>("raw_charge_stamp","counts",
+            "The counts of highest-charge bin of the first 16 fADC bins (400 ns), plus the bins immediately before and after.",3);
+      desc->AddField<uint16_t>("raw_fadc","counts","Raw digitizer counts from fADC",256);
     }
 
-    static void FillRow(const I3DOMLaunch& launch, I3TableRowPtr row) 
+    static void FillRow(const I3DOMLaunch& dl, I3TableRowPtr row) 
     {
-      row->Set<double>("StartTime", launch.GetStartTime());
+      row->Set<double>("start_time", dl.GetStartTime());
+      row->Set<I3DOMLaunch::ATWDselect>("which_atwd",dl.GetWhichATWD());
+      row->Set<I3DOMLaunch::TriggerMode>("trigger_mode",dl.GetTriggerMode());
+      row->Set<I3DOMLaunch::TriggerType>("trigger_type",dl.GetTriggerType());
+      row->Set<bool>("pedestal_sub", dl.GetIsPedestalSub());
+      row->Set<bool>("lc_bit", dl.GetLCBit());
+      std::vector<int>::const_iterator it;
+      size_t i; uint16_t* pointy;
+      
+      pointy = row->GetPointer<uint16_t>("raw_atwd_0");
+      for (it = dl.GetRawATWD(0).begin(), i = 0; it != dl.GetRawATWD(0).end(); it++, i++) {
+          pointy[i] = *it;
+      }
+      pointy = row->GetPointer<uint16_t>("raw_atwd_1");
+      for (it = dl.GetRawATWD(1).begin(), i = 0; it != dl.GetRawATWD(1).end(); it++, i++) {
+          pointy[i] = *it;
+      }
+      pointy = row->GetPointer<uint16_t>("raw_atwd_2");
+      for (it = dl.GetRawATWD(2).begin(), i = 0; it != dl.GetRawATWD(2).end(); it++, i++) {
+          pointy[i] = *it;
+      }
+      pointy = row->GetPointer<uint16_t>("raw_charge_stamp");
+      for (it = dl.GetRawChargeStamp().begin(), i = 0; it != dl.GetRawChargeStamp().end(); it++, i++) {
+          pointy[i] = *it;
+      }
+      pointy = row->GetPointer<uint16_t>("raw_fadc");
+      for (it = dl.GetRawFADC().begin(), i = 0; it != dl.GetRawFADC().end(); it++, i++) {
+          pointy[i] = *it;
+      }
+      
     }
   };
   
@@ -87,7 +133,7 @@ class I3MapOMKeyConverter
 
 private:
   size_t GetNumberOfRows(const T& m) {
-    log_warn("%s", __PRETTY_FUNCTION__);
+    log_trace("%s", __PRETTY_FUNCTION__);
     typename T::const_iterator iter = m.begin();
     size_t nrows = 0;
     while (iter != m.end())
@@ -100,12 +146,12 @@ private:
 
   I3TableRowDescriptionPtr CreateDescription(const T& m) 
   {
-    log_warn("%s", __PRETTY_FUNCTION__);
+    log_trace("%s", __PRETTY_FUNCTION__);
     I3TableRowDescriptionPtr desc = 
       I3TableRowDescriptionPtr(new I3TableRowDescription() );
     desc->isMultiRow_ = true;
-    desc->AddField<int>("String", "", "string number");
-    desc->AddField<unsigned>("OM", "", "om number");
+    desc->AddField<uint8_t>("string", "", "String number");
+    desc->AddField<uint8_t>("om", "", "OM number");
     desc->AddField<tableio_size_t>("vector_index", "", "index in vector");
       
     converter_type::AddFields(desc);
@@ -115,7 +161,7 @@ private:
 
   size_t FillRows(const T& m, I3TableRowPtr rows) 
   {
-    log_warn("%s", __PRETTY_FUNCTION__);
+    log_trace("%s", __PRETTY_FUNCTION__);
     size_t index = 0;
     for(typename T::const_iterator mapiter = m.begin();
 	mapiter != m.end();
@@ -127,13 +173,13 @@ private:
 	     veciter++)
 	  {
 	    rows->SetCurrentRow(index);
-	    rows->Set<int>("String", mapiter->first.GetString());
-	    rows->Set<unsigned>("OM", mapiter->first.GetOM());
+	    rows->Set<uint8_t>("string", mapiter->first.GetString());
+	    rows->Set<uint8_t>("om", mapiter->first.GetOM());
 	    rows->Set<tableio_size_t>("vector_index", vecindex);
 
 	    converter_type::FillRow(*veciter, rows);
 	    
-	    log_warn("%u %d", mapiter->first.GetString(), mapiter->first.GetOM());
+	    log_trace("String: %d OM: %d", mapiter->first.GetString(), mapiter->first.GetOM());
 
 
 	    index++;

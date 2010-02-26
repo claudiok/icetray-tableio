@@ -51,7 +51,10 @@ void throw_unless_fits(size_t array_size, size_t field_size) {
      template <typename T>
      void call() {
          T v = bp::extract<T>(value);
+         // temporarily turn off enum-checking
+         self.SetEnumsAreInts(true);
          self.Set(index,v,all);
+         self.SetEnumsAreInts(false);
      };
 
      void fail(std::string message) {

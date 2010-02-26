@@ -28,6 +28,10 @@ struct I3TableServiceWrapper : I3TableService, bp::wrapper<I3TableService> {
 void register_I3TableService() {
 
 	// expose the the python-inheritable wrapper class instead of the virtual base class
-    bp::class_<I3TableServiceWrapper, boost::shared_ptr<I3TableServiceWrapper>, boost::noncopyable>("I3TableService")
+    bp::class_<I3TableServiceWrapper,
+               boost::shared_ptr<I3TableServiceWrapper>,
+               boost::noncopyable>("I3TableService")
+    .def("CreateTable",&I3TableServiceWrapper::CreateTable)
+    .def("CloseFile",&I3TableServiceWrapper::CloseFile)
     ;
 }

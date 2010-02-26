@@ -34,4 +34,10 @@ Float64 = make_dtype(dt.Float,8,True)
 
 Bool    = make_dtype(dt.Bool,1,False)
 
-del I3Datatype,dt,make_dtype
+# make a pretty-printer for I3Datatype
+def pretty_dtype(self):
+    return "I3Datatype(kind=%s, size=%s, signed=%s)"  % (self.kind,self.size,self.is_signed)
+    
+I3Datatype.__repr__ = pretty_dtype
+
+del I3Datatype,dt,make_dtype,pretty_dtype
