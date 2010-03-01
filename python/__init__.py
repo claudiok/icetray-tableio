@@ -1,3 +1,6 @@
+# create the registry first, so that compiled bookers can be added
+from registry import I3ConverterRegistry
+
 from icecube.load_pybindings import load_pybindings
 import icecube.icetray # be nice and pull in our dependencies
 import icecube.dataclasses
