@@ -96,6 +96,9 @@ I3_POINTER_TYPEDEFS( I3Converter );
 template<class FrmObj>
 class I3ConverterImplementation : public I3Converter {
     public:
+        
+        typedef FrmObj booked_type;
+        
         size_t GetNumberOfRows(I3FrameObjectConstPtr object) {
             return GetNumberOfRows(dynamic_cast<const FrmObj&>(*object));
         }
