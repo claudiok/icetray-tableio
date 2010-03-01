@@ -2,12 +2,15 @@
  * copyright  (C) 2010
  * The Icecube Collaboration
  *
- * $Id: I3STLContainerConverter.h 61800 2010-02-23 02:22:49Z jvansanten $
+ * $Id$
  *
- * @version $Revision: 61800 $
- * @date $LastChangedDate: 2010-02-22 21:22:49 -0500 (Mon, 22 Feb 2010) $
- * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy: jvansanten $
+ * @version $Revision$
+ * @date $LastChangedDate$
+ * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
+
+// A converter can be made for frame objects of the form map<OMKey, vector<T>> by
+// specializing the following templated structs for T. 
 
 // the converters should be written to be indifferent on the state of the I3TableRow.
 // So if an I3DOMLaunch converter exists, converters for vector<I3DOMLaunch> and
@@ -35,9 +38,9 @@ namespace converter
   { 
     static void AddFields(I3TableRowDescriptionPtr desc)
     {
-      desc->AddField<double>("start_time","ns/10","Time at which the DOM was triggered");
+      desc->AddField<double>("start_time","ns","Time at which the DOM went over threshold");
       desc->AddField<bool>("pedestal_sub","bool","Has the pedestal been subtracted from the waveform?");
-      desc->AddField<bool>("lc_bit","bool","Was the local-cooincidence condition satistfied?");
+      desc->AddField<bool>("lc_bit","bool","Was the local-coincidence condition satistfied?");
       
       MAKE_ENUM_VECTOR(atwdselect,I3DOMLaunch,I3DOMLaunch::ATWDselect,I3DOMLAUNCH_H_I3DOMLaunch_ATWDselect);
       desc->AddEnumField<I3DOMLaunch::ATWDselect>("which_atwd",atwdselect,"","Which ATWD chip recorded this launch?");     
@@ -50,7 +53,7 @@ namespace converter
       desc->AddField<uint16_t>("raw_atwd_1","counts","Raw digitizer counts from ATWD channel 1",128);
       desc->AddField<uint16_t>("raw_atwd_2","counts","Raw digitizer counts from ATWD channel 2",128);
       desc->AddField<uint16_t>("raw_charge_stamp","counts",
-            "The counts of highest-charge bin of the first 16 fADC bins (400 ns), plus the bins immediately before and after.",3);
+            "The number of counts in highest-charge bin of the first 16 fADC bins (400 ns), plus the bins immediately before and after.",3);
       desc->AddField<uint16_t>("raw_fadc","counts","Raw digitizer counts from fADC",256);
     }
 
@@ -94,14 +97,14 @@ namespace converter
   { 
     static void AddFields(I3TableRowDescriptionPtr desc)
     {
-      desc->AddField<double>("Time", "ns/10", "time");
-      desc->AddField<int>("ID", "generic", "hit id");
+      desc->AddField<double>("time", "ns", "time");
+      desc->AddField<int>("id", "generic", "hit id");
     }
 
     static void FillRow(const I3RecoHit& hit, I3TableRowPtr row) 
     {
-      row->Set<double>("Time", hit.GetTime());
-      row->Set<int>("ID", hit.GetID());
+      row->Set<double>("time", hit.GetTime());
+      row->Set<int>("id", hit.GetID());
     }
   };
 
@@ -110,16 +113,18 @@ namespace converter
   { 
     static void AddFields(I3TableRowDescriptionPtr desc)
     {
-      desc->AddField<double>("Time", "ns/10", "time");
-      desc->AddField<int>("ID", "generic", "hit id");
-      desc->AddField<double>("Charge", "pes", "charge in PEs");
+      desc->AddField<double>("time", "ns", "Leading-edge time of the pulse");
+      desc->AddField<double>("width", "ns", "Duration of the pulse");
+      desc->AddField<double>("charge", "PE", "Integrated pulse charge");
+      desc->AddField<int>("id", "generic", "hit id");
     }
 
     static void FillRow(const I3RecoPulse& pulse, I3TableRowPtr row) 
     {
-      row->Set<double>("Time", pulse.GetTime());
-      row->Set<int>("ID", pulse.GetID());
-      row->Set<double>("Charge", pulse.GetCharge());
+      row->Set<double>("time", pulse.GetTime());
+      row->Set<double>("width", pulse.GetWidth());
+      row->Set<double>("charge", pulse.GetCharge());
+      row->Set<int>("id", pulse.GetID());
     }
   };
 }
@@ -127,7 +132,7 @@ namespace converter
 template <class T, 
 	  typename mapped_type = typename T::mapped_type::value_type,
 	  typename converter_type = typename converter::convert<mapped_type> >
-class I3MapOMKeyConverter 
+class I3MapOMKeyVectorConverter 
   : public I3ConverterImplementation<I3Map<OMKey, std::vector<mapped_type> > > 
 {
 

@@ -16,6 +16,6 @@ void register_dataclasses_converters() {
     I3CONVERTER_NAMESPACE(dataclasses);
     
     // typdef the template into a legal Python identifier
-    typedef I3MapOMKeyConverter<I3DOMLaunchSeriesMap> I3DOMLaunchSeriesMapConverter;
+    typedef I3MapOMKeyVectorConverter<I3DOMLaunchSeriesMap> I3DOMLaunchSeriesMapConverter;
     I3CONVERTER_EXPORT(I3DOMLaunchSeriesMapConverter);
 };
