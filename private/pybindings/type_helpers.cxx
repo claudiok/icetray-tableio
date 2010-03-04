@@ -160,8 +160,10 @@ boost::shared_ptr<I3Datatype> I3Datatype_from_NumpyDtype(boost::python::object n
         case 'f':
             dtype->kind = I3Datatype::Float;
             dtype->is_signed = true;
+            break;
         case 'b':
             dtype->kind = I3Datatype::Bool;
+            break;
         default:
             // return NULL for everything else
             dtype = I3DatatypePtr();
