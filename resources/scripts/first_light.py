@@ -1,9 +1,9 @@
 # hey look, i can a) write HDF5 files, and b) writer bookers in python!
 
-from icecube import icetray,dataclasses,dataio,tableio,hdfwriter
+from icecube import icetray,dataclasses,dataio,tableio
 from I3Tray import I3Tray
 from test_pybindings import DOMLaunchBookie
-		
+
 class I3ParticleConverter(tableio.I3Converter):
 	booked = dataclasses.I3Particle
 	def CreateDescription(self,part):
@@ -39,44 +39,20 @@ class I3ParticleConverter(tableio.I3Converter):
 		row['fit_status'] = particle.fit_status
 		return 1
 
-from icecube import coordinate_service
-		
-class SkyBooker(tableio.I3Converter):
-	"""Demo of a booker extension, e.g. to book celestial coordinates"""
-	def CreateDescription(self,part):
-		desc = tableio.I3TableRowDescription()
-		desc.add_field('RA', tableio.types.Float64,'radian','right ascension')
-		desc.add_field('Dec',tableio.types.Float64,'radian','declination')
-		desc.add_field('galactic_latitude', tableio.types.Float64,'radian','Galactic latitude')
-		desc.add_field('galactic_longitude',tableio.types.Float64,'radian','Galactic longitude')
-		return desc
-	def Convert(self,particle,row,frame):
-		"""Here, we would have to get the event time from the header
-		In order to transform from detector to celestial coords."""
-		# coordinate-service magic
-		coord = coordinate_service.Coordinate(frame['I3EventHeader'],particle)
-		row['RA'] = coord.RA
-		row['Dec'] = coord.Dec
-		row['galactic_latitude'] = coord.GalacticLatitude
-		row['galactic_longitude'] = coord.GalacticLongitude
-		
-		return 1
-
-# from icecube import jebclasses
 
 tray = I3Tray()
 
-from icecube import textwriter
-tabler = hdfwriter.I3HDFTableService('foo.hd5',0)
+#from icecube import hdfwriter
+from icecube import rootwriter
+#from icecube import textwriter
+#tabler = hdfwriter.I3HDFTableService('foo.hd5',0)
+tabler = rootwriter.I3ROOTTableService('foo.root')
 #tabler = textwriter.I3CSVTableService('foocsv')
 
-tray.AddModule('I3Reader','reader',filename='/Users/jakob/Documents/Wisc/2010 Spring/Python Primer/foo.i3.gz')
+tray.AddModule('I3Reader','reader',filename='/home/fabian/Physik/foo.i3.gz')
 tray.AddModule(tableio.I3TableWriterModule,'writer',
     tableservice = tabler,
-    keys  = [dict(key='LineFit', converter=I3ParticleConverter(), name='Way_out_there_beyond_this_hick_town_Barnaby'),
-             dict(key='LineFit', converter=[I3ParticleConverter(),SkyBooker()], name='Theres_a_slick_town_Barnaby')],
-    types = {dataclasses.I3DOMLaunchSeriesMap: DOMLaunchBookie()}
-    # types = {jebclasses.I3FilterResultMap: jebclasses.converters.I3FilterResultMapConverter()}
+    keys  = [dict(key='LineFit', converter=I3ParticleConverter(), name='Way_out_there_beyond_this_hick_town_Barnaby')]
 )
 
 tray.AddModule('TrashCan','yeswecan')
