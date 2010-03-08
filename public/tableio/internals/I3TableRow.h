@@ -79,6 +79,10 @@ class I3TableRow {
         void SetNumberOfRows(size_t nrows);
 
         void SetEnumsAreInts( bool flag ) { enums_are_ints_ = flag; };
+        
+        void reserve(size_t nrows);
+        void erase(size_t nrows);
+        void append(const I3TableRow& rhs);
 
     private:
         // set field with name fieldName to value for all rows
@@ -96,9 +100,11 @@ class I3TableRow {
         
         I3TableRow();
         void init();
+        void expand(size_t nrows);
 
         I3TableRowDescriptionConstPtr description_;
         size_t nrows_;
+        size_t capacity_;
         size_t currentRow_;
         I3MemoryChunk* data_;
         bool enums_are_ints_;

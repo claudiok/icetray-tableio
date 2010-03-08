@@ -26,7 +26,9 @@ class I3Table {
     public:
         I3Table(I3TableService& service, std::string name,
                 I3TableRowDescriptionConstPtr description);
+        
         virtual ~I3Table(); // Flush?
+        virtual void Flush(const size_t nrows = 0);
         
         bool IsConnectedToWriter();
         void SetConnectedToWriter(bool connected);

@@ -34,7 +34,10 @@ I3Table::I3Table(I3TableService& service,
 
 /******************************************************************************/
 
-I3Table::~I3Table() {}; // Flush?
+I3Table::~I3Table() { Flush(); }; // Flush?
+
+// Default flush implementation does nothing
+void I3Table::Flush(const size_t nrows) {};
 
 /******************************************************************************/
 
@@ -148,6 +151,7 @@ void I3Table::Align() {
     }
 
     lastHeader_ = service_.GetLastHeader();
+    Flush();
 }
 
 /******************************************************************************/

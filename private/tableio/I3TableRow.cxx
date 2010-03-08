@@ -17,8 +17,8 @@
 
 void I3TableRow::init() {
     // assume nrows_ and description_ are set; data_ == 0
-    const size_t totalChunkSize = nrows_ * description_->GetTotalChunkSize();
-    const size_t totalByteSize = nrows_ * description_->GetTotalByteSize();
+    const size_t totalChunkSize = capacity_ * description_->GetTotalChunkSize();
+    const size_t totalByteSize = capacity_ * description_->GetTotalByteSize();
     data_ = new I3MemoryChunk[totalChunkSize];
 
     // initialize memory block with zeros - TODO useful?
@@ -33,6 +33,7 @@ I3TableRow::I3TableRow(I3TableRowDescriptionConstPtr description,
                        size_t nrows) :
     description_(description),
     nrows_(nrows),
+    capacity_(nrows),
     currentRow_(0)
 {
         init();
@@ -48,9 +49,72 @@ I3TableRow::~I3TableRow() {
 
 /******************************************************************************/
 
+void I3TableRow::expand(size_t nrows) {
+    log_trace("Expanding to %zu rows",nrows);
+    if (nrows <= nrows_) {
+        log_fatal("Attempted to change size of I3TableRow from %zu to %zu!",nrows_,nrows);
+    }
+    const size_t totalChunkSize = nrows * description_->GetTotalChunkSize();
+    const size_t totalByteSize = nrows * description_->GetTotalByteSize();
+    const size_t currentByteSize = nrows_ * description_->GetTotalByteSize();
+    I3MemoryChunk* newdata = new I3MemoryChunk[totalChunkSize];
+    // copy over old buffer
+    memcpy(newdata, data_, currentByteSize);
+    // zero the remaining memory
+    memset( &newdata[nrows_ * description_->GetTotalChunkSize()], 0, totalByteSize-currentByteSize);
+    
+    // delete the old data array and replace it with the new one
+    delete[] data_;
+    data_ = newdata;
+    // update the capacity
+    capacity_ = nrows;
+}
+
+/******************************************************************************/
+
+void I3TableRow::reserve(size_t nrows) {
+    if (nrows > capacity_) expand(nrows);
+}
+
+/******************************************************************************/
+
+// erase the first nrows
+void I3TableRow::erase(size_t nrows) {
+    if (nrows == 0) return; // no-op
+    if (nrows > nrows_) nrows = nrows_;
+    const size_t doomed_block_size = nrows * description_->GetTotalByteSize();
+    const size_t remaining_block_size = (nrows_-nrows) * description_->GetTotalByteSize();
+    // shift the remaining bytes down to the front of the array
+    memmove( data_, &data_[nrows * description_->GetTotalChunkSize()], remaining_block_size );
+    // zero the former location of the remaining bytes
+    memset( &data_[(nrows_-nrows) * description_->GetTotalChunkSize()], 0, doomed_block_size );
+    // decrement the container size
+    nrows_ -= nrows;
+}
+
+/******************************************************************************/
+
+void I3TableRow::append(const I3TableRow& rhs) {
+    if (! (*(description_) == rhs.GetDescription()) ) {
+        log_fatal("Attempted to append rows with an incompatible description.");
+    }
+    const size_t required_rows = nrows_ + rhs.GetNumberOfRows();
+    const size_t bytes_to_write = rhs.GetNumberOfRows()*description_->GetTotalByteSize();
+    const size_t index = nrows_ * description_->GetTotalChunkSize();
+    if (required_rows > capacity_) {
+        expand(std::max(required_rows,2*capacity_));
+    }
+    memcpy( &data_[index], rhs.GetPointer(), bytes_to_write);
+    
+    nrows_ = required_rows;
+}
+
+/******************************************************************************/
+
 I3TableRow::I3TableRow(const I3TableRow& rhs) {
     description_ = rhs.GetDescription();
     nrows_ = rhs.GetNumberOfRows();
+    capacity_ = nrows_;
     currentRow_ = 0;
     
     size_t totalChunkSize = nrows_*rhs.GetDescription()->GetTotalChunkSize();
@@ -74,6 +138,7 @@ I3TableRow& I3TableRow::operator=(const I3TableRow& rhs) {
     }
     description_ = rhs.GetDescription();
     nrows_ = rhs.GetNumberOfRows();
+    capacity_ = nrows_;
     currentRow_ = 0;
     return *this;
 }
