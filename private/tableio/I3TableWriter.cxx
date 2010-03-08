@@ -387,6 +387,8 @@ void I3TableWriter::Finish() {
             DisconnectTable(it->table);
         }
     }
+
+    service_->Finish();
 }
 
 /******************************************************************************/
