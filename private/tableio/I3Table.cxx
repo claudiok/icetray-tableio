@@ -148,6 +148,7 @@ void I3Table::Align() {
     if (indexTable_) {
         padding = service_.GetPaddingRows(lastHeader_, I3EventHeaderConstPtr(), service_.GetIndexDescription());
         if (padding) indexTable_->WriteRows(padding);
+        indexTable_->Flush();
     }
 
     lastHeader_ = service_.GetLastHeader();
