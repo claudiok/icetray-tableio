@@ -26,6 +26,8 @@
 #include <dataclasses/physics/I3DOMLaunch.h>
 #include <dataclasses/physics/I3RecoHit.h>
 #include <dataclasses/physics/I3RecoPulse.h>
+#include "dataclasses/physics/I3MCHit.h"
+
 
 namespace converter
 {
@@ -107,6 +109,32 @@ namespace converter
       row->Set<int>("id", hit.GetID());
     }
   };
+  
+  template <>
+  struct convert<I3MCHit> 
+  { 
+    static void AddFields(I3TableRowDescriptionPtr desc)
+    {
+      desc->AddField<double>("time", "ns", "time");
+      desc->AddField<double>("weight", "PE", "The number of photoelectrons the hit represents.");
+      desc->AddField<double>("cherenkov_distance", "m", "FIXME: document");
+      MAKE_ENUM_VECTOR(hit_source,I3MCHit,I3MCHit::HitSource,I3MCHIT_H_I3MCHit_HitSource);
+      desc->AddEnumField<I3MCHit::HitSource>("source",hit_source,"","");
+      
+      // skipped: hitID, particleMajorID, particleMinorID
+      
+    }
+
+    static void FillRow(const I3MCHit& hit, I3TableRowPtr row) 
+    {
+      row->Set<double>("time", hit.GetTime());
+      row->Set<double>("weight", hit.GetWeight());
+      row->Set<double>("cherenkov_distance", hit.GetCherenkovDistance());
+      row->Set<I3MCHit::HitSource>("source", hit.GetHitSource());
+            
+    }
+  };
+  
 
   template <>
   struct convert<I3RecoPulse> 

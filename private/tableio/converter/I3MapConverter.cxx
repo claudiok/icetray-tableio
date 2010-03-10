@@ -13,8 +13,7 @@
 #include "tableio/converter/I3MapConverter.h"
 
 I3_CONVERTER(I3MapOMKeyVectorConverter<I3DOMLaunchSeriesMap>, I3DOMLaunchSeriesMap);
-I3_CONVERTER(I3MapOMKeyVectorConverter<I3RecoHitSeriesMap>, I3RecoHitSeriesMap);
 I3_CONVERTER(I3MapOMKeyVectorConverter<I3RecoPulseSeriesMap>, I3RecoPulseSeriesMap);
-
-
+I3_CONVERTER(I3MapOMKeyVectorConverter<I3RecoHitSeriesMap>, I3RecoHitSeriesMap);
+I3_CONVERTER(I3MapOMKeyVectorConverter<I3MCHitSeriesMap>, I3MCHitSeriesMap);
 
