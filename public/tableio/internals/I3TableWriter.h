@@ -24,7 +24,7 @@ I3_FORWARD_DECLARATION(I3Table);
 
 class I3TableWriter {
     public:
-        I3TableWriter(I3TableServicePtr service);
+        I3TableWriter(I3TableServicePtr service, std::vector<I3ConverterPtr>& converters);
         virtual ~I3TableWriter();
         
         // register one specific object, lazily. if type and converter are empty the writer 

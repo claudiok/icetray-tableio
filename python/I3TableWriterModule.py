@@ -10,10 +10,10 @@
 # 
 
 from icecube.icetray import I3Module
-from icecube.tableio import I3TableService, I3Converter, I3ConverterBundle, I3TableWriter
+from icecube.tableio import I3TableService, I3Converter, I3ConverterBundle, I3TableWriterWorker, I3ConverterRegistry, vector_I3ConverterPtr
 import re
 
-class I3TableWriterModule(I3Module):
+class I3TableWriter(I3Module):
 	def __init__(self,context):
 		I3Module.__init__(self,context)
 		self.AddParameter('TableService','The I3TableService to recieve output.',None)
@@ -118,9 +118,15 @@ class I3TableWriterModule(I3Module):
 		# convert whatever was passed as 'Types' to a list of dicts
 		types = self._parse_args(types,self._transform_typeitem)
 		
-		self.writer = I3TableWriter(self.table_service)
-		tablespec = I3TableWriter.TableSpec
-		typespec = I3TableWriter.TypeSpec
+		# now, pull in all of the registered converters from Python-land
+		converter_list = vector_I3ConverterPtr()
+		for converters in I3ConverterRegistry.registry.itervalues():
+		    # only instantiate the _first_ registered converter
+		    converter_list.append(converters[0]())
+		
+		self.writer = I3TableWriterWorker(self.table_service,converter_list)
+		tablespec = I3TableWriterWorker.TableSpec
+		typespec = I3TableWriterWorker.TypeSpec
 		
 		for item in keys:
 			key = item.pop('key')
