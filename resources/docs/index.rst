@@ -62,6 +62,8 @@ Table of Contents:
 
    howto
    converters
+   python_converter
+   cpp_converter
    make_a_writer_service
    transcriber
 

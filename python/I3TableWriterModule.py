@@ -11,7 +11,8 @@
 
 from icecube.icetray import I3Module
 from icecube.tableio import I3TableService, I3Converter, I3ConverterBundle, I3TableWriterWorker, I3ConverterRegistry, vector_I3ConverterPtr
-import re
+from icecube import dataclasses
+import re,warnings
 
 class I3TableWriter(I3Module):
 	def __init__(self,context):
@@ -106,7 +107,12 @@ class I3TableWriter(I3Module):
 		types = self.GetParameter('Types')
 		empty = lambda t: (t is None) or (len(t) == 0)
 		if empty(keys) and empty(types):
-			raise ValueError, "You must specify either Keys or Types."
+			warnings.warn("Both Keys and Types are empty. I will book everything from the file, even though I think it's a really bad idea!")
+			types = I3ConverterRegistry.registry.keys()
+			# remove GCD types if they exist
+			for t in [dataclasses.I3Geometry,dataclasses.I3DetectorStatus,dataclasses.I3Calibration]:
+				if t in types:
+					del types[t]
 		if (not keys is None) and (not types is None):
 			# raise ValueError, "You must specify either Keys or Types, but you may not specify both."
 			# we will allow both, but configurations specified by key must take precedence

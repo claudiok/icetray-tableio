@@ -69,64 +69,15 @@ rather than the ambiguous::
 which will create a 32-bit field on 32-bit systems and a 64-bit field on
 64-bit systems.
 
+Writing new converters
+*****************************
 
-Writing a converter for your FrameObject
-========================================
-
-The easy way
-************
-
-.. highlight:: python
-
-It is pretty simple to implement a converter in Python. All you need to do is
-define a class that inherits from I3Converter and implements two methods,
-CreateDescription() and FillRows(), and defines a class-level attribute
-'booked' holding the type the converter expects. Here, for example, is an
-implementation of an I3Particle converter in Python::
-
-    class I3ParticleConverter(tableio.I3Converter):
-        booked = dataclasses.I3Particle
-        def CreateDescription(self,part):
-            desc = tableio.I3TableRowDescription()
-            desc.add_field('x',      tableio.types.Float64,'m',     'x-position of particle')
-            desc.add_field('y',      tableio.types.Float64,'m',     'y-position of particle')
-            desc.add_field('z',      tableio.types.Float64,'m',     'z-position of particle')
-            desc.add_field('time',   tableio.types.Float64,'ns',    'origin time of particle')
-            desc.add_field('zenith', tableio.types.Float64,'radian','zenith angle of particle origin')
-            desc.add_field('azimuth',tableio.types.Float64,'radian','azimuthal angle of particle origin')
-            desc.add_field('energy', tableio.types.Float64,'GeV',   'energy of particle')
-            desc.add_field('speed',  tableio.types.Float64,'Gm/s',  'particle speed')
-            desc.add_field('length', tableio.types.Float64,'m',     'length of track')
-            # skip: major_id/minor_id
-            desc.add_field('type',      tableio.I3Datatype(self.booked.ParticleType),'','')
-            desc.add_field('shape',     tableio.I3Datatype(self.booked.ParticleShape),'','')
-            desc.add_field('location',  tableio.I3Datatype(self.booked.LocationType),'','')
-            desc.add_field('fit_status',tableio.I3Datatype(self.booked.FitStatus),'','')
-            return desc
-        def Convert(self,particle,row,frame):
-            row['x']          = particle.x
-            row['y']          = particle.y
-            row['z']          = particle.z
-            row['time']       = particle.time
-            row['zenith']     = particle.zenith
-            row['azimuth']    = particle.azimuth
-            row['energy']     = particle.energy
-            row['speed']      = particle.speed
-            row['length']     = particle.length
-            row['type']       = particle.type
-            row['shape']      = particle.shape
-            row['location']   = particle.location_type
-            row['fit_status'] = particle.fit_status
-            return 1
-
-The converter expects a FrameObject of type dataclasses.I3Particle and produces an I3TableRowDescription with 13 fields. The fields 'type', 'shape', 'location', and 'fit_status' are filled with enumerated types. The labels associated with the enum members will be stored in the final file.
-
-You can put this class definition in the Python directory associated with your project and use the converter in your steering files without introducing a hard dependency on tableio. 
+You can write converters the easy way, :doc:`python_converter`, or the hard way, :doc:`cpp_converter`.
 
 Extending an existing converter
 ***********************************
 
-It is even simpler to add additional fields to an existing converter. Suppose that for a particular analysis, we wish to extend the I3Particle converter to book celestial coordinates in addition to detector coordinates. We would define a new converter for I3Particle that looks something like this::
+It is particularly simple to add additional fields to an existing converter. Suppose that for a particular analysis, we wish to extend the I3Particle converter to book celestial coordinates in addition to detector coordinates. We would define a new converter for I3Particle that looks something like this::
 
     class SkyBooker(tableio.I3Converter):
         """Demo of a booker extension, e.g. to book celestial coordinates"""
@@ -154,68 +105,3 @@ We can then pass a *list* of converters to I3TableWriter instead of a single con
         types = {dataclasses.I3Particle: [I3ParticleConverter(), SkyBooker()]}
 
 Each converter will get a chance to fill the table structure with the appropriate data.
-
-The hard (but perhaps slightly faster) way
-******************************************
-
-.. highlight:: c++
-
-You can also define your converters in C++. To do this, you need to inherit
-from the templated C++ class I3ConverterImplementation<YourFrameObject>. Here,
-for example, is the header for a converter for I3FilterResultMap from
-jebclasses, which would live in
-public/jebclasses/converter/I3FilterResultMap.h::
-
-    class I3FilterResultMapConverter : public I3ConverterImplementation<I3FilterResultMap> {
-        private:
-            I3TableRowDescriptionPtr CreateDescription(const I3FilterResultMap& frmap);
-            unsigned int FillRows(const I3FilterResultMap& frmap, I3TableRowPtr rows);
-    };
-
-and the implementation, in private/converter/I3FilterResultMap.cxx::
-
-    #include "jebclasses/converter/I3FilterResultMapConverter.h"
-
-    I3TableRowDescriptionPtr I3FilterResultMapConverter::CreateDescription(const I3FilterResultMap& frmap) {
-        I3TableRowDescriptionPtr desc = 
-            I3TableRowDescriptionPtr(new I3TableRowDescription() );
-        I3FilterResultMap::const_iterator it;
-        for (it = frmap.begin(); it != frmap.end(); it++) {
-            desc->AddField<bool>(it->first,"bool","Field 0: condition passed, Field 1: prescale passed",2);
-        }
-        return desc;
-    }
-        
-    unsigned int I3FilterResultMapConverter::FillRows(const I3FilterResultMap& frmap, I3TableRowPtr rows) {
-        I3FilterResultMap::const_iterator it;
-        bool* filter_result;
-        for (it = frmap.begin(); it != frmap.end(); it++) {
-            filter_result = rows->GetPointer<bool>(it->first);
-            filter_result[0] = it->second.conditionPassed;
-            filter_result[1] = it->second.prescalePassed;
-        }
-        return 1;
-    }
-
-    I3_CONVERTER(I3FilterResultMapConverter, I3FilterResultMap);
-
-The call to the I3_CONVERTER() macro registers I3FilterResultMapConverter as
-the default converter for objects of type I3FilterResultMap.
-
-If you want users to be able to specify your converter by name, you have to
-write trivial pybindings for it. The tableio project provides preprocessor
-macros that automate most of this. Here are example pybindings for
-I3FilterResultMapConverter::
-
-    #include "jebclasses/converter/I3FilterResultMapConverter.h"
-    #include "tableio/converter/pybindings.h"
-    
-    void register_I3Converters() {
-        I3CONVERTER_NAMESPACE(jebclasses);
-        I3CONVERTER_EXPORT(I3FilterResultMapConverter);
-    }
-
-The macro I3CONVERTER_NAMESPACE(jebclasses) sets up a Python module
-icecube.jebclasses.converters into which pybindings for
-I3FilterResultMapConverter are exported.
-

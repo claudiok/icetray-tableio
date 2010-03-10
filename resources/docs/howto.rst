@@ -18,7 +18,7 @@ the service. A simple script could look something like this::
 
     from icecube import icetray
     from I3Tray import I3Tray
-    from icecube.tableio import I3TableWriterModule
+    from icecube.tableio import I3TableWriter
     from icecube.hdfwriter import I3HDFTableService
     
     tray = I3Tray()
@@ -26,7 +26,7 @@ the service. A simple script could look something like this::
     
     table_service = I3HDFTableService('foo.hd5')
     
-    tray.AddModule(I3TableWriterModule,'writer',
+    tray.AddModule(I3TableWriter,'writer',
                    tableservice = table_service,
                    keys         = ['LineFit','InIceRawData']
                   )
@@ -36,7 +36,7 @@ the service. A simple script could look something like this::
     tray.Finish()
 
 Here, the I3HDFTableService table_service is passed as a parameter to
-I3TableWriterModule. The other parameter, 'keys', is a list of frame object
+I3TableWriter. The other parameter, 'keys', is a list of frame object
 names. Any objects in the file named 'LineFit' will be written to a table
 called 'LineFit' in the HDF5 file 'foo.hd5'.
 
@@ -64,7 +64,7 @@ For full control, you can pass a list of dicts, specifying the key, converter, a
 Specifying objects by type
 **************************
 
-If you don't know ahead of time which specific key-names you'd like to book, you can tell I3TableWriterModule to book all objects of a given type. Types are specified via their Python bindings::
+If you don't know ahead of time which specific key-names you'd like to book, you can tell I3TableWriter to book all objects of a given type. Types are specified via their Python bindings::
 
     types = [dataclasses.I3Particle, dataclasses.I3DOMLaunchSeriesMap]
 
@@ -81,4 +81,18 @@ You can also pass a list of dicts specifying the type and converter::
 Booking everything in the file
 *********************************
 
-There is no "book everything" mode. If you really want dump *absolutely everything* in an I3 file, you'll have to specify as many of the types as you can think of.
+.. note::
+    You should really avoid doing this whenever possible, as it's likely to create very, very large files.
+
+If you really want dump *absolutely everything* in an I3 file using the
+default converters, you can omit both the `Types` and `Keys` parameters::
+
+    tray.AddModule(I3TableWriter,'writer', tableservice = table_service)
+
+This gives you absolutely no control over how objects are booked. If you just
+want to discover which converters are defined, you can inspect
+:data:`tableio.I3ConverterRegistry.registry` in ipython. This dictionary
+contains all the converters tableio knows about.
+
+
+

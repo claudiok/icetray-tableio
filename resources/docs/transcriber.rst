@@ -20,7 +20,7 @@ all of your data and dump it to ROOT files, eliminating most of the benefit
 you enjoyed by working in HDF5 in the first place.
 
 For this case, tableio provides I3TableTranscriber, which communicates with a
-table writer service using the same interface as I3TableWriterModule. Instead
+table writer service using the same interface as I3TableWriter. Instead
 of I3Frames from IceTray, however, the transcriber uses another table service
 that supports reading (of which I3HDFTableService is currently the only one)
 for input.
