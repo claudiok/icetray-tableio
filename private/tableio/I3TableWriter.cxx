@@ -43,20 +43,20 @@ std::string name_of(const boost::shared_ptr<T> obj) {
 // Search the converter cache for a converter that says it can handle obj
 // raise an error and if more than one answers the call (there can be only one highlander)
 I3ConverterPtr I3TableWriter::FindConverter(I3FrameObjectConstPtr obj) {
-	I3ConverterPtr converter_ptr;
-	std::vector<I3ConverterPtr>::const_iterator it_conv;
-	for(it_conv = converterCache_.begin(); it_conv != converterCache_.end(); it_conv++) {
-		log_trace("Asking converter '%s' what it thinks of '%s'",name_of(*it_conv).c_str(),name_of(obj).c_str());
-		bool match = it_conv->get()->CanConvert(obj);
-		if (match && (converter_ptr != NULL)) {
-			log_fatal("Ambiguity in the converter registry. Converters '%s' and '%s' both want to handle '%s'",
-						name_of(converter_ptr).c_str(),name_of(*it_conv).c_str(),name_of(obj).c_str());
-		} else if (match) {
-			log_trace("Converter '%s' can convert '%s'",name_of(*it_conv).c_str(),name_of(obj).c_str());
-			converter_ptr = *it_conv;
-		}
-	}
-	return converter_ptr;
+    I3ConverterPtr converter_ptr;
+    std::vector<I3ConverterPtr>::const_iterator it_conv;
+    for(it_conv = converterCache_.begin(); it_conv != converterCache_.end(); it_conv++) {
+        log_trace("Asking converter '%s' what it thinks of '%s'",name_of(*it_conv).c_str(),name_of(obj).c_str());
+        bool match = it_conv->get()->CanConvert(obj);
+        if (match && (converter_ptr != NULL)) {
+            log_fatal("Ambiguity in the converter registry. Converters '%s' and '%s' both want to handle '%s'",
+                        name_of(converter_ptr).c_str(),name_of(*it_conv).c_str(),name_of(obj).c_str());
+        } else if (match) {
+            log_trace("Converter '%s' can convert '%s'",name_of(*it_conv).c_str(),name_of(obj).c_str());
+            converter_ptr = *it_conv;
+        }
+    }
+    return converter_ptr;
 }
 
 /******************************************************************************/
@@ -81,7 +81,7 @@ bool I3TableWriter::AddObject(std::string name, std::string tableName,
 
     // check to see whether the object contains anything at all
     // if it's empty, (e.g. an empty DOMLaunchSeriesMap, the converter 
-    // might not have the information it needs to build the description
+    // might not have the information it needs to build the description)
     size_t nrows = converter->GetNumberOfRows(obj);
     // we assume that the converter needs a live object to build its description
     // if the object is empty, there's no harm in delaying instantiation of the table
@@ -142,7 +142,6 @@ bool I3TableWriter::AddObject(std::string name, std::string tableName,
         
 void I3TableWriter::AddObject(std::string objName, TableSpec spec) {
     // FIXME: error/duplicate checking
-    // wantedNames_.push_back(objName);
 	tablespec_map::iterator n_it = wantedNames_.find(objName);
 	if (n_it == wantedNames_.end()) {
 		wantedNames_[objName] = std::vector<TableSpec>(1,spec);
@@ -155,7 +154,6 @@ void I3TableWriter::AddObject(std::string objName, TableSpec spec) {
 
 void I3TableWriter::AddType(TypeSpec type, TableSpec spec) {
     // FIXME: error/duplicate checking
-    // wantedTypes_.push_back(typeName);
 	typespec_map::iterator t_it = wantedTypes_.find(type);
 	if (t_it == wantedTypes_.end()) {
 		wantedTypes_[type] = std::vector<TableSpec>(1,spec);
