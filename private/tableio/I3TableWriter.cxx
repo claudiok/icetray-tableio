@@ -22,14 +22,7 @@ I3TableWriter::I3TableWriter(I3TableServicePtr service, std::vector<I3ConverterP
     service_ = service;
     ticConverter_ = BuildConverter("I3IndexColumnsGenerator");
     
-    // instantiate each registered converter
-    // I3ConverterFactory::const_iterator it_conv;
-    // const I3ConverterFactory& factory = I3::Singleton<I3ConverterFactory>::get_const_instance();
-    // for(it_conv = factory.begin(); it_conv != factory.end(); it_conv++) {
-    //      converterCache_.push_back((it_conv->second.fn)());
-    // }
-    
-    // use converters registered in Python-land instead
+    // pull in the converters registered in Python-land instead
     std::vector<I3ConverterPtr>::const_iterator it_conv;
     std::copy(converters.begin(),converters.end(),std::back_inserter(converterCache_));
 }

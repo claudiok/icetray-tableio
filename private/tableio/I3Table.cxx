@@ -157,16 +157,7 @@ void I3Table::Align() {
 
 /******************************************************************************/
 
-I3TableRowConstPtr I3Table::GetRowForEvent(unsigned int RunID, unsigned int EventID) {
-	// FIXME: index implementation pending
-	if (!indexTable_) { 
-	    log_fatal("This table is write-only."); 
-	} else {
-	    return ReadRows(0,1);
-	}
-}
-
-I3TableRowConstPtr I3Table::GetRowForEvent(size_t index) {
+I3TableRowConstPtr I3Table::GetRowForEvent(size_t index) const {
     std::pair<size_t,size_t> range;
     
     range = GetRangeForEvent(index);
@@ -177,8 +168,9 @@ I3TableRowConstPtr I3Table::GetRowForEvent(size_t index) {
     }
 }
 
+/******************************************************************************/
 
-std::pair<size_t,size_t> I3Table::GetRangeForEvent(size_t index) {
+std::pair<size_t,size_t> I3Table::GetRangeForEvent(size_t index) const {
     log_fatal("This table is write-only.");
     return std::pair<size_t,size_t>();
 }
@@ -187,7 +179,7 @@ std::pair<size_t,size_t> I3Table::GetRangeForEvent(size_t index) {
 /******************************************************************************/
 
 // default implementation is write-only
-I3TableRowConstPtr I3Table::ReadRows(size_t start, size_t nrows) {
+I3TableRowConstPtr I3Table::ReadRows(size_t start, size_t nrows) const {
 	log_fatal("This table is write-only.");
 	return I3TableRowConstPtr();
 }

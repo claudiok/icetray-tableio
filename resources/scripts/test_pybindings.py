@@ -173,6 +173,57 @@ class DOMLaunchBookie(tableio.I3Converter):
     
                 rows['raw_fadc']         = array.array('H',domlaunch.GetRawFADC())
         return rowno
+
+        
+class WaveformBookie(tableio.I3Converter):
+    booked = dataclasses.I3WaveformSeriesMap
+    wf = dataclasses.I3Waveform
+    def CreateDescription(self,dlsm):
+        desc = tableio.I3TableRowDescription()
+        # make this a "ragged" table
+        desc.is_multi_row = True
+        # grab an example DOMLaunch
+        wf = self._get_nonempty(dlsm)
+        # unrolling fields
+        desc.add_field('string',tableio.types.Int16,'','String number')
+        desc.add_field('om',tableio.types.UInt16,'','OM number')
+        desc.add_field('index',tableio.types.UInt16,'','Index within the vector')
+        # DOMLaunch fields
+        desc.add_field('start_time',tableio.types.Float32,'ns','')
+        desc.add_field('bin_width',tableio.types.Float32,'ns','')
+        desc.add_field('source',tableio.I3Datatype(self.wf.Source),'','')
+        desc.add_field('waveform',tableio.types.Float32,'','',len(wf.waveform))
+        return desc
+    def _get_nonempty(self,dlsm):
+        dl = None
+        for vec in dlsm.itervalues():
+            if len(vec) == 0: continue
+            dl = vec[0]
+            if dl != None: break
+        return dl
+    def GetNumberOfRows(self,frameobj):
+        nrows = 0
+        for vec in frameobj.itervalues():
+            nrows += len(vec)
+        return nrows
+    def Convert(self,wfsm,rows,frame):
+        rowno = 0
+        for omkey,wf_series in wfsm.iteritems():
+            string = omkey.GetString()
+            om = omkey.GetOM()
+            for i,wf in enumerate(wf_series):
+                rows.current_row = rowno
+                rowno += 1
+                rows['string']           = string
+                rows['om']               = om
+                rows['index']            = i
+                
+                rows['start_time']       = wf.start_time
+                rows['bin_width']        = wf.bin_width
+                rows['source']           = wf.source
+                rows['waveform']         = wf.waveform
+        return rowno
+        
         
 class I3TableWriterPythonModuleTest(unittest.TestCase):
 		"""Test the option-parsing magic."""

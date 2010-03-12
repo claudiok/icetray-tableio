@@ -33,5 +33,7 @@ void register_I3TableService() {
                boost::noncopyable>("I3TableService")
     .def("CreateTable",&I3TableServiceWrapper::CreateTable)
     .def("CloseFile",&I3TableServiceWrapper::CloseFile)
+    .def("Finish",&I3TableServiceWrapper::Finish)
+    
     ;
 }

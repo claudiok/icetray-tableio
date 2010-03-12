@@ -37,8 +37,8 @@ class I3Table {
         void AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row);
         void Align();
         
-        I3TableRowConstPtr GetRowForEvent(unsigned int RunID, unsigned int EventID);
-        I3TableRowConstPtr GetRowForEvent(size_t index);
+        // I3TableRowConstPtr GetRowForEvent(unsigned int RunID, unsigned int EventID);
+        I3TableRowConstPtr GetRowForEvent(size_t index) const;
 
         std::string GetName() const; 
         size_t GetNumberOfEvents() const; 
@@ -48,8 +48,8 @@ class I3Table {
     protected:
         // to be overridden by derivatives
         virtual void WriteRows(I3TableRowConstPtr row) = 0;
-        virtual I3TableRowConstPtr ReadRows(size_t start, size_t nrows);
-        virtual std::pair<size_t,size_t> GetRangeForEvent(size_t index);
+        virtual I3TableRowConstPtr ReadRows(size_t start, size_t nrows) const;
+        virtual std::pair<size_t,size_t> GetRangeForEvent(size_t index) const;
 
         I3TableService& service_;
         std::string name_;
