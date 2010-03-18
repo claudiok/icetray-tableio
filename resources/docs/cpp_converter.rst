@@ -109,7 +109,7 @@ wrap the whole export block in #ifdefs to avoid hard dependencies::
     
     void register_I3Converters() {
         I3CONVERTER_NAMESPACE(jebclasses);
-        I3CONVERTER_EXPORT(I3FilterResultMapConverter);
+        I3CONVERTER_EXPORT(I3FilterResultMapConverter,"Dumps the result of each Pole filter to a table column");
     }
     
     #else

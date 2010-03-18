@@ -15,6 +15,7 @@
 #define PYBINDINGS_H_GNEDBL5C
 
 #include "tableio/internals/I3Converter.h"
+#include <boost/python/class.hpp>
 
 namespace bp = boost::python;
 
@@ -45,11 +46,12 @@ namespace bp = boost::python;
     
 // put the converter in a python-side registry, then return the class
 // scope for more method-adding.
-template<typename Converter>
-bp::scope register_converter(bp::object& registry, bp::scope class_scope) {
+template<typename Converter,class W,class X1,class X2,class X3> // template args for bp::class_
+bp::class_<W,X1,X2,X3> register_converter(bp::object& registry, bp::class_<W,X1,X2,X3> classy) {
     bp::object type = bp::object(typename Converter::booked_type()).attr("__class__");
+    bp::scope class_scope = classy;
     registry.attr("register")(class_scope,type);
-    return class_scope;
+    return classy;
 };
 
 
