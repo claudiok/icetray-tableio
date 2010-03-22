@@ -86,26 +86,23 @@ TEST(enum_checking) {
     desc->AddEnumField<Foo::DummyEnummy>("enum", dummies, "unit", "doc");
     
     I3TableRow row(desc);
-    bool thrown;
     
     ENSURE_EQUAL( sizeof(Foo::DummyEnummy), sizeof(int32_t) );
     
-    thrown = false;
-    try { row.Set<Foo::DummyEnummy>("field",Foo::foo); }
-    catch(...) { thrown = true; }
-    ENSURE_EQUAL(thrown, true, "Should not be able to set int field with enum type");
+    try {  
+       row.Set<Foo::DummyEnummy>("field",Foo::foo);
+       FAIL("Shouldn't be able to set int field with enum type");
+    } catch (...) { }
     
-    thrown = false;
-    try { row.Set<int32_t>("enum",0); }
-    catch(...) { thrown = true; }
-    ENSURE_EQUAL(thrown, true, "Should not be able to set enum field with int type");
+    try {  
+       row.Set<int32_t>("enum",0);
+       FAIL("Shouldn't be able to set enum field with int type");
+    } catch (...) { }
     
-    thrown = false;
-    try { row.Set<Foo::DummyEnummy>("enum",Foo::foo); }
-    catch(...) { thrown = true; }
-    ENSURE_EQUAL(thrown, false, "Enum field passes.");
-    
-    
+    try {  
+       row.Set<Foo::DummyEnummy>("enum",Foo::foo);
+    } catch (...) { FAIL("Enum field passes"); }
+
 }
 
 TEST(bool_casting) {
