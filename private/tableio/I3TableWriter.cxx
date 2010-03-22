@@ -260,6 +260,8 @@ void I3TableWriter::Convert(I3FramePtr frame) {
                    // copy the iterator to avoid invalidating it on erase
                    eraser = vlist_it++;
                    wantedNames_.erase(eraser);
+               } else {
+                   ++vlist_it;
                }
            }
            else{
