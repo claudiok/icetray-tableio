@@ -34,7 +34,8 @@ I3TableRow::I3TableRow(I3TableRowDescriptionConstPtr description,
     description_(description),
     nrows_(nrows),
     capacity_(nrows),
-    currentRow_(0)
+    currentRow_(0),
+    enums_are_ints_(false)
 {
         init();
 }
@@ -116,6 +117,7 @@ I3TableRow::I3TableRow(const I3TableRow& rhs) {
     nrows_ = rhs.GetNumberOfRows();
     capacity_ = nrows_;
     currentRow_ = 0;
+    enums_are_ints_ = false;
     
     size_t totalChunkSize = nrows_*rhs.GetDescription()->GetTotalChunkSize();
     size_t totalByteSize = nrows_*rhs.GetDescription()->GetTotalByteSize();
