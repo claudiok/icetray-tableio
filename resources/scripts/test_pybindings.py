@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from icecube import icetray,dataclasses,tableio,dataio
 import array
 import unittest
@@ -15,7 +17,18 @@ class I3PythonConverterTest(unittest.TestCase):
 		desc = tableio.I3TableRowDescription()
 		
 		self.types = {
-		              'char':          'c', 
+		              'signed_char':   tableio.types.Int8,
+		              'unsigned_char': tableio.types.UInt8,
+		              'signed_short':  tableio.types.Int16,
+		              'unsigned_short':tableio.types.UInt16,
+		              'signed_int':    tableio.types.Int32,
+		              'unsigned_int':  tableio.types.UInt32,
+		              'signed_long':   tableio.types.Int64,
+		              'unsigned_long': tableio.types.UInt64,
+		              'float':         tableio.types.Float32,
+		              'double':        tableio.types.Float64,
+		              'bool':          tableio.types.Bool}
+		self.codes = {
 		              'signed_char':   'b',
 		              'unsigned_char': 'B',
 		              'signed_short':  'h',
@@ -37,11 +50,7 @@ class I3PythonConverterTest(unittest.TestCase):
 			desc.add_field(t,code,'','')
 			desc.add_field('%s_vec'%t,code,'','',128)
 		
-		desc.add_field('double_py',     float,'','')
-		desc.add_field('signed_int_py',        int,'','')
-		desc.add_field('bool_py',       bool,'','')
-		
-		desc.add_field('trigger_type',dataclasses.I3DOMLaunch.TriggerType,'','')
+		desc.add_field('trigger_type',tableio.I3Datatype(dataclasses.I3DOMLaunch.TriggerType),'','')
 		
 		self.desc = desc
 		self.rows = tableio.I3TableRow(desc,1)
@@ -57,7 +66,7 @@ class I3PythonConverterTest(unittest.TestCase):
 		self.assertEquals( int(val), got )
 	def testIntegerScalars(self):
 		types = self.conversions[int]
-		reverse_types = dict([(b,a) for a,b in self.types.iteritems()])
+		reverse_types = dict([(b,a) for a,b in self.codes.iteritems()])
 		for i,t in enumerate(types):
 			if t == 'c': continue # no from_python converter for char...ah well
 			val = i+7
@@ -75,21 +84,21 @@ class I3PythonConverterTest(unittest.TestCase):
 		self.assertRaises(exceptions.OverflowError, bad_news)
 	def testArray(self):
 		field = 'signed_int_vec'
-		arr = array.array(self.types[field[:-4]],range(128))
+		arr = array.array(self.codes[field[:-4]],range(128))
 		self.rows[field] = arr
 		got = self.rows[field]
 		self.assertEquals( list(arr), got )
 	if have_numpy:
 		def testNumpy(self):
 			field = 'signed_long_vec'
-			arr = numpy.array(range(128),self.types[field[:-4]])
+			arr = numpy.array(range(128),self.codes[field[:-4]])
 			self.rows[field] = arr
 			got = self.rows[field]
 			self.assertEquals( list(arr), got )
 			import sys
 			# try passing an array in byte-swapped order
 			swapped = '>' if (sys.byteorder == 'little') else '<'
-			arr = numpy.array(range(128), (swapped + self.types[field[:-4]]) )
+			arr = numpy.array(range(128), (swapped + self.codes[field[:-4]]) )
 			bad_news = lambda: self.rows.set(field,arr)
 			self.assertRaises(exceptions.RuntimeError,bad_news)
 	def testVectorInt(self):
@@ -229,7 +238,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 		"""Test the option-parsing magic."""
 		def setUp(self):
 			from icecube import icetray,tableio,dataclasses,hdfwriter
-			from icecube.tableio import I3TableWriterModule
+			from icecube.tableio import I3TableWriter
 			import tempfile
 			from I3Tray import I3Tray, load
 			load("libphys-services")
@@ -247,7 +256,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 			self.tray = tray
 			self.tempfile = tempfile.NamedTemporaryFile()
 			self.hdf_service = hdfwriter.I3HDFTableService(self.tempfile.name,0)
-			self.target = I3TableWriterModule
+			self.target = I3TableWriter
 			self.bookie = DOMLaunchBookie()
 			
 		def tearDown(self):

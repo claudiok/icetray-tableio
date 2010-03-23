@@ -32,5 +32,6 @@ struct PythonConverter : I3Converter, boost::python::wrapper<I3Converter>
     bool CanConvert(I3FrameObjectConstPtr object);
     bool CanConvert(I3FrameObjectPtr object);
 
+    SET_LOGGER("PythonConverter");
 };
 

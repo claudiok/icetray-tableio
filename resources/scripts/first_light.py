@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # hey look, i can a) write HDF5 files, and b) writer bookers in python!
 
 import os
@@ -6,7 +7,7 @@ from optparse import OptionParser
 parser = OptionParser()
 parser.add_option("-f","--format",dest="format",help="format to output [hdf5, root, or csv]",default='hdf5')
 parser.add_option("-z","--compress",dest="compression",help="compression level",default=1,type=int)
-parser.add_option("-n","--fra,es",dest="nframes",help="number of frames to process",default=None,type=int)
+parser.add_option("-n","--frames",dest="nframes",help="number of frames to process",default=None,type=int)
 
 options,args = parser.parse_args()
 

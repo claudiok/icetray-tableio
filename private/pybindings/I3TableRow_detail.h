@@ -182,7 +182,9 @@ struct get_scalar {
     
     template <typename T>
     void call() {
+        self.SetEnumsAreInts(true);
         result = bp::object(self.Get<T>(index));
+        self.SetEnumsAreInts(false);
     };
     
     void fail(std::string message) {

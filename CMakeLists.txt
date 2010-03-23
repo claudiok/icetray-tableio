@@ -18,3 +18,5 @@ add_subdirectory(private/pybindings)
 i3_test_executable(test 
     private/test/*.cxx
     USE_PROJECTS dataclasses icetray phys-services tableio)
+
+i3_test_scripts(resources/scripts/test_pybindings.py)
