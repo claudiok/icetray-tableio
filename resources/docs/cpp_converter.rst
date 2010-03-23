@@ -19,7 +19,7 @@ from the templated C++ class I3ConverterImplementation<YourFrameObject>. The mec
 CMakeLists.txt
 ___________________
 
-.. highlight:: cmake
+.. highlight:: none
 
 To use compiled converters, your project must link against tableio. You can
 use the following conditional-compilation pattern in your CMakeLists file to
