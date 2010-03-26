@@ -35,6 +35,7 @@ class I3Converter {
          * of rows that this converter will produce
          */
         virtual size_t GetNumberOfRows(I3FrameObjectConstPtr object)=0;
+        virtual size_t GetNumberOfRows(const I3FrameObject& object)=0;
 
         /**
          * return a I3TableRowDescription that specifies which table columns this converter
@@ -101,6 +102,10 @@ class I3ConverterImplementation : public I3Converter {
         
         size_t GetNumberOfRows(I3FrameObjectConstPtr object) {
             return GetNumberOfRows(dynamic_cast<const FrmObj&>(*object));
+        }
+        
+        size_t GetNumberOfRows(const I3FrameObject& object) {
+            return GetNumberOfRows(dynamic_cast<const FrmObj&>(object));
         }
         
         size_t Convert(const I3FrameObject& object, I3TableRowPtr rows, 

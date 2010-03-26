@@ -12,6 +12,11 @@ size_t PythonConverter::GetNumberOfRows(I3FrameObjectConstPtr object) {
 	}
 }
 
+size_t PythonConverter::GetNumberOfRows(const I3FrameObject& object) {
+	log_trace("%s",__PRETTY_FUNCTION__);    
+    log_fatal("I shouldn't ever be called!");
+}
+
 
 I3TableRowDescriptionConstPtr PythonConverter::GetDescription(I3FrameObjectConstPtr object) {
     // return GetDescription(*object);

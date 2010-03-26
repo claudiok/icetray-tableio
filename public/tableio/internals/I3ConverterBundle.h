@@ -19,6 +19,7 @@ class I3ConverterBundle : public I3Converter {
         I3ConverterBundle(std::vector<I3ConverterPtr>& converters);
         // virtual ~I3ConverterBundle();
         virtual size_t GetNumberOfRows(I3FrameObjectConstPtr object);
+        virtual size_t GetNumberOfRows(const I3FrameObject& object);
         virtual I3TableRowDescriptionConstPtr GetDescription(I3FrameObjectConstPtr object);
         virtual I3TableRowDescriptionConstPtr GetDescription(const I3FrameObject& object);
         virtual size_t Convert(I3FrameObjectConstPtr object, 

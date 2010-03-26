@@ -13,7 +13,8 @@
 #include "tableio/converter/I3MapConverter.h"
 #include "tableio/converter/I3MapStringConverter.h"
 #include "tableio/converter/I3ParticleConverter.h"
-
+#include "tableio/converter/I3TreeConverter.h"
+#include "tableio/converter/I3TriggerHierarchyConverter.h"
 
 void register_dataclasses_converters() {
     I3CONVERTER_NAMESPACE(dataclasses);
@@ -31,5 +32,8 @@ void register_dataclasses_converters() {
     I3CONVERTER_EXPORT(I3MapStringDoubleConverter,"Dumps a std::map<string,double> verbatim");
     I3CONVERTER_EXPORT(I3ParticleConverter,"Dumps an I3Particle verbatim");
     
+    typedef I3TreeConverter<I3Particle> I3MCTreeConverter;
+    I3CONVERTER_EXPORT(I3MCTreeConverter,"Dumps all particles in the MC Tree");
     
+    I3CONVERTER_EXPORT(I3TriggerHierarchyConverter,"Dumps all triggers in the I3TriggerHierarchy tree");
 };

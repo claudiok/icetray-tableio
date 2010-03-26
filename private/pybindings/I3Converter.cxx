@@ -30,6 +30,8 @@ void register_I3Converter() {
 	               &PythonConverter::Convert)
 	.def("CanConvert", (bool (PythonConverter::*)(I3FrameObjectPtr)) &PythonConverter::CanConvert)
 	.def("FillRows",&PythonConverter::FillRows)
-	.def("GetNumberOfRows",&PythonConverter::GetNumberOfRows)
+	//.def("GetNumberOfRows",&PythonConverter::GetNumberOfRows)
+	.def("GetNumberOfRows",(size_t (PythonConverter::*)(I3FrameObjectConstPtr))
+                           &PythonConverter::GetNumberOfRows)
 	;
 }

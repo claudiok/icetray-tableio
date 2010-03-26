@@ -138,6 +138,15 @@ TEST(joining_descriptions) {
     ENSURE_EQUAL( map_omkey_pos_d.GetFieldNames().at(4), "x" );
     ENSURE_EQUAL( map_omkey_pos_d.GetFieldNames().at(5), "y" );
     ENSURE_EQUAL( map_omkey_pos_d.GetFieldNames().at(6), "z" );
+
+    ENSURE_EQUAL( map_omkey_pos_d.GetFieldColumn("Run"),    static_cast<unsigned>(0));
+    ENSURE_EQUAL( map_omkey_pos_d.GetFieldColumn("Event"),  static_cast<unsigned>(1));
+    ENSURE_EQUAL( map_omkey_pos_d.GetFieldColumn("String"), static_cast<unsigned>(2));
+    ENSURE_EQUAL( map_omkey_pos_d.GetFieldColumn("OM"),     static_cast<unsigned>(3));
+    ENSURE_EQUAL( map_omkey_pos_d.GetFieldColumn("x"),      static_cast<unsigned>(4));
+    ENSURE_EQUAL( map_omkey_pos_d.GetFieldColumn("y"),      static_cast<unsigned>(5));
+    ENSURE_EQUAL( map_omkey_pos_d.GetFieldColumn("z"),      static_cast<unsigned>(6));
+
     
     for (size_t i = 0; i < 7; ++i) {
         ENSURE_EQUAL( map_omkey_pos_d.GetFieldByteOffsets().at(i), i*I3MEMORYCHUNK_SIZE, "check byte offsets");

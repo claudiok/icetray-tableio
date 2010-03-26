@@ -70,6 +70,7 @@ class I3STLVectorConverter : public I3ConverterImplementation<std::vector<FrmObj
 
             size_t v_index = 0;
             size_t i_row = currentRow;
+            size_t start_row = currentRow;
             for (it = vec.begin(); it != vec.end(); ++it) {
                 rows->SetCurrentRow(i_row);
                 
@@ -93,7 +94,7 @@ class I3STLVectorConverter : public I3ConverterImplementation<std::vector<FrmObj
             assert(nrows == rows->GetNumberOfRows());
 
             // loop over vector
-            return i_row;
+            return i_row - start_row;
         }
 
     std::string  converterName_;

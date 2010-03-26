@@ -132,6 +132,7 @@ bool I3TableRow::CheckType(size_t index) {
 template<class T>
 void I3TableRow::Set(const std::string& fieldName, T value, bool all = false) {
     size_t index = description_->GetFieldColumn(fieldName);
+    log_trace("I3TableRow::Set:  field %s has index %d", fieldName.c_str(), index);
     if (index >= description_->GetNumberOfFields())
         log_fatal("Tried to set unknown column '%s'",fieldName.c_str());
 	if (all) SetAll(index,value);

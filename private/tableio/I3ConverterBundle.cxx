@@ -19,6 +19,13 @@ I3ConverterBundle::I3ConverterBundle(std::vector<I3ConverterPtr>& converters)
 //***************************************************************************//
 
 size_t I3ConverterBundle::GetNumberOfRows(I3FrameObjectConstPtr object) {
+    return GetNumberOfRows(*object);
+};
+
+
+//***************************************************************************//
+
+size_t I3ConverterBundle::GetNumberOfRows(const I3FrameObject& object) {
     std::vector<I3ConverterPtr>::iterator it;
     size_t global_numrows = 0;
     size_t numrows = 0;
@@ -34,6 +41,9 @@ size_t I3ConverterBundle::GetNumberOfRows(I3FrameObjectConstPtr object) {
     
     return global_numrows;
 };
+
+
+
 
 //***************************************************************************//
 

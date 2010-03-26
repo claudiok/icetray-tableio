@@ -10,6 +10,7 @@ struct PythonConverter : I3Converter, boost::python::wrapper<I3Converter>
     // void Configure( const StringPairVector& params);
 
     size_t GetNumberOfRows(I3FrameObjectConstPtr object);
+    size_t GetNumberOfRows(const I3FrameObject& object);
 
     I3TableRowDescriptionConstPtr GetDescription(I3FrameObjectConstPtr object);
     I3TableRowDescriptionConstPtr GetDescription(const I3FrameObject& object);
