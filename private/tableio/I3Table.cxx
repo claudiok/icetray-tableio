@@ -72,7 +72,7 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
        maybe replace this with a while(padding = ...) loop
        and hand out rows in chunks 
     */
-    assert(row->GetDescription() == description_);
+    assert(*row->GetDescription() == description_);
     
     // sanity check: padding behavior is different for ragged tables
     size_t nrows = row->GetNumberOfRows(); 
