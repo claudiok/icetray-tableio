@@ -23,6 +23,7 @@ class I3TableRow {
     public:
         I3TableRow(I3TableRowDescriptionConstPtr description, size_t nrows=1);
         I3TableRow(const I3TableRow& rhs);
+        I3TableRow(const I3TableRow& rhs, size_t start, size_t stop);
         I3TableRow& operator=(const I3TableRow& rhs);
 
         virtual ~I3TableRow(); // TODO measure gain by making the destructor not virtual
@@ -68,6 +69,9 @@ class I3TableRow {
         
         // get a void pointer to a particular row
         void const* GetPointerToField(size_t index, size_t row) const;
+        
+        // get a void pointer to the beginning of a particular row
+        void const* GetPointerToRow(size_t row) const;
         
         // and a non-const version of same
         void* GetPointerToField(size_t index, size_t row);
@@ -132,7 +136,7 @@ bool I3TableRow::CheckType(size_t index) {
 template<class T>
 void I3TableRow::Set(const std::string& fieldName, T value, bool all = false) {
     size_t index = description_->GetFieldColumn(fieldName);
-    log_trace("I3TableRow::Set:  field %s has index %d", fieldName.c_str(), index);
+    log_trace("I3TableRow::Set:  field %s has index %zu", fieldName.c_str(), index);
     if (index >= description_->GetNumberOfFields())
         log_fatal("Tried to set unknown column '%s'",fieldName.c_str());
 	if (all) SetAll(index,value);

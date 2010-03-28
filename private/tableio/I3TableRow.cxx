@@ -127,6 +127,24 @@ I3TableRow::I3TableRow(const I3TableRow& rhs) {
 
 /******************************************************************************/
 
+I3TableRow::I3TableRow(const I3TableRow& rhs, size_t start, size_t stop) {
+    assert( stop <= rhs.GetNumberOfRows() );
+    assert( stop > start );
+    description_ = rhs.GetDescription();
+    nrows_ = stop - start;
+    capacity_ = nrows_;
+    currentRow_ = 0;
+    enums_are_ints_ = false;
+    
+    size_t totalChunkSize = nrows_*rhs.GetDescription()->GetTotalChunkSize();
+    size_t totalByteSize = nrows_*rhs.GetDescription()->GetTotalByteSize();
+    data_ = new I3MemoryChunk[totalChunkSize];
+    memcpy( data_, rhs.GetPointerToRow(start), totalByteSize );
+}
+
+
+/******************************************************************************/
+
 I3TableRow& I3TableRow::operator=(const I3TableRow& rhs) {
     size_t totalByteSize = rhs.GetNumberOfRows()*rhs.GetDescription()->GetTotalByteSize();
     size_t totalChunkSize = rhs.GetNumberOfRows()*rhs.GetDescription()->GetTotalByteSize();
@@ -151,6 +169,11 @@ I3TableRow& I3TableRow::operator=(const I3TableRow& rhs) {
 void const* I3TableRow::GetPointer() const {
     return static_cast<void*>(data_); // TODO const?
 }
+
+void const* I3TableRow::GetPointerToRow(size_t row) const {
+    return static_cast<void*>( &data_[description_->GetTotalChunkSize()*row] ); // TODO const?
+}
+
 
 void const* I3TableRow::GetPointerToField(size_t index, size_t row) const {
     if (row >= nrows_) log_fatal("Tried to get pointer to a row not in range [0,%zu)", nrows_);
