@@ -24,31 +24,22 @@ I3TableTranscriber::I3TableTranscriber(I3TableServicePtr input, I3TableServicePt
         I3TablePtr table;
         size_t nEvents = 0;
         std::string nEvents_reference;
-        size_t nrows = 0;
         for (it = inputTables.begin(); it != inputTables.end(); it++) {
             table = inputService_->GetTable(*it, I3TableRowDescriptionConstPtr());
-            nrows = table->GetNumberOfRows();
-            // if this is not a ragged table, then it should have exactly
-            // one row for every event in the table 
-            if (!table->GetDescription()->GetIsMultiRow()) {
-                // in particular, every non-ragged table should
-                // have the same number of rows
-                if (nEvents != 0) {
-                    if (nrows != nEvents) {
-                        log_fatal("Input tables '%s' '%s' have different sizes (%zu vs. %zu)",
-                            nEvents_reference.c_str(),table->GetName().c_str(),nEvents,nrows);
-                    }
-                } else {
-                    nEvents = nrows;
-                    nEvents_reference = table->GetName();
-                }
+            
+            if (nEvents == 0) {
+                nEvents = table->GetNumberOfEvents();
+                nEvents_reference = table->GetName();
+            } else if (table->GetNumberOfEvents() != nEvents) {
+                log_fatal("Input tables '%s' '%s' have different sizes (%zu vs. %zu)",
+                    nEvents_reference.c_str(),table->GetName().c_str(),nEvents,table->GetNumberOfEvents());
             }
            
             inputTableMap[*it] = table;
         }
         
         if (nEvents == 0) {
-            log_fatal("Input file contains no events. [FIXME: this could happen if there are no non-ragged tables.]");
+            log_fatal("Input file contains no events.");
         }
         
         nEvents_ = nEvents;

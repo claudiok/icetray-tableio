@@ -17,6 +17,7 @@ parser = OptionParser()
 parser.add_option("-f","--format",dest="format",help="format to output",default='hdf5')
 parser.add_option("-z","--compress",dest="compress",help="compression level",default=1,type=int)
 parser.add_option("-n","--frames",dest="nframes",help="number of frames to process",default=None,type=int)
+parser.add_option("-o","--output",dest="outfile",help="name of the output file",default=None,type=str)
 
 options,args = parser.parse_args()
 if len(args) != 1:
@@ -25,7 +26,10 @@ if len(args) != 1:
 infile = args[0]
 iformat = 'hdf5' # only service that supports reading at this point
 oformat = options.format
-outfile = os.path.basename(infile) + '.' + options.format
+if options.outfile is None:
+    outfile = os.path.basename(infile) + '.' + options.format
+else:
+    outfile = options.outfile
 
 from icecube import icetray,tableio
 from icecube.tableio import I3TableTranscriber
