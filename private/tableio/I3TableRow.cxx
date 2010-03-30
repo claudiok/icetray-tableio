@@ -22,9 +22,7 @@ void I3TableRow::init() {
     data_ = new I3MemoryChunk[totalChunkSize];
 
     // initialize memory block with zeros - TODO useful?
-    char* pointy = reinterpret_cast<char*>(&data_[0]);
-    for (size_t i = 0; i < totalByteSize; ++i)
-        pointy[i] = 0;
+    memset(data_, 0, totalByteSize);
 }
 
 /******************************************************************************/
