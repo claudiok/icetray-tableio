@@ -108,7 +108,6 @@ size_t I3WaveformConverter::FillRows(const I3WaveformSeriesMap& atwdWaveformMap,
     I3Map<OMKey, std::vector<I3Waveform> >::const_iterator iter;
     
     const size_t startRow = rows->GetCurrentRow();
-    static const double qe=1.60217653e-19;  //units of coulombs
     
     size_t currentRow;
     for (iter = atwdWaveformMap.begin(), currentRow = rows->GetCurrentRow(); 
@@ -119,12 +118,12 @@ size_t I3WaveformConverter::FillRows(const I3WaveformSeriesMap& atwdWaveformMap,
         OMKey key = iter->first;
         const I3DOMCalibration &domcal = domcalmap.find(key)->second;
         const I3DOMStatus &domstatus   = domstatusmap.find(key)->second;
-        double gain=PMTGain(domstatus,domcal);
+        const double GI(SPEMean(domstatus,domcal)*domcal.GetFrontEndImpedance());
     
         bool atwd_ok = true;
         bool fadc_ok = true;
         
-        if((gain<=0) || !finite(gain)){
+        if( isnan(GI) ){
             log_info("OM (%d,%d) has an invalid gain. Skipping the OM.", 
                      key.GetString(), key.GetOM());
             atwd_ok = false;
@@ -135,8 +134,7 @@ size_t I3WaveformConverter::FillRows(const I3WaveformSeriesMap& atwdWaveformMap,
         const std::vector<double>& atwd_readout = wf.GetWaveform();
         rows->Set<double>("atwd_t0", wf.GetStartTime()/I3Units::ns);
         rows->Set<double>("atwd_dt", wf.GetBinWidth()/I3Units::ns);
-        double VoltToNPE=(wf.GetBinWidth()/I3Units::ns*1e-9)/
-                         (qe * domcal.GetFrontEndImpedance()/I3Units::ohm * gain);
+        double VoltToNPE = wf.GetBinWidth()/GI;
 
         std::vector<double>::const_iterator wfiter;
         double* buffer = rows->GetPointer<double>("atwd");
@@ -146,7 +144,7 @@ size_t I3WaveformConverter::FillRows(const I3WaveformSeriesMap& atwdWaveformMap,
             for(wfiter = atwd_readout.begin(); 
                 i < 128 && wfiter != atwd_readout.end(); 
                 ++i, ++wfiter++) {
-                buffer[i] = *wfiter/I3Units::volt*VoltToNPE;
+                buffer[i] = (*wfiter)*VoltToNPE;
             }
         }
         else {
@@ -168,8 +166,7 @@ size_t I3WaveformConverter::FillRows(const I3WaveformSeriesMap& atwdWaveformMap,
             const std::vector<double>& fadc_readout = wf2.GetWaveform();
             rows->Set<double>("fadc_t0", wf2.GetStartTime()/I3Units::ns);
             rows->Set<double>("fadc_dt", wf2.GetBinWidth()/I3Units::ns);
-            VoltToNPE=(wf2.GetBinWidth()/I3Units::ns*1e-9)/
-                      (qe * domcal.GetFrontEndImpedance()/I3Units::ohm * gain);
+            VoltToNPE = wf2.GetBinWidth()/GI;
 
             std::vector<double>::const_iterator wfiter;
             buffer = rows->GetPointer<double>("fadc");
@@ -178,7 +175,7 @@ size_t I3WaveformConverter::FillRows(const I3WaveformSeriesMap& atwdWaveformMap,
             if (calibrate_) {
                 for(wfiter = fadc_readout.begin(); 
                     i < 256 && wfiter != fadc_readout.end(); ++i, ++wfiter) {
-                    buffer[i] = *wfiter/I3Units::volt*VoltToNPE;
+                    buffer[i] = (*wfiter)*VoltToNPE;
                 }
             }
             else {
