@@ -354,6 +354,8 @@ void I3TableWriter::Convert(I3FramePtr frame) {
                 // the converter can then fill them
                 size_t rowsWritten = bundle.converter->Convert(obj, rows, frame);
             
+                // TODO add an error reporting mechanism to Convert
+                // e.g. rowWritten == 0 -> exist = 0
                 assert(rowsWritten == nrows);
             
                 // fill the table index columns

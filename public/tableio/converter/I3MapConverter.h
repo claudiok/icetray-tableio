@@ -183,7 +183,7 @@ private:
     I3TableRowDescriptionPtr desc = 
       I3TableRowDescriptionPtr(new I3TableRowDescription() );
     desc->isMultiRow_ = true;
-    desc->AddField<uint8_t>("string", "", "String number");
+    desc->AddField<int8_t>("string", "", "String number");
     desc->AddField<uint8_t>("om", "", "OM number");
     desc->AddField<tableio_size_t>("vector_index", "", "index in vector");
       
@@ -206,7 +206,7 @@ private:
 	     veciter++)
 	  {
 	    rows->SetCurrentRow(index);
-	    rows->Set<uint8_t>("string", mapiter->first.GetString());
+	    rows->Set<int8_t>("string", mapiter->first.GetString());
 	    rows->Set<uint8_t>("om", mapiter->first.GetOM());
 	    rows->Set<tableio_size_t>("vector_index", vecindex);
 
