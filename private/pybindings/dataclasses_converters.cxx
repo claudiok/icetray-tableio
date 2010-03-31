@@ -16,6 +16,7 @@
 #include "tableio/converter/I3TreeConverter.h"
 #include "tableio/converter/I3TriggerHierarchyConverter.h"
 #include "tableio/converter/I3WaveformConverter.h"
+#include "tableio/converter/PODConverter.h"
 
 void register_dataclasses_converters() {
     I3CONVERTER_NAMESPACE(dataclasses);
@@ -37,7 +38,11 @@ void register_dataclasses_converters() {
     I3CONVERTER_EXPORT(I3MCTreeConverter,"Dumps all particles in the MC Tree");
     
     I3CONVERTER_EXPORT(I3TriggerHierarchyConverter,"Dumps all triggers in the I3TriggerHierarchy tree");
-
+    
+    I3CONVERTER_EXPORT(I3DoubleConverter,"Dumps I3Double objects");
+    I3CONVERTER_EXPORT(I3IntConverter,"Dumps I3Int objects");
+    I3CONVERTER_EXPORT(I3BoolConverter,"Dumps I3Bool objects");
+    
     // waveform converter has a non-default constructor
     // don't register this converter, since registered converters need default constructors
     bp::class_<I3WaveformConverter,                                      
