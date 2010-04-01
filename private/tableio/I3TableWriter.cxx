@@ -68,11 +68,15 @@ bool I3TableWriter::AddObject(std::string name, std::string tableName,
 
     // create a converter if needed
     if (converter == NULL) {
+      log_debug("AddObject called for object %s table %s without a converter",
+                 name.c_str(), tableName.c_str());
       converter = FindConverter(obj);
       if (converter == NULL) {
          log_fatal("No converter found for '%s' of type '%s'",name.c_str(),name_of(obj).c_str());
       }
      } else {
+      log_debug("AddObject called for object %s table %s with a converter",
+                 name.c_str(), tableName.c_str());
       // check the converter anyhow
       if (!converter->CanConvert(obj)) {
          log_fatal("Converter for key '%s' of type '%s' can't convert the object.",name.c_str(),name_of(obj).c_str());
@@ -122,6 +126,10 @@ bool I3TableWriter::AddObject(std::string name, std::string tableName,
        
     if (!duplicate) {
       // get the table from the service
+       log_debug("connecting object %s with table %s (%d fields %s .. %s)", name.c_str(), tableName.c_str(), 
+                 combinedDescription.GetNumberOfFields(),
+                 combinedDescription.GetFieldNames().at(0).c_str(),
+                 combinedDescription.GetFieldNames().at(combinedDescription.GetNumberOfFields()-1).c_str()); 
        I3TablePtr table = ConnectTable(tableName, combinedDescription);
 
        // store all this in tables_ 
@@ -275,9 +283,9 @@ void I3TableWriter::Convert(I3FramePtr frame) {
     // now, cycle through the typelist and look for objects in the frames that 
     // have the type and are not in tables_
     // TODO rather expensive loop -> restructure to optimize?
-    std::vector<std::string> objectsInFrame = frame->keys();
+    const std::vector<std::string>& objectsInFrame = frame->keys();
 
-   std::vector<std::string>::const_iterator it_skipkeys;
+   std::set<std::string>::const_iterator it_skipkeys;
    // if the user specified types to be booked, loop through the frame's keys
    if (wantedTypes_.size() > 0) {
       // .. loop through the frame
@@ -298,7 +306,7 @@ void I3TableWriter::Convert(I3FramePtr frame) {
                const TypeSpec& typeSpec = typelist_it->first;
                // if the object is already in tables ignore it 
                if ( tables_.find(objName) != tables_.end() ) {
-                  uselessKeys_.push_back(objName);
+                  uselessKeys_.insert(objName);
                   log_trace("Added key '%s' to ban list (already booked)",objName.c_str());
                   continue;
                }
@@ -308,7 +316,7 @@ void I3TableWriter::Convert(I3FramePtr frame) {
                try {
                   object = frame->Get<I3FrameObjectConstPtr>(objName,true);
                } catch (...) {
-                  uselessKeys_.push_back(objName);
+                  uselessKeys_.insert(objName);
                   log_trace("Added key '%s' to ban list (unregistered class)",objName.c_str());
                   continue;
                }
@@ -323,7 +331,7 @@ void I3TableWriter::Convert(I3FramePtr frame) {
                } // if (typeName == objTypeName)
                
                if (!selected) {
-                  uselessKeys_.push_back(objName);
+                  uselessKeys_.insert(objName);
                   log_trace("Added key '%s' to ban list (nobody wants it)",objName.c_str());
                } // if !selected
             } // for (k_it
@@ -339,6 +347,12 @@ void I3TableWriter::Convert(I3FramePtr frame) {
             
             size_t nrows = 0;
             
+            log_debug("converting object %s with converter %s to table %s", objName.c_str(), 
+                      typeid(*bundle.converter).name(), bundle.table->GetName().c_str());
+            log_debug("(%d fields %s .. %s)",  
+                      bundle.table->GetDescription()->GetNumberOfFields(),
+                      bundle.table->GetDescription()->GetFieldNames().at(0).c_str(),
+                      bundle.table->GetDescription()->GetFieldNames().at(bundle.table->GetDescription()->GetNumberOfFields()-1).c_str()); 
             I3FrameObjectConstPtr obj = frame->Get<I3FrameObjectConstPtr>(objName);
             if (!obj) {
                 // TODO error logic

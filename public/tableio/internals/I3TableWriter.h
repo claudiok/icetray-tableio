@@ -15,6 +15,7 @@
 #include "icetray/IcetrayFwd.h"
 
 #include <string>
+#include <set>
 
 #include "tableio/internals/I3Converter.h"
 #include <boost/python.hpp>
@@ -102,7 +103,7 @@ class I3TableWriter {
         std::map<std::string, I3ConverterPtr> converters_;
         std::vector<I3ConverterPtr> converterCache_;
         // keys that have been examined and found useless
-        std::vector<std::string> uselessKeys_;
+        std::set<std::string> uselessKeys_;
          
         typedef std::map<std::string, std::vector<TableSpec> > tablespec_map;
         typedef std::map<TypeSpec, std::vector<TableSpec> > typespec_map;

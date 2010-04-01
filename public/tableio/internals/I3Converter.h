@@ -128,12 +128,18 @@ class I3ConverterImplementation : public I3Converter {
         }
 
         I3TableRowDescriptionConstPtr GetDescription(const I3FrameObject& object) {
+            /* FIXME: this caching logic breaks if the description depends on the object! (e.g. I3MapStringDoubleConverter)
+             * maybe introduce a flag in the description to catch this case.
+             * for the moment the description will always be newly constructed!
             if (description_)
                 return description_;
             else {
                 description_ = CreateDescription(dynamic_cast<const FrmObj&>(object)); 
                 return description_;
             }
+            */
+            description_ = CreateDescription(dynamic_cast<const FrmObj&>(object)); 
+            return description_;
         }
 
         I3TableRowDescriptionConstPtr GetDescription(I3FrameObjectConstPtr object) {
