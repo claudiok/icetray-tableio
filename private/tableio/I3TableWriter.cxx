@@ -126,7 +126,7 @@ bool I3TableWriter::AddObject(std::string name, std::string tableName,
        
     if (!duplicate) {
       // get the table from the service
-       log_debug("connecting object %s with table %s (%d fields %s .. %s)", name.c_str(), tableName.c_str(), 
+       log_debug("connecting object %s with table %s (%zu fields %s .. %s)", name.c_str(), tableName.c_str(), 
                  combinedDescription.GetNumberOfFields(),
                  combinedDescription.GetFieldNames().at(0).c_str(),
                  combinedDescription.GetFieldNames().at(combinedDescription.GetNumberOfFields()-1).c_str()); 
@@ -349,7 +349,7 @@ void I3TableWriter::Convert(I3FramePtr frame) {
             
             log_debug("converting object %s with converter %s to table %s", objName.c_str(), 
                       typeid(*bundle.converter).name(), bundle.table->GetName().c_str());
-            log_debug("(%d fields %s .. %s)",  
+            log_debug("(%zu fields %s .. %s)",  
                       bundle.table->GetDescription()->GetNumberOfFields(),
                       bundle.table->GetDescription()->GetFieldNames().at(0).c_str(),
                       bundle.table->GetDescription()->GetFieldNames().at(bundle.table->GetDescription()->GetNumberOfFields()-1).c_str()); 
