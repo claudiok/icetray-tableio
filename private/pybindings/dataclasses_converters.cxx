@@ -17,11 +17,14 @@
 #include "tableio/converter/I3TriggerHierarchyConverter.h"
 #include "tableio/converter/I3WaveformConverter.h"
 #include "tableio/converter/PODConverter.h"
+#include "tableio/converter/I3EventHeaderConverter.h"
 
 void register_dataclasses_converters() {
     I3CONVERTER_NAMESPACE(dataclasses);
     
     // typdef the template into a legal Python identifier
+    I3CONVERTER_EXPORT(I3EventHeaderConverter,"Dumps I3EventHeader objects");
+    
     typedef I3MapOMKeyVectorConverter<I3DOMLaunchSeriesMap> I3DOMLaunchSeriesMapConverter;
     I3CONVERTER_EXPORT(I3DOMLaunchSeriesMapConverter,"Dumps all DOMLaunches verbatim.");
     typedef I3MapOMKeyVectorConverter<I3RecoPulseSeriesMap> I3RecoPulseSeriesMapConverter;
