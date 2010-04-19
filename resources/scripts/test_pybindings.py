@@ -266,6 +266,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 		def testNoArgs(self):
 			"""TableService is a required argument"""
 			self.tray.AddModule(self.target,'scribe')
+			self.tray.AddModule('TrashCan','tc')
 			self.assertRaises(TypeError,self.tray.Execute)
 			# self.tray.Execute()
 			self.tray.Finish()
@@ -275,6 +276,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 				tableservice = 'foo',
 				keys = ['I3EventHeader','InIceRawData']
 				)
+			self.tray.AddModule('TrashCan','tc')
 			self.assertRaises(TypeError,self.tray.Execute)
 			# self.tray.Execute()
 			self.tray.Finish()
@@ -284,6 +286,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 				tableservice = self.hdf_service,
 				keys = ['I3EventHeader','InIceRawData']
 				)
+			self.tray.AddModule('TrashCan','tc')
 			self.tray.Execute()
 			self.tray.Finish()
 		def testKeyDict(self):
@@ -292,6 +295,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 				tableservice = self.hdf_service,
 				keys = {'InIceRawData': self.bookie}
 				)
+			self.tray.AddModule('TrashCan','tc')
 			self.tray.Execute()
 			self.tray.Finish()
 		def testKeyTuples(self):
@@ -300,6 +304,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 				tableservice = self.hdf_service,
 				keys = [('InIceRawData', self.bookie),('InIceRawData',None)] # repeat with default booker
 				)
+			self.tray.AddModule('TrashCan','tc')
 			self.tray.Execute()
 			self.tray.Finish()
 		

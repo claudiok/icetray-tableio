@@ -17,6 +17,7 @@ import re,warnings
 class I3TableWriter(I3Module):
 	def __init__(self,context):
 		I3Module.__init__(self,context)
+		self.AddOutBox('OutBox')
 		self.AddParameter('TableService','The I3TableService to recieve output.',None)
 		self.AddParameter('Keys','A list or dict of FrameObject keys to convert',None)
 		self.AddParameter('Types','A list or dict of types to convert',None)
@@ -140,6 +141,7 @@ class I3TableWriter(I3Module):
 		for item in types:
 			typus = item.pop('type')
 			self.writer.add_type(typespec(typus),tablespec(**item))
+
 	def handle_frame(self,frame):
 		self.writer.convert(frame)
 		self.PushFrame(frame)
