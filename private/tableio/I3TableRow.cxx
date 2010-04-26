@@ -94,9 +94,12 @@ void I3TableRow::erase(size_t nrows) {
 /******************************************************************************/
 
 void I3TableRow::append(const I3TableRow& rhs) {
+    // FIXME: This call is __really__ expensive
+    /*
     if (! (*(description_) == rhs.GetDescription()) ) {
         log_fatal("Attempted to append rows with an incompatible description.");
     }
+    */
     const size_t required_rows = nrows_ + rhs.GetNumberOfRows();
     const size_t bytes_to_write = rhs.GetNumberOfRows()*description_->GetTotalByteSize();
     const size_t index = nrows_ * description_->GetTotalChunkSize();

@@ -1,6 +1,6 @@
 """A demonstration of a converter written in pure Python"""
 
-from icecube import tableio
+from icecube import tableio,dataclasses
 
 class I3ParticleConverter(tableio.I3Converter):
 	booked = dataclasses.I3Particle

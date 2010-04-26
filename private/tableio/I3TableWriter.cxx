@@ -75,7 +75,7 @@ bool I3TableWriter::AddObject(std::string name, std::string tableName,
          log_fatal("No converter found for '%s' of type '%s'",name.c_str(),name_of(obj).c_str());
       }
      } else {
-      log_debug("AddObject called for object %s table %s with a converter",
+      log_debug("AddObject called for object '%s' table '%s' with a converter",
                  name.c_str(), tableName.c_str());
       // check the converter anyhow
       if (!converter->CanConvert(obj)) {

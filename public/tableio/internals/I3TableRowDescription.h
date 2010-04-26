@@ -20,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <boost/unordered_map.hpp>
 
 // boost::assign for less tedious enums
 #include <boost/assign/list_inserter.hpp>
@@ -79,7 +80,6 @@ public:
     // getter and setter - remove them? no real encapsulation anyway
     const std::vector<std::string>& GetFieldNames() const;
     const std::vector<I3Datatype>&  GetFieldTypes() const;
-    // const std::vector<char>& GetFieldTypeCodes() const;
     // units of bytes
     const std::vector<size_t>& GetFieldTypeSizes() const;
     const std::vector<size_t>& GetFieldByteOffsets() const;
@@ -102,77 +102,16 @@ public:
     bool operator==(shared_ptr<const I3TableRowDescription> other) const;
 private:
     std::vector<std::string> fieldNames_;
-    std::map<std::string, size_t> fieldNameToIndex_;
+    // typedef std::map<std::string, size_t> fieldNameToIndex_t;
+    typedef boost::unordered_map<std::string, size_t> fieldNameToIndex_t;
+    fieldNameToIndex_t fieldNameToIndex_;
     std::vector<I3Datatype> fieldTypes_;
-    // std::vector<char> fieldTypeCodes_;
     std::vector<size_t> fieldTypeSizes_;
     std::vector<size_t> fieldArrayLengths_;
     std::vector<size_t> fieldByteOffsets_;
     std::vector<size_t> fieldChunkOffsets_;
     std::vector<std::string> fieldUnits_;
     std::vector<std::string> fieldDocStrings_;
-
-
-/*     
-#define CODEMAP_DEF(TYPE, CODE, TYPECODE)                \
-    const static inline char  py_code(TYPE)  { return TYPECODE; }
-    // const static inline hid_t hdf_type(TYPE) { return  CODE; }       
-    
-    
-    CODEMAP_DEF(float, H5T_NATIVE_FLOAT, 'f');
-    CODEMAP_DEF(double, H5T_NATIVE_DOUBLE, 'd');
-    CODEMAP_DEF(long double, H5T_NATIVE_LDOUBLE, '\0');
-    CODEMAP_DEF(char, H5T_NATIVE_CHAR, 'c');
-    CODEMAP_DEF(unsigned char, H5T_NATIVE_UCHAR, 'B');
-    CODEMAP_DEF(signed char, H5T_NATIVE_SCHAR, 'b');
-    CODEMAP_DEF(short, H5T_NATIVE_SHORT, 'h');
-    CODEMAP_DEF(unsigned short, H5T_NATIVE_USHORT, 'H');
-    CODEMAP_DEF(int, H5T_NATIVE_INT, 'i');
-    CODEMAP_DEF(unsigned int, H5T_NATIVE_UINT, 'I');
-    CODEMAP_DEF(long int, H5T_NATIVE_LONG, 'l');
-    CODEMAP_DEF(unsigned long int, H5T_NATIVE_ULONG, 'L');
-    CODEMAP_DEF(bool, H5T_NATIVE_CHAR, 'o'); // HBOOL is really an int
-
-  #undef CODEMAP_DEF
-*/
-
-/*
-const static inline char py_code_from_hdf(hid_t hdf_type) { 
-   // grab the native datatype of the atom 
-   if ( H5Tget_class(hdf_type) == H5T_ENUM ) { 
-        hdf_type = H5Tget_super(hdf_type); 
-   } 
-   hid_t n = H5Tget_native_type(hdf_type,H5T_DIR_ASCEND); 
-   char code = 0; 
-   if        ( H5Tequal(n,H5T_NATIVE_FLOAT)  ) { 
-          code = 'f'; // python double        
-   } else if ( H5Tequal(n,H5T_NATIVE_DOUBLE) ) { 
-          code = 'd'; // python double        
-   } else if ( H5Tequal(n,H5T_NATIVE_CHAR)   ) { 
-          code = 'c'; // python character     
-   } else if ( H5Tequal(n,H5T_NATIVE_UCHAR)  ) { 
-          code = 'B'; // python int           
-   } else if ( H5Tequal(n,H5T_NATIVE_SCHAR)  ) { 
-          code = 'b'; // python int           
-   } else if ( H5Tequal(n,H5T_NATIVE_SHORT)  ) { 
-          code = 'h'; // python int           
-   } else if ( H5Tequal(n,H5T_NATIVE_USHORT) ) { 
-          code = 'H'; // python int           
-   } else if ( H5Tequal(n,H5T_NATIVE_INT)    ) { 
-          code = 'i'; // python int           
-   } else if ( H5Tequal(n,H5T_NATIVE_UINT)   ) { 
-          code = 'I'; // python long          
-   } else if ( H5Tequal(n,H5T_NATIVE_LONG)   ) { 
-          code = 'l'; // python long          
-   } else if ( H5Tequal(n,H5T_NATIVE_ULONG)  ) { 
-          code = 'L'; // python long 
-   } //else if ( H5Tequal(n,H5T_NATIVE_HBOOL)  ) { 
-     //     code = 'o'; // bool 
-   //} 
-   H5Tclose(n); 
-   return code; 
-}
-*/
 
     friend I3TableRowDescription operator|(const I3TableRowDescription& lhs, const I3TableRowDescription& rhs);
 

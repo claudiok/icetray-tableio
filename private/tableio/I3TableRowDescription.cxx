@@ -61,7 +61,7 @@ const std::vector<std::string>& I3TableRowDescription::GetFieldDocStrings() cons
 /******************************************************************************/
         
 size_t I3TableRowDescription::GetFieldColumn(const std::string& fieldName) const {
-    std::map<std::string,size_t>::const_iterator iter;
+    fieldNameToIndex_t::const_iterator iter;
     iter = fieldNameToIndex_.find(fieldName);
     if (iter != fieldNameToIndex_.end()) {
         return iter->second;
@@ -92,7 +92,7 @@ bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) cons
    size_t nfields = GetNumberOfFields();
    size_t o_nfields = other->GetNumberOfFields();
    if (nfields != o_nfields) return false;
-	if (isMultiRow_ != other->isMultiRow_) return false;
+   if (isMultiRow_ != other->isMultiRow_) return false;
    bool equal = true;
    
    for (size_t i = 0; i < nfields; ++i) {

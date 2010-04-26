@@ -46,9 +46,9 @@ if 'csv' in [iformat,oformat]:
 	from icecube.textwriter import I3CSVTableService
 
 if iformat == 'hdf5':
-	inservices = [I3HDFTableService(infile,1,'r') for infile in infiles]
+	inservices = [(I3HDFTableService,(infile,1,'r')) for infile in infiles]
 elif iformat == 'root':
-	inservices = [I3ROOTTableService(infile,'r') for infile in infiles]
+	inservices = [(I3ROOTTableService,(infile,'r')) for infile in infiles]
 else:
 	raise "Unknown input format '%s'" % iformat
 	
@@ -61,8 +61,9 @@ elif oformat == 'csv':
 else:
 	raise "Unknown out format '%s'" % oformat
 
-for fname,inservice in zip(infiles,inservices):
-    print 'Merging %s'%fname
+for ctor,args in inservices:
+    print 'Merging %s'%args[0]
+    inservice = ctor(*args)
     scribe = I3TableTranscriber(inservice,outservice)
     if options.nframes is not None:
         scribe.Execute(options.nframes)
