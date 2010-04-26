@@ -160,12 +160,14 @@ void I3TableRowDescription::AddField(const std::string& name, I3Datatype type,
 /******************************************************************************/
         
 size_t I3TableRowDescription::GetTotalChunkSize() const {
-    // TODO catch no defined field case
-    return fieldChunkOffsets_.back() + fieldArrayLengths_.back();
+   if (fieldChunkOffsets_.size() == 0) { // no defined fields
+      return 0;
+   } else {
+      return fieldChunkOffsets_.back() + fieldArrayLengths_.back();
+   }
 }
 
 size_t I3TableRowDescription::GetTotalByteSize() const {
-    // TODO catch no defined field case
     return I3MEMORYCHUNK_SIZE * GetTotalChunkSize();
 }
 

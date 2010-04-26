@@ -174,10 +174,12 @@ I3TableRowConstPtr I3TableService::GetPaddingRows(I3EventHeaderConstPtr lastHead
    if (nrows == 0) return I3TableRowPtr();
    I3TableRowPtr rows = I3TableRowPtr(new I3TableRow(description_, nrows));
    I3FramePtr frame; // assume ticConv doesn't need the frame
-   for (size_t i=0; i< nrows; ++i) {
-      rows->SetCurrentRow(i);
-      ticConverter_->Convert(*rit, rows,frame);
-      rit--;
+   if (description_->GetTotalChunkSize() > 0) {  // hack to deal with padding tables that have no fields at all
+      for (size_t i=0; i< nrows; ++i) {
+ 	 rows->SetCurrentRow(i);
+	 ticConverter_->Convert(*rit, rows,frame);
+	 rit--;
+      }
    }
    return rows;
 }
