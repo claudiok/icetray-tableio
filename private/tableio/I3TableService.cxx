@@ -126,7 +126,11 @@ I3TableRowConstPtr I3TableService::GetPaddingRows(I3EventHeaderConstPtr lastHead
    std::vector<I3EventHeaderConstPtr>::reverse_iterator rit;
 
    if (!lastHeader) { // this table is reporting for the first time
-      if (EventHeadersEqual(*newHeader, *(eventHeaderCache_.back()))) {
+      if (!newHeader) {
+          log_trace("This table is reporting for the first time with a NULL header, padding out the table completely.");
+          rit = eventHeaderCache_.rend()-1;
+          nrows = eventHeaderCache_.size();
+      } else if (EventHeadersEqual(*newHeader, *(eventHeaderCache_.back()))) {
          log_trace("This table is reporting for the first time; R%u E%u is the current event",newHeader->GetRunID(),newHeader->GetEventID());
          rit = eventHeaderCache_.rend()-1;
          nrows = eventHeaderCache_.size()-1;
