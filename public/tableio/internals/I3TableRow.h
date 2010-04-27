@@ -19,6 +19,8 @@
 #include "tableio/internals/I3TableRowDescription.h"
 #include "tableio/internals/I3MemoryChunk.h"
 
+I3_FORWARD_DECLARATION(I3TableRow);
+
 class I3TableRow {
     public:
         I3TableRow(I3TableRowDescriptionConstPtr description, size_t nrows=1);
@@ -31,6 +33,8 @@ class I3TableRow {
         // set the current row one which following Set and Get calls operate
         void SetCurrentRow(size_t row);
         size_t GetCurrentRow();
+
+        I3TableRowPtr GetSingleRow(size_t row) const;
         
         // set the value of a field
         template<class T>

@@ -230,6 +230,14 @@ size_t I3TableRow::GetCurrentRow() {
 
 /******************************************************************************/
 
+I3TableRowPtr I3TableRow::GetSingleRow(size_t row) const {
+    I3TableRowPtr result(new I3TableRow(description_, 1));
+    memcpy(result->data_, data_+row*description_->GetTotalByteSize(), description_->GetTotalByteSize());
+    return result;
+}
+
+/******************************************************************************/
+
 // Explictly cast booleans to true/false
 template<>
 void I3TableRow::Set<bool>(const std::string& fieldName, bool value, bool all) {

@@ -140,7 +140,9 @@ void I3Table::Align() {
         padding = service_.GetPaddingRows(lastHeader_, I3EventHeaderConstPtr(), description_);
         if (padding) {
             log_trace("(%s) Finalizing alignment with %zu padding rows",name_.c_str(),padding->GetNumberOfRows());
-            WriteRows(padding);
+            for (size_t r = 0; r < padding->GetNumberOfRows(); ++r) {
+              WriteRows(padding->GetSingleRow(r));
+            }
             nrowsWithPadding_ += padding->GetNumberOfRows();
         }
     }
