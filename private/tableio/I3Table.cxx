@@ -91,7 +91,9 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
         padding = service_.GetPaddingRows(lastHeader_, header, description_);
         if (padding) {
             log_trace("(%s) Writing %zu padding rows",name_.c_str(),padding->GetNumberOfRows());
-            WriteRows(padding);
+	    for (size_t r = 0; r < padding->GetNumberOfRows(); ++r) {
+	      WriteRows(padding->GetSingleRow(r));
+	    }
             nrowsWithPadding_ += padding->GetNumberOfRows();
         }
     } 
