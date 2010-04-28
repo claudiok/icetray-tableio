@@ -54,11 +54,16 @@ class I3CSVTable : public I3Table {
         std::vector<NativeType> fieldTypes_;
         
         template <typename T>
-        void WriteField(T* value,size_t arraySize) {
+        void inline WriteField(T* value,size_t arraySize) {
             for (size_t i = 0; i < arraySize; i++) {
-                output_ << value[i];
+                WriteElement(&value[i]);
                 if ((arraySize > 1) && (i != arraySize-1)) output_ << ",";
             }
+        }
+        
+        template <typename T>
+        void inline WriteElement(T* element) {
+            output_ << *element;
         }
         
         std::string folderPath_;
@@ -66,4 +71,16 @@ class I3CSVTable : public I3Table {
 
     SET_LOGGER("I3CSVTable");
 };
+
+/* Force chars to be written as digits */
+template <>
+void inline I3CSVTable::WriteElement(signed char* element) {
+    output_ << static_cast<int>(*element);
+};
+
+template <>
+void inline I3CSVTable::WriteElement(unsigned char* element) {
+    output_ << static_cast<int>(*element);
+};
+
 #endif
