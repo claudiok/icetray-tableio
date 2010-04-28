@@ -11,6 +11,7 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
+#include <tableio/internals/I3TableRowDescription.h>
 #include <tableio/internals/I3TableService.h>
 
 namespace bp = boost::python;
@@ -32,6 +33,7 @@ void register_I3TableService() {
                boost::shared_ptr<I3TableServiceWrapper>,
                boost::noncopyable>("I3TableService")
     .def("CreateTable",&I3TableServiceWrapper::CreateTable)
+    .def("GetTable",&I3TableServiceWrapper::GetTable)
     .def("CloseFile",&I3TableServiceWrapper::CloseFile)
     .def("Finish",&I3TableServiceWrapper::Finish)
     

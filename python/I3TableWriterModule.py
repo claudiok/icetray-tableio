@@ -10,7 +10,7 @@
 # 
 
 from icecube.icetray import I3Module
-from icecube.tableio import I3TableService, I3Converter, I3ConverterBundle, I3TableWriterWorker, I3ConverterRegistry, vector_I3ConverterPtr
+from icecube.tableio import I3TableService, I3Converter, I3ConverterBundle, I3TableWriterWorker, I3ConverterRegistry, vector_I3ConverterPtr, I3BroadcastTableService
 from icecube import dataclasses
 import re,warnings
 
@@ -25,7 +25,10 @@ class I3TableWriter(I3Module):
 	def _get_tableservice(self):
 		"""Get the table service (passed v3-style as a python object)"""
 		table_service = self.GetParameter('TableService')
-		if not isinstance(table_service, I3TableService):
+		# if a list is passed, wrap it in a repeater service
+		if isinstance(table_service, list):
+		    table_service = I3BroadcastTableService(tuple(table_service))
+		elif not isinstance(table_service, I3TableService):
 			raise TypeError, "TableService must be an instance of I3TableService (got %s instead)" % table_service
 		self.table_service = table_service
 	

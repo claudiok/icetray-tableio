@@ -115,7 +115,7 @@ I3TableRowDescriptionConstPtr I3TableService::GetIndexDescription() {
         
 I3TableRowConstPtr I3TableService::GetPaddingRows(I3EventHeaderConstPtr lastHeader,
                                                   I3EventHeaderConstPtr newHeader,
-                                             I3TableRowDescriptionConstPtr description_){
+                                             I3TableRowDescriptionConstPtr description){
    // catch the cases where padding is not necessary 
    if (eventHeaderCache_.size() == 0) { // first call, first event 
      log_trace("Event header cache is empty, no padding required");
@@ -172,14 +172,16 @@ I3TableRowConstPtr I3TableService::GetPaddingRows(I3EventHeaderConstPtr lastHead
       
    log_trace("nrows = %zu",nrows);
    if (nrows == 0) return I3TableRowPtr();
-   I3TableRowPtr rows = I3TableRowPtr(new I3TableRow(description_, nrows));
-   I3FramePtr frame; // assume ticConv doesn't need the frame
-   if (description_->GetTotalChunkSize() > 0) {  // hack to deal with padding tables that have no fields at all
-      for (size_t i=0; i< nrows; ++i) {
- 	 rows->SetCurrentRow(i);
-	 ticConverter_->Convert(*rit, rows,frame);
-	 rit--;
-      }
+   I3TableRowPtr rows = I3TableRowPtr(new I3TableRow(description, nrows));
+   // FIXME: special case for fieldless master table needed by ROOTWriter
+   // how to handle index-less tables in general?
+   if (description->GetNumberOfFields() > 0) {
+       I3FramePtr frame; // assume ticConv doesn't need the frame
+       for (size_t i=0; i< nrows; ++i) {
+          rows->SetCurrentRow(i);
+          ticConverter_->Convert(*rit, rows,frame);
+          rit--;
+       }
    }
    return rows;
 }

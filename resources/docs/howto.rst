@@ -94,5 +94,29 @@ want to discover which converters are defined, you can inspect
 :data:`tableio.I3ConverterRegistry.registry` in ipython. This dictionary
 contains all the converters tableio knows about.
 
+Booking to multiple files at once
+************************************
 
+You can also route output to multiple files in parallel by passing a list of
+I3TableServices rather than a single instance::
 
+    from icecube import icetray
+    from I3Tray import I3Tray
+    from icecube.tableio import I3TableWriter
+    from icecube.hdfwriter import I3HDFTableService
+    from icecube.rootwriter import I3ROOTTableService
+    
+    tray = I3Tray()
+    tray.AddModule('I3Reader','reader',filename = 'foo.i3.gz')
+    
+    hdf = I3HDFTableService('foo.hd5')
+    root = I3ROOTTableService('foo.root','master_tree')
+    
+    tray.AddModule(I3TableWriter,'writer',
+                   tableservice = [hdf, root],
+                   keys         = ['LineFit','InIceRawData']
+                  )
+                  
+    tray.AddModule('TrashCan','yeswecan')
+    tray.Execute()
+    tray.Finish()

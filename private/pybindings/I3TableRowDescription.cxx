@@ -12,6 +12,7 @@
  */
 
 #include <tableio/internals/I3TableRowDescription.h>
+#include "const_ptr_helpers.h"
 
 namespace bp = boost::python;
 
@@ -26,8 +27,8 @@ void register_I3TableRowDescription() {
 
 
    bp::class_<I3TableRowDescription, 
-      boost::shared_ptr<I3TableRowDescription>,
-      boost::shared_ptr<I3TableRowDescription const> >
+      boost::shared_ptr<I3TableRowDescription>
+      >
       ("I3TableRowDescription")
       #define RO_VEC_PROPERTIES (FieldNames)(FieldTypes)(FieldTypeSizes)(FieldByteOffsets)(FieldChunkOffsets)(FieldArrayLengths)(FieldUnits)(FieldDocStrings)
       #define RO_PROPERTIES (TotalByteSize)(TotalChunkSize)(NumberOfFields)
@@ -65,4 +66,8 @@ Returns                                                                       \n
 None                                                                          \n\
 "))
    ;
+   
+   // register implicit conversions for const pointers
+   utils::register_const_ptr<I3TableRowDescription>();
+
 }

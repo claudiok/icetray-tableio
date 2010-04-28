@@ -34,8 +34,8 @@ class I3Table {
         void SetConnectedToWriter(bool connected);
 
         I3TableRowPtr CreateRow(size_t nrows);
-        void AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row);
-        void Align();
+        virtual void AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row);
+        virtual void Align();
         
         // I3TableRowConstPtr GetRowForEvent(unsigned int RunID, unsigned int EventID);
         I3TableRowConstPtr GetRowForEvent(size_t index) const;

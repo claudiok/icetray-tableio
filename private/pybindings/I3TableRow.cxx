@@ -14,6 +14,7 @@
 #include <tableio/internals/I3TableRow.h>
 #include <dataclasses/I3Vector.h>
 #include "type_helpers.h"
+#include "const_ptr_helpers.h"
 #include "I3TableRow_detail.h"
 
 size_t index_for_field(I3TableRowDescriptionConstPtr desc, const std::string& field) {
@@ -195,4 +196,7 @@ will be raised.                                                              \n\
    .def("__getitem__",getitem)
    .def("keys",keys)
    ;
+   
+   // register implicit conversions for const pointers
+   utils::register_const_ptr<I3TableRow>();
 }
