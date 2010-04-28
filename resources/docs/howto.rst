@@ -102,7 +102,7 @@ I3TableServices rather than a single instance::
 
     from icecube import icetray
     from I3Tray import I3Tray
-    from icecube.tableio import I3TableWriter
+    from icecube.tableio import I3TableWriter, I3CSVTableService
     from icecube.hdfwriter import I3HDFTableService
     from icecube.rootwriter import I3ROOTTableService
     
@@ -111,9 +111,10 @@ I3TableServices rather than a single instance::
     
     hdf = I3HDFTableService('foo.hd5')
     root = I3ROOTTableService('foo.root','master_tree')
+    csv = I3CSVTableService('foo_csv')
     
     tray.AddModule(I3TableWriter,'writer',
-                   tableservice = [hdf, root],
+                   tableservice = [hdf, root, csv],
                    keys         = ['LineFit','InIceRawData']
                   )
                   

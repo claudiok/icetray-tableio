@@ -8,6 +8,7 @@ i3_add_pybindings(tableio
   I3TableWriter.cxx
   I3TableTranscriber.cxx
   I3BroadcastTableService.cxx
+  I3CSVTableService.cxx
   I3Datatype.cxx
   type_helpers.cxx
   dataclasses_converters.cxx

@@ -9,20 +9,27 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
-#ifndef I3BROADCASTTABLESERVICE_H_INCLUDED
-#define I3BROADCASTTABLESERVICE_H_INCLUDED
+#ifndef	I3CSVTABLESERVICE_H_INCLUDED
+#define I3CSVTABLESERVICE_H_INCLUDED
 
-#include <tableio/internals/I3TableService.h>
+#include "tableio/internals/I3TableService.h"
 
-class I3BroadcastTableService : public I3TableService {
+class I3CSVTableService : public I3TableService {
     public:
-        I3BroadcastTableService(const std::vector<I3TableServicePtr>& clients);
+        I3CSVTableService(const std::string& foldername);
+        virtual ~I3CSVTableService();
+
     protected:
         virtual I3TablePtr CreateTable(const std::string& tableName, 
                                        I3TableRowDescriptionConstPtr description);
         virtual void CloseFile();
+
     private:
-        std::vector<I3TableServicePtr> clients_;
+
+        std::string folderName_;
+
+    SET_LOGGER("I3CSVTableService");
 };
 
-#endif /* end of include guard */
+
+#endif

@@ -9,6 +9,9 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
+#ifndef I3BROADCASTTABLE_H_INCLUDED
+#define I3BROADCASTTABLE_H_INCLUDED
+
 #include <tableio/internals/I3Table.h>
 
 class I3BroadcastTable : public I3Table {
@@ -24,3 +27,5 @@ class I3BroadcastTable : public I3Table {
         
     SET_LOGGER("I3BroadcastTable");
 };
+
+#endif /* end of include guard */
