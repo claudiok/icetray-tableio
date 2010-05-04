@@ -18,6 +18,7 @@
 #include "tableio/converter/I3WaveformConverter.h"
 #include "tableio/converter/PODConverter.h"
 #include "tableio/converter/I3EventHeaderConverter.h"
+#include "tableio/converter/I3VectorConverter.h"
 
 void register_dataclasses_converters() {
     I3CONVERTER_NAMESPACE(dataclasses);
@@ -45,7 +46,33 @@ void register_dataclasses_converters() {
     I3CONVERTER_EXPORT(I3DoubleConverter,"Dumps I3Double objects");
     I3CONVERTER_EXPORT(I3IntConverter,"Dumps I3Int objects");
     I3CONVERTER_EXPORT(I3BoolConverter,"Dumps I3Bool objects");
-    
+
+    typedef I3VectorConverter<bool> I3VectorBoolConverter;
+    I3CONVERTER_EXPORT(I3VectorBoolConverter, "Dumps an I3Vector of bools");
+
+    typedef I3VectorConverter<int16_t> I3VectorShortConverter;
+    I3CONVERTER_EXPORT(I3VectorShortConverter, "Dumps an I3Vector of shorts");
+    typedef I3VectorConverter<uint16_t> I3VectorUShortConverter;
+    I3CONVERTER_EXPORT(I3VectorUShortConverter, "Dumps an I3Vector of unsigned shorts");
+
+    typedef I3VectorConverter<int32_t> I3VectorIntConverter;
+    I3CONVERTER_EXPORT(I3VectorIntConverter, "Dumps an I3Vector of ints");
+    typedef I3VectorConverter<uint32_t> I3VectorUIntConverter;
+    I3CONVERTER_EXPORT(I3VectorUIntConverter, "Dumps an I3Vector of unsigned ints");
+
+    typedef I3VectorConverter<I3VectorInt64::value_type> I3VectorInt64Converter;
+    I3CONVERTER_EXPORT(I3VectorInt64Converter, "Dumps an I3Vector of 64bit ints");
+    typedef I3VectorConverter<I3VectorUInt64::value_type> I3VectorUInt64Converter;
+    I3CONVERTER_EXPORT(I3VectorUInt64Converter, "Dumps an I3Vector of unsigned 64bit ints");
+
+    typedef I3VectorConverter<float> I3VectorFloatConverter;
+    I3CONVERTER_EXPORT(I3VectorFloatConverter, "Dumps an I3Vector of floats");
+    typedef I3VectorConverter<double> I3VectorDoubleConverter;
+    I3CONVERTER_EXPORT(I3VectorDoubleConverter, "Dumps an I3Vector of doubles");
+  
+    typedef I3VectorConverter< std::pair<double, double> > I3VectorDoubleDoubleConverter;
+    I3CONVERTER_EXPORT(I3VectorDoubleDoubleConverter, "Dumps an I3Vector of double-double pairs");
+
     // waveform converter has a non-default constructor
     // don't register this converter, since registered converters need default constructors
     bp::class_<I3WaveformConverter,                                      
