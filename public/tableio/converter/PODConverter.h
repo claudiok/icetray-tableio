@@ -2,12 +2,15 @@
  * copyright  (C) 2010
  * The Icecube Collaboration
  *
- * $Id: I3DoubleConverter.cxx 61920 2010-02-26 17:35:43Z jvansanten $
+ * $Id$
  *
- * @version $Revision: 61920 $
- * @date $LastChangedDate: 2010-02-26 18:35:43 +0100 (Fr, 26. Feb 2010) $
- * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy: jvansanten $
+ * @version $Revision$
+ * @date $LastChangedDate$
+ * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
+
+#ifndef TABLEIO_PODCONVERTER_H_INCLUDED
+#define TABLEIO_PODCONVERTER_H_INCLUDED
 
 #include "tableio/internals/I3ConverterFactory.h"
 #include "dataclasses/I3Double.h"
@@ -37,4 +40,4 @@ typedef PODConverter<I3Double,double , PODConverter_NoUnit> I3DoubleConverter;
 typedef PODConverter<I3Int   ,int32_t, PODConverter_NoUnit> I3IntConverter;
 typedef PODConverter<I3Bool  ,bool   , PODConverter_BoolUnit> I3BoolConverter;
 
-
+#endif // TABLEIO_PODCONVERTER_H_INCLUDED

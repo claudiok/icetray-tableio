@@ -9,6 +9,9 @@
  * @author Eike Middell <eike.middell@desy.de> $LastChangedBy$
  */
 
+#ifndef TABLEIO_I3WAVEFORMCONVERTER_H_INCLUDED
+#define TABLEIO_I3WAVEFORMCONVERTER_H_INCLUDED
+
 #include "tableio/internals/I3ConverterFactory.h"
 #include "dataclasses/physics/I3Waveform.h"
 
@@ -25,3 +28,5 @@ private:
     std::string fadcName_;
     bool calibrate_;
 };
+
+#endif // TABLEIO_I3WAVEFORMCONVERTER_H_INCLUDED

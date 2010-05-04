@@ -16,6 +16,9 @@
 // FIXME: vector<I3DOMLaunch> is no I3FrameObject. how to get this through the I3Converter
 //        interface?
 
+#ifndef TABLEIO_I3STLCONTAINERCONVERTER_H_INCLUDED
+#define TABLEIO_I3STLCONTAINERCONVERTER_H_INCLUDED
+
 #include "tableio/internals/I3ConverterFactory.h"
 #include "dataclasses/physics/I3EventHeader.h"
 
@@ -100,3 +103,5 @@ class I3STLVectorConverter : public I3ConverterImplementation<std::vector<FrmObj
     std::string  converterName_;
     I3ConverterPtr itemConverter_;
 };
+
+#endif // TABLEIO_I3STLCONTAINERCONVERTER_H_INCLUDED

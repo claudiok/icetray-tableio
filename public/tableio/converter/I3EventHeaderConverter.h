@@ -9,6 +9,9 @@
  * @author Eike Middell <eike.middell@desy.de> $LastChangedBy$
  */
 
+#ifndef TABLEIO_I3EVENTHEADERCONVERTER_HPP_INCLUDED
+#define TABLEIO_I3EVENTHEADERCONVERTER_HPP_INCLUDED
+
 #include "tableio/internals/I3ConverterFactory.h"
 #include "dataclasses/physics/I3EventHeader.h"
 
@@ -18,3 +21,4 @@ private:
     size_t FillRows(const I3EventHeader& params, I3TableRowPtr rows);
 };
     
+#endif // TABLEIO_I3EVENTHEADERCONVERTER_HPP_INCLUDED

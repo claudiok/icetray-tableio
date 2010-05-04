@@ -19,6 +19,9 @@
 // FIXME: vector<I3DOMLaunch> is no I3FrameObject. how to get this through the I3Converter
 //        interface?
 
+#ifndef TABLEIO_I3MAPCONVERTER_H_INCLUDED
+#define TABLEIO_I3MAPCONVERTER_H_INCLUDED
+
 #include <tableio/internals/I3ConverterFactory.h>
 #include <dataclasses/I3Map.h>
 #include <icetray/OMKey.h>
@@ -225,3 +228,5 @@ private:
 
   std::string  converterName_;
 };
+
+#endif // TABLEIO_I3MAPCONVERTER_H_INCLUDED

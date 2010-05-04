@@ -9,6 +9,9 @@
  * @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
  */
 
+#ifndef TABLEIO_I3MAPSTRINGCONVERTER_H_INCLUDED
+#define TABLEIO_I3MAPSTRINGCONVERTER_H_INCLUDED
+
 #include "tableio/internals/I3ConverterFactory.h"
 #include "dataclasses/I3Map.h"
 
@@ -17,3 +20,5 @@ private:
     I3TableRowDescriptionPtr CreateDescription(const I3MapStringDouble& map);
     size_t FillRows(const I3MapStringDouble& map, I3TableRowPtr rows);
 };
+
+#endif // TABLEIO_I3MAPSTRINGCONVERTER_H_INCLUDED

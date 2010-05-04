@@ -9,6 +9,9 @@
  * @author Eike Middell <eike.middell@desy.de> $LastChangedBy$
  */
 
+#ifndef TABLEIO_I3TRIGGERHIERARCHYCONVERTER_H_INCLUDED
+#define TABLEIO_I3TRIGGERHIERARCHYCONVERTER_H_INCLUDED
+
 #include "tableio/internals/I3ConverterFactory.h"
 #include "dataclasses/physics/I3TriggerHierarchy.h"
 
@@ -18,3 +21,5 @@ private:
     size_t FillRows(const I3TriggerHierarchy& triggers, I3TableRowPtr rows);
     size_t GetNumberOfRows(const I3TriggerHierarchy& triggers);
 };
+
+#endif // TABLEIO_I3TRIGGERHIERARCHYCONVERTER_H_INCLUDED

@@ -4,10 +4,13 @@
  *
  * $Id$
  *
- * @version $Revision: 62280 $
- * @date $LastChangedDate: 2010-03-10 05:37:10 +0100 (Mi, 10. Mär 2010) $
+ * @version $Revision$
+ * @date $LastChangedDate$
  * @author Eike Middell <eike.middell@desy.de> $LastChangedBy$
  */
+
+#ifndef TABLEIO_I3TREECONVERTER_H_INCLUDED
+#define TABLEIO_I3TREECONVERTER_H_INCLUDED
 
 #include "tableio/internals/I3ConverterFactory.h"
 #include "dataclasses/physics/I3MCTree.h"
@@ -95,3 +98,5 @@ class I3TreeConverter : public I3ConverterImplementation<I3Tree<FrmObj> > {
             return totalsize;
         }
 };
+
+#endif // TABLEIO_I3TREECONVERTER_H_INCLUDED
