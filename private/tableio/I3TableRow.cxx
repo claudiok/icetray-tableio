@@ -232,7 +232,7 @@ size_t I3TableRow::GetCurrentRow() {
 
 I3TableRowPtr I3TableRow::GetSingleRow(size_t row) const {
     I3TableRowPtr result(new I3TableRow(description_, 1));
-    memcpy(result->data_, data_+row*description_->GetTotalByteSize(), description_->GetTotalByteSize());
+    memcpy(result->data_, &data_[row*description_->GetTotalChunkSize()], description_->GetTotalByteSize());
     return result;
 }
 
