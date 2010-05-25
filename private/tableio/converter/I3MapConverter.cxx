@@ -9,7 +9,7 @@
  * @author Eike Middell <eike.middell@desy.de> $LastChangedBy$
  */
 
-#include "tableio/internals/I3ConverterFactory.h"
+#include "tableio/I3ConverterFactory.h"
 #include "tableio/converter/I3MapConverter.h"
 
 I3_CONVERTER(I3MapOMKeyVectorConverter<I3DOMLaunchSeriesMap>, I3DOMLaunchSeriesMap);

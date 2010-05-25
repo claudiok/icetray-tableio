@@ -9,7 +9,7 @@
  * @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
  */
 
-#include <tableio/internals/I3TableRow.h>
+#include <tableio/I3TableRow.h>
 #include <dataclasses/I3Vector.h>
 #include "type_helpers.h"
 

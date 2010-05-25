@@ -12,7 +12,7 @@
 #ifndef TABLEIO_I3MAPSTRINGCONVERTER_H_INCLUDED
 #define TABLEIO_I3MAPSTRINGCONVERTER_H_INCLUDED
 
-#include "tableio/internals/I3ConverterFactory.h"
+#include "tableio/I3ConverterFactory.h"
 #include "dataclasses/I3Map.h"
 
 class I3MapStringDoubleConverter : public I3ConverterImplementation<I3MapStringDouble> {

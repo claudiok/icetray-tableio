@@ -11,9 +11,9 @@
 
 #include "icetray/I3Frame.h"
 
-#include "tableio/internals/I3TableWriter.h"
-#include "tableio/internals/I3TableService.h"
-#include "tableio/internals/I3ConverterFactory.h"
+#include "tableio/I3TableWriter.h"
+#include "tableio/I3TableService.h"
+#include "tableio/I3ConverterFactory.h"
 #include <I3/name_of.h>
 
 /******************************************************************************/

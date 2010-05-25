@@ -19,7 +19,7 @@
 #ifndef TABLEIO_I3STLCONTAINERCONVERTER_H_INCLUDED
 #define TABLEIO_I3STLCONTAINERCONVERTER_H_INCLUDED
 
-#include "tableio/internals/I3ConverterFactory.h"
+#include "tableio/I3ConverterFactory.h"
 #include "dataclasses/physics/I3EventHeader.h"
 
 template <class FrmObj>

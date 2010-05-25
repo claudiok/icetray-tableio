@@ -16,8 +16,8 @@
 #include "icetray/I3Logging.h"
 #include "icetray/I3PointerTypedefs.h"
 
-#include "tableio/internals/I3TableRowDescription.h"
-#include "tableio/internals/I3MemoryChunk.h"
+#include "tableio/I3TableRowDescription.h"
+#include "tableio/I3MemoryChunk.h"
 
 I3_FORWARD_DECLARATION(I3TableRow);
 

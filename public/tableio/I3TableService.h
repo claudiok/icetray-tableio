@@ -17,7 +17,7 @@
 #include "icetray/IcetrayFwd.h"
 
 #include "dataclasses/physics/I3EventHeader.h"
-#include "tableio/internals/I3Table.h"
+#include "tableio/I3Table.h"
 
 I3_FORWARD_DECLARATION(I3TableRow);
 I3_FORWARD_DECLARATION(I3Table);

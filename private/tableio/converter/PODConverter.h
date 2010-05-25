@@ -12,7 +12,7 @@
 #ifndef TABLEIO_PODCONVERTER_H_INCLUDED
 #define TABLEIO_PODCONVERTER_H_INCLUDED
 
-#include "tableio/internals/I3ConverterFactory.h"
+#include "tableio/I3ConverterFactory.h"
 #include "dataclasses/I3Double.h"
 #include "dataclasses/I3Bool.h"
 #include "icetray/I3Int.h"

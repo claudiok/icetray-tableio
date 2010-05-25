@@ -9,7 +9,7 @@
  * @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
  */
 
-#include "tableio/internals/I3Datatype.h"
+#include "tableio/I3Datatype.h"
 #include "type_helpers.h"
 
 namespace bp = boost::python;

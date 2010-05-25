@@ -9,7 +9,7 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
-#include "tableio/internals/I3ConverterFactory.h"
+#include "tableio/I3ConverterFactory.h"
 
 I3ConverterPtr BuildConverter(std::string name) {
     I3ConverterPtr converter = 

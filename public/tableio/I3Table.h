@@ -15,7 +15,7 @@
 #include <string>
 
 #include "icetray/IcetrayFwd.h"
-//#include "tableio/internals/I3TableService.h"
+//#include "tableio/I3TableService.h"
 
 I3_FORWARD_DECLARATION(I3TableRowDescription);
 I3_FORWARD_DECLARATION(I3TableRow);

@@ -9,7 +9,7 @@
  * @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
  */
 
-#include <tableio/internals/I3Converter.h>
+#include <tableio/I3Converter.h>
 
 // I3ConverterBundlerepresents a bundle of converters all acting on the same frame object
 // this can be used to extend the functionality of compiled bookers in a 

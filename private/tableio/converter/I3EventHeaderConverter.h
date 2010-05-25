@@ -12,7 +12,7 @@
 #ifndef TABLEIO_I3EVENTHEADERCONVERTER_HPP_INCLUDED
 #define TABLEIO_I3EVENTHEADERCONVERTER_HPP_INCLUDED
 
-#include "tableio/internals/I3ConverterFactory.h"
+#include "tableio/I3ConverterFactory.h"
 #include "dataclasses/physics/I3EventHeader.h"
 
 class I3EventHeaderConverter : public I3ConverterImplementation<I3EventHeader > {

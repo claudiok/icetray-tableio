@@ -9,11 +9,11 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
-#include "tableio/internals/I3Table.h"
-#include "tableio/internals/I3TableRow.h"
-#include "tableio/internals/I3TableRowDescription.h"
-#include "tableio/internals/I3TableService.h"
-#include "tableio/internals/I3Converter.h"
+#include "tableio/I3Table.h"
+#include "tableio/I3TableRow.h"
+#include "tableio/I3TableRowDescription.h"
+#include "tableio/I3TableService.h"
+#include "tableio/I3Converter.h"
 
 /******************************************************************************/
 

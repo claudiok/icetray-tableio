@@ -22,7 +22,7 @@
 #ifndef TABLEIO_I3MAPCONVERTER_H_INCLUDED
 #define TABLEIO_I3MAPCONVERTER_H_INCLUDED
 
-#include <tableio/internals/I3ConverterFactory.h>
+#include <tableio/I3ConverterFactory.h>
 #include <dataclasses/I3Map.h>
 #include <icetray/OMKey.h>
 

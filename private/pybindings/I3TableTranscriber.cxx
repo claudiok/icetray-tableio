@@ -9,7 +9,7 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
-#include <tableio/internals/I3TableTranscriber.h>
+#include <tableio/I3TableTranscriber.h>
 
 namespace bp = boost::python;
 

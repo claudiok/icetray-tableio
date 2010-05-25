@@ -10,8 +10,8 @@
  */
 
 #include "tableio/textwriter/I3CSVTable.h"
-#include "tableio/internals/I3TableRow.h"
-#include "tableio/internals/I3TableRowDescription.h"
+#include "tableio/I3TableRow.h"
+#include "tableio/I3TableRowDescription.h"
 #include "boost/filesystem.hpp"
 
 namespace fs = boost::filesystem;

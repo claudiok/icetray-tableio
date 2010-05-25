@@ -14,7 +14,7 @@
 #ifndef PYBINDINGS_H_GNEDBL5C
 #define PYBINDINGS_H_GNEDBL5C
 
-#include "tableio/internals/I3Converter.h"
+#include "tableio/I3Converter.h"
 #include <boost/python/class.hpp>
 
 namespace bp = boost::python;

@@ -12,8 +12,8 @@
 #ifndef	I3CSVTABLE_H_INCLUDED
 #define I3CSVTABLE_H_INCLUDED
 
-#include "tableio/internals/I3Table.h"
-#include "tableio/internals/I3Datatype.h"
+#include "tableio/I3Table.h"
+#include "tableio/I3Datatype.h"
 #include <fstream>
 
 I3_FORWARD_DECLARATION(I3TableService);

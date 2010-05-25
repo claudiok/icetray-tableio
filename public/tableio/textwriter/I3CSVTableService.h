@@ -12,7 +12,7 @@
 #ifndef	I3CSVTABLESERVICE_H_INCLUDED
 #define I3CSVTABLESERVICE_H_INCLUDED
 
-#include "tableio/internals/I3TableService.h"
+#include "tableio/I3TableService.h"
 
 class I3CSVTableService : public I3TableService {
     public:

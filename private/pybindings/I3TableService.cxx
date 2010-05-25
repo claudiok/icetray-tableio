@@ -11,8 +11,8 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
-#include <tableio/internals/I3TableRowDescription.h>
-#include <tableio/internals/I3TableService.h>
+#include <tableio/I3TableRowDescription.h>
+#include <tableio/I3TableService.h>
 
 namespace bp = boost::python;
 

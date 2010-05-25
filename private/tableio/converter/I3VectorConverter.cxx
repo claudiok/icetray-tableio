@@ -9,7 +9,7 @@
  * @author Eike Middell <eike.middell@desy.de> $LastChangedBy$
  */
 
-#include "tableio/internals/I3ConverterFactory.h"
+#include "tableio/I3ConverterFactory.h"
 #include "tableio/converter/I3VectorConverter.h"
 
 #include <boost/preprocessor.hpp>

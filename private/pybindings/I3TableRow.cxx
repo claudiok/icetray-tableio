@@ -11,7 +11,7 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
-#include <tableio/internals/I3TableRow.h>
+#include <tableio/I3TableRow.h>
 #include <dataclasses/I3Vector.h>
 #include "type_helpers.h"
 #include "const_ptr_helpers.h"

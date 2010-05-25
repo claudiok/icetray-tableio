@@ -12,7 +12,7 @@
 #ifndef I3BROADCASTTABLESERVICE_H_INCLUDED
 #define I3BROADCASTTABLESERVICE_H_INCLUDED
 
-#include <tableio/internals/I3TableService.h>
+#include <tableio/I3TableService.h>
 
 class I3BroadcastTableService : public I3TableService {
     public:

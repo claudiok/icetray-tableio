@@ -1,4 +1,4 @@
-#include <tableio/internals/I3Converter.h>
+#include <tableio/I3Converter.h>
 #include <boost/python.hpp>
 #include <icetray/I3FrameObject.h>
 

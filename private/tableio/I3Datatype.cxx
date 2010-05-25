@@ -9,7 +9,7 @@
  * @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
  */
 
-#include "tableio/internals/I3Datatype.h"
+#include "tableio/I3Datatype.h"
 
 // specialization for boolean types
 template <>

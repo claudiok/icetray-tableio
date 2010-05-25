@@ -12,7 +12,7 @@
 #ifndef TYPE_HELPERS_H_M3WNFWYF
 #define TYPE_HELPERS_H_M3WNFWYF
 
-#include "tableio/internals/I3Datatype.h"
+#include "tableio/I3Datatype.h"
 #include "dataclasses/I3Vector.h"
 #include <sstream>
 

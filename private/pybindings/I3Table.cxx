@@ -11,8 +11,8 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
-#include <tableio/internals/I3Table.h>
-#include <tableio/internals/I3TableService.h>
+#include <tableio/I3Table.h>
+#include <tableio/I3TableService.h>
 
 namespace bp = boost::python;
 
@@ -41,3 +41,4 @@ void register_I3Table() {
     bp::register_ptr_to_python< boost::shared_ptr<I3Table> >();
     
 }
+

@@ -11,7 +11,7 @@
 
 #include <cassert>
 
-#include "tableio/internals/I3TableRow.h"
+#include "tableio/I3TableRow.h"
 
 /******************************************************************************/
 

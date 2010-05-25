@@ -9,7 +9,7 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
-#include "tableio/internals/I3Converter.h"
+#include "tableio/I3Converter.h"
 
 /******************************************************************************/
 

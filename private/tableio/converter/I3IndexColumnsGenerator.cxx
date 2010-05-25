@@ -10,7 +10,7 @@
  */
 
 //#include "tableio/I3Converter.h"
-#include "tableio/internals/I3ConverterFactory.h"
+#include "tableio/I3ConverterFactory.h"
 #include "dataclasses/physics/I3EventHeader.h"
 
 class I3IndexColumnsGenerator : public I3ConverterImplementation<I3EventHeader> {

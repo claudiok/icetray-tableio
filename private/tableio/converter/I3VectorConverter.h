@@ -12,7 +12,7 @@
 #ifndef TABLEIO_I3VECTORCONVERTER_H_INCLUDED
 #define TABLEIO_I3VECTORCONVERTER_H_INCLUDED
 
-#include <tableio/internals/I3ConverterFactory.h>
+#include <tableio/I3ConverterFactory.h>
 #include <dataclasses/I3Vector.h>
 #include <dataclasses/physics/I3DOMLaunch.h>
 #include <dataclasses/physics/I3RecoHit.h>

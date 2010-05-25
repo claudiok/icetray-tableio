@@ -9,9 +9,9 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy: jvansanten $
  */
 
-#include <tableio/internals/I3TableTranscriber.h>
-#include <tableio/internals/I3TableRowDescription.h>
-#include <tableio/internals/I3TableRow.h>
+#include <tableio/I3TableTranscriber.h>
+#include <tableio/I3TableRowDescription.h>
+#include <tableio/I3TableRow.h>
 
 #include <dataclasses/physics/I3EventHeader.h>
 

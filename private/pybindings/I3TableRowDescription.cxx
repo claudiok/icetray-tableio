@@ -11,7 +11,7 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
-#include <tableio/internals/I3TableRowDescription.h>
+#include <tableio/I3TableRowDescription.h>
 #include "const_ptr_helpers.h"
 
 namespace bp = boost::python;
