@@ -13,9 +13,9 @@
 
 #include "dataclasses/physics/I3Particle.h"
 
-#include "tableio/internals/I3TableRowDescription.h"
-#include "tableio/internals/I3TableRow.h"
-#include "tableio/internals/I3MemoryChunk.h"
+#include "tableio/I3TableRowDescription.h"
+#include "tableio/I3TableRow.h"
+#include "tableio/I3MemoryChunk.h"
 
 TEST_GROUP(I3TableRowDescriptionTests);
 

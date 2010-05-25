@@ -10,8 +10,8 @@
  */
 
 #include <I3Test.h>
-#include "tableio/internals/I3Datatype.h"
-#include "tableio/internals/I3TableRowDescription.h"
+#include "tableio/I3Datatype.h"
+#include "tableio/I3TableRowDescription.h"
 
 TEST_GROUP(I3DatatypeTests)
 

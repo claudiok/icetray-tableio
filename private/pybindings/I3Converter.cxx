@@ -12,7 +12,7 @@
  */
 
 
-#include <tableio/PythonConverter.h>
+#include <tableio/converter/PythonConverter.h>
 
 namespace bp = boost::python;
 
@@ -35,3 +35,4 @@ void register_I3Converter() {
                            &PythonConverter::GetNumberOfRows)
 	;
 }
+

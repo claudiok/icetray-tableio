@@ -9,7 +9,7 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy: jvansanten $
  */
 
-#include <tableio/I3TableTranscriber.h>
+#include <tableio/utils/I3TableTranscriber.h>
 #include <tableio/I3TableRowDescription.h>
 #include <tableio/I3TableRow.h>
 

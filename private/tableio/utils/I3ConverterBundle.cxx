@@ -9,7 +9,7 @@
  * @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
  */
 
-#include <tableio/I3ConverterBundle.h>
+#include <tableio/utils/I3ConverterBundle.h>
 
 //***************************************************************************//
 

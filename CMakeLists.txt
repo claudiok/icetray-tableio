@@ -10,6 +10,7 @@ i3_project(tableio
 i3_add_library(tableio
   private/tableio/*.cxx private/tableio/converter/*.cxx 
   private/tableio/broadcaster/*.cxx private/tableio/textwriter/*.cxx
+  private/tableio/utils/*.cxx
   USE_TOOLS log4cplus boost
   USE_PROJECTS icetray dataclasses
 )

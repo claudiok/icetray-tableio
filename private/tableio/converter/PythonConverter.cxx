@@ -1,4 +1,4 @@
-#include <tableio/PythonConverter.h>
+#include <tableio/converter/PythonConverter.h>
 #include <boost/python.hpp>
 
 namespace bp = boost::python;

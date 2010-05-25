@@ -11,8 +11,8 @@
 
 #include <I3Test.h>
 
-#include "tableio/internals/I3Converter.h"
-#include "tableio/internals/I3ConverterFactory.h"
+#include "tableio/I3Converter.h"
+#include "tableio/I3ConverterFactory.h"
 
 #include "dataclasses/physics/I3DOMLaunch.h"
 

@@ -15,9 +15,9 @@
 #include "dataclasses/I3Bool.h"
 
 
-#include "tableio/internals/I3TableService.h"
-#include "tableio/internals/I3TableWriter.h"
-#include "tableio/internals/I3ConverterFactory.h"
+#include "tableio/I3TableService.h"
+#include "tableio/I3TableWriter.h"
+#include "tableio/I3ConverterFactory.h"
 
 
 TEST_GROUP(I3DoubleConverterTests);
@@ -137,3 +137,4 @@ TEST(convert_into_many_rows) {
 
     }
 }
+
