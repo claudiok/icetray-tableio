@@ -10,9 +10,9 @@
  */
 
 #include "tableio/converter/PODConverter.h"
-//#include "tableio/converter/I3STLContainerConverter.h"
+#include "tableio/converter/I3STLContainerConverter.h"
 
 I3_CONVERTER(I3DoubleConverter, I3Double);
 I3_CONVERTER(I3IntConverter, I3Int);
 I3_CONVERTER(I3BoolConverter, I3Bool);
-//I3_CONVERTER(I3STLVectorConverter<I3Double>, std::vector<I3Double>);
+I3_CONVERTER(I3STLVectorConverter<I3Double>, std::vector<I3Double>);
