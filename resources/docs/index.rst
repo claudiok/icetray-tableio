@@ -10,6 +10,8 @@
 
 .. highlight:: python
 
+.. _tableio-main:
+
 tableio
 =================
 
