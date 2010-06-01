@@ -32,7 +32,7 @@ class I3TableRow {
         
         // set the current row one which following Set and Get calls operate
         void SetCurrentRow(size_t row);
-        size_t GetCurrentRow();
+        size_t GetCurrentRow() const;
 
         I3TableRowPtr GetSingleRow(size_t row) const;
         

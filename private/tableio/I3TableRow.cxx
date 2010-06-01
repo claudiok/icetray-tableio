@@ -224,7 +224,7 @@ void I3TableRow::SetCurrentRow(size_t row) {
 
 /******************************************************************************/
 
-size_t I3TableRow::GetCurrentRow() {
+size_t I3TableRow::GetCurrentRow() const {
     return currentRow_;
 }
 
