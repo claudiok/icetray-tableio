@@ -13,7 +13,8 @@
 
 I3BroadcastTable::I3BroadcastTable(I3TableService& service, std::string name,
         I3TableRowDescriptionConstPtr description, std::vector<I3TablePtr>& clients)
-        : clients_(clients), I3Table(service,name,description) {};
+  : I3Table(service,name,description), clients_(clients)
+{};
 
 void I3BroadcastTable::WriteRows(I3TableRowConstPtr rows) {
     log_fatal("I should never have been called!");
