@@ -30,3 +30,5 @@ I3_CONVERTER(I3VectorConverter<double>, I3Vector<double>);
 
 typedef I3VectorConverter< std::pair<double, double> > I3VectorDoubleDoubleConverter;
 I3_CONVERTER(I3VectorDoubleDoubleConverter, I3VectorDoubleDouble);
+
+I3_CONVERTER(I3VectorConverter<I3FlasherInfo>, I3FlasherInfoVect);

@@ -73,6 +73,9 @@ void register_dataclasses_converters() {
     typedef I3VectorConverter< std::pair<double, double> > I3VectorDoubleDoubleConverter;
     I3CONVERTER_EXPORT(I3VectorDoubleDoubleConverter, "Dumps an I3Vector of double-double pairs");
 
+    typedef I3VectorConverter<I3FlasherInfo> I3FlasherInfoVectConverter;
+    I3CONVERTER_EXPORT(I3FlasherInfoVectConverter, "Dumps and I3FlasherInfoVect");
+
     // waveform converter has a non-default constructor
     // don't register this converter, since registered converters need default constructors
     bp::class_<I3WaveformConverter,                                      
