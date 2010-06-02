@@ -4,6 +4,7 @@ from icecube import icetray,dataclasses,tableio,dataio
 import array
 import unittest
 import exceptions
+import sys
 
 try:
 	import numpy
@@ -28,6 +29,10 @@ class I3PythonConverterTest(unittest.TestCase):
 		              'float':         tableio.types.Float32,
 		              'double':        tableio.types.Float64,
 		              'bool':          tableio.types.Bool}
+		# HACK: dial back longs on 32 bit systems for testing purposes
+		if sys.maxint == 2**31-1:
+				self.types['signed_long'] = tableio.types.Int32
+				self.types['unsigned_long'] = tableio.types.UInt32
 		self.codes = {
 		              'signed_char':   'b',
 		              'unsigned_char': 'B',
