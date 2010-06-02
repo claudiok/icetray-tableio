@@ -102,7 +102,10 @@ class I3PythonConverterTest(unittest.TestCase):
 			self.assertEquals( list(arr), got )
 			import sys
 			# try passing an array in byte-swapped order
-			swapped = '>' if (sys.byteorder == 'little') else '<'
+			if (sys.byteorder == 'little'):
+				swapped = '>'
+			else:
+				swapped = '<'
 			arr = numpy.array(range(128), (swapped + self.codes[field[:-4]]) )
 			bad_news = lambda: self.rows.set(field,arr)
 			self.assertRaises(exceptions.RuntimeError,bad_news)
