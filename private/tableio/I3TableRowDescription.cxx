@@ -113,16 +113,16 @@ bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) cons
     /* specialized AddField for booleans */
     template<>
     void I3TableRowDescription::AddField<bool>(const std::string& name, 
-		  const std::string& unit,
-		  const std::string& doc, 
-		  size_t arrayLength) 
+                  const std::string& unit,
+                  const std::string& doc, 
+                  size_t arrayLength) 
     {
-		// Since booleans are just integers, we need to enforce this unit convention
-		std::string boolunit("bool");
-		if ((unit.size() != 0) && (unit != boolunit))
-			log_fatal("The unit string of a boolean field must be \"bool\".");
-		AddField(name, I3DatatypeFromNativeType<bool>(), 
-			 boolunit, doc, arrayLength);
+                // Since booleans are just integers, we need to enforce this unit convention
+                std::string boolunit("bool");
+                if ((unit.size() != 0) && (unit != boolunit))
+                        log_fatal("The unit string of a boolean field must be \"bool\".");
+                AddField(name, I3DatatypeFromNativeType<bool>(), 
+                         boolunit, doc, arrayLength);
     }
 
 
@@ -183,18 +183,19 @@ size_t I3TableRowDescription::GetNumberOfFields() const {
 I3TableRowDescription operator|(const I3TableRowDescription& lhs, 
                                 const I3TableRowDescription& rhs) {
     I3TableRowDescription newlhs = I3TableRowDescription(lhs);
-    size_t nfields = rhs.GetNumberOfFields();
-    for (size_t i = 0; i < nfields; i++) {
+    size_t nfields_new = rhs.GetNumberOfFields();
+    size_t nfields_old = lhs.GetNumberOfFields();
+    for (size_t i = 0; i < nfields_new; i++) {
         size_t byteOffset=0;
         size_t chunkOffset=0;
-        if (newlhs.GetNumberOfFields() > 0)
-            byteOffset = newlhs.GetTotalByteSize();
-            chunkOffset = newlhs.GetTotalChunkSize();
-
+        if (newlhs.GetNumberOfFields() > 0) {
+          byteOffset = newlhs.GetTotalByteSize();
+          chunkOffset = newlhs.GetTotalChunkSize();
+        }
         std::string fieldName = rhs.fieldNames_.at(i);
 
         newlhs.isMultiRow_ = (lhs.isMultiRow_ || rhs.isMultiRow_);
-        
+
         // values that are just copied:
         newlhs.fieldNames_.push_back( fieldName );
         newlhs.fieldTypeSizes_.push_back( rhs.fieldTypeSizes_.at(i) );
@@ -203,14 +204,14 @@ I3TableRowDescription operator|(const I3TableRowDescription& lhs,
         newlhs.fieldArrayLengths_.push_back( rhs.fieldArrayLengths_.at(i) );
         newlhs.fieldUnits_.push_back( rhs.fieldUnits_.at(i) );
         newlhs.fieldDocStrings_.push_back( rhs.fieldDocStrings_.at(i) );
-        
+
         // values that have to be recalculated:
-        newlhs.fieldNameToIndex_[fieldName] = newlhs.fieldNameToIndex_.size()-1;
+        newlhs.fieldNameToIndex_[fieldName] = nfields_old + i;
         newlhs.fieldByteOffsets_.push_back(byteOffset);
         newlhs.fieldChunkOffsets_.push_back(chunkOffset);
     }
     return newlhs;
 }
-        
+
 
 
