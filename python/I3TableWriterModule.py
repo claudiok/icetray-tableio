@@ -111,7 +111,16 @@ class I3TableWriter(I3Module):
 		types = self.GetParameter('Types')
 		empty = lambda t: (t is None) or (len(t) == 0)
 		if empty(keys) and empty(types):
-			warnings.warn("Both Keys and Types are empty. I will book everything from the file, even though I think it's a really bad idea!")
+			warnings.warn("""
+I3TableWriter is now going to book everything it can find in the frame. This
+has the tendency to produce very, very large files, and is almost certainly
+not what you want to do.
+
+To book only the frame objects you're interested in, pass a list of keys as
+the `keys' parameter, or a list of types as the `types' parameter when
+configuring I3TableWriter. You can find a tutorial in
+$I3_BUILD/doc/projects/tableio/howto.html .
+""")
 			types = I3ConverterRegistry.registry.keys()
 			# remove GCD types if they exist
 			for t in [dataclasses.I3Geometry,dataclasses.I3DetectorStatus,dataclasses.I3Calibration]:
