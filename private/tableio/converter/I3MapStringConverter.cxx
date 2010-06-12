@@ -10,6 +10,7 @@
  */
 
 #include "tableio/converter/I3MapStringConverter.h"
+#include "tableio/I3ConverterFactory.h"
 #include "boost/foreach.hpp"
 
 I3TableRowDescriptionPtr I3MapStringDoubleConverter::CreateDescription(const I3MapStringDouble& map) {
@@ -26,3 +27,5 @@ size_t I3MapStringDoubleConverter::FillRows(const I3MapStringDouble& map, I3Tabl
     }
     return 1;
 };
+
+I3_CONVERTER(I3MapStringDoubleConverter, I3MapStringDouble);

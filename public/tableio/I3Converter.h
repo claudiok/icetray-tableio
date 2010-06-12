@@ -17,12 +17,12 @@
 #include <utility>
 
 #include "icetray/IcetrayFwd.h"
+#include "icetray/I3FrameObject.h"
 
 #include "tableio/I3TableRowDescription.h"
 #include "tableio/I3TableRow.h"
 
 I3_FORWARD_DECLARATION(I3TableWriter);
-I3_FORWARD_DECLARATION(I3FrameObject);
 
 /******************************************************************************/
 
