@@ -9,6 +9,7 @@
  * @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
  */
 
+#include <icetray/I3FrameObject.h>
 #include <tableio/utils/I3ConverterBundle.h>
 
 //***************************************************************************//

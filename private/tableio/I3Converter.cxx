@@ -9,6 +9,8 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
+#include <icetray/I3FrameObject.h>
+
 #include "tableio/I3Converter.h"
 
 /******************************************************************************/

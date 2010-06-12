@@ -38,11 +38,11 @@ class I3TableRow {
         
         // set the value of a field
         template<class T>
-        void Set(const std::string& fieldName, T value, bool all);
+        void Set(const std::string& fieldName, T value, bool all = false);
         
         // set the value of a field by index
         template<class T>
-        void Set(size_t index, T value, bool all);
+        void Set(size_t index, T value, bool all = false);
         
         // get the value of a field in the current row
         template<class T>
@@ -138,7 +138,7 @@ bool I3TableRow::CheckType(size_t index) {
 }
 
 template<class T>
-void I3TableRow::Set(const std::string& fieldName, T value, bool all = false) {
+void I3TableRow::Set(const std::string& fieldName, T value, bool all) {
     size_t index = description_->GetFieldColumn(fieldName);
     //log_trace("I3TableRow::Set:  field %s has index %zu", fieldName.c_str(), index);
     if (index >= description_->GetNumberOfFields())
@@ -148,7 +148,7 @@ void I3TableRow::Set(const std::string& fieldName, T value, bool all = false) {
 }
 
 template<class T>
-void I3TableRow::Set(size_t index, T value, bool all = false) {
+void I3TableRow::Set(size_t index, T value, bool all) {
     if (index >= description_->GetNumberOfFields())
         log_fatal("Tried to set column which is not in [0,%zu]",description_->GetNumberOfFields());
 	if (all) SetAll(index,value);

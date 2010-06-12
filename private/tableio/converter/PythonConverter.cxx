@@ -1,3 +1,5 @@
+#include <icetray/I3FrameObject.h>
+
 #include <tableio/converter/PythonConverter.h>
 #include <boost/python.hpp>
 
