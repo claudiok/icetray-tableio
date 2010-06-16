@@ -16,13 +16,14 @@ The IceTray interface to the framework is provided by a service that manages
 the actual output file and a module that shuffles data between the frame and
 the service. A simple script could look something like this::
 
-    from icecube import icetray
+    from icecube import icetray, dataio
     from I3Tray import I3Tray
     from icecube.tableio import I3TableWriter
     from icecube.hdfwriter import I3HDFTableService
     
     tray = I3Tray()
-    tray.AddModule('I3Reader','reader',filename = 'foo.i3.gz')
+    tray.AddModule('I3Reader','reader',
+                   filename = 'foo.i3.gz')
     
     table_service = I3HDFTableService('foo.hd5')
     
