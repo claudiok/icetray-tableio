@@ -77,3 +77,28 @@ ________________________
 
 Any converters should be defined in `converters.py`, including the call to :func:`tableio.I3ConverterRegistry.register`.
 
+FAQs
+*********************************************
+
+How do I create a description for an enumerated type?
+______________________________________________________
+
+You can construct an I3Datatype from a boost-python-wrapped enum like this::
+
+    desc = tableio.I3TableRowDescription()
+    desc.add_field('type', tableio.I3Datatype(dataclasses.I3Particle.ParticleType), '', '')
+
+Alternatively, if you have a set of options in Python that you'd like to
+express in terms of an enumeration, you can use a subclass of
+:class:`tableio.enum`::
+
+    class DummyEnummy(tableio.enum):
+        Foo = 0
+        Bar = 1
+        Baz = 2
+    
+    desc = tableio.I3TableRowDescription()
+    desc.add_field('stuff', tableio.I3Datatype(DummyEnummy), '', '')
+
+This works by mimicking the interface exposed by boost-python-wrapped enums.
+

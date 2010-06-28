@@ -10,5 +10,7 @@ from I3TableWriterModule import I3TableWriter
 
 import types
 
+from enum import enum
+
 # clean up the local dictionary
 del icecube
