@@ -235,50 +235,46 @@ void I3TableWriter::Convert(I3FramePtr frame) {
         const std::string& objName = vlist_it->first;
         tablespec_map::iterator eraser;          
 
-        if( (tlist_it = tables_.find(objName)) == tables_.end() ) {
-            // try to get the object from the frame 
-           // if exist: derive type, get converter, add to tables_, pop from wanted list
-            I3FrameObjectConstPtr object;
-            
-            try {
-               object = frame->Get<I3FrameObjectConstPtr>(objName);
-            } catch (...) {
-               log_error("Frame object '%s' could not be deserialized and will not be booked.",objName.c_str());
+        // try to get the object from the frame 
+        // if exist: derive type, get converter, add to tables_, pop from wanted list
+        I3FrameObjectConstPtr object;
+        
+        try {
+           object = frame->Get<I3FrameObjectConstPtr>(objName);
+        } catch (...) {
+           log_error("Frame object '%s' could not be deserialized and will not be booked.",objName.c_str());
+           eraser = vlist_it++;
+           wantedNames_.erase(eraser);
+           continue;
+        }
+        
+        if (object) {
+           bool success = false;
+           for (v_it = vlist_it->second.begin(); v_it != vlist_it->second.end(); ) {
+              
+              success = AddObject(objName, v_it->tableName, v_it->converter, object);
+              // if the TableSpec was successfully added, erase it from the queue
+              // and move the to next element
+              if (success) { 
+                  v_it = vlist_it->second.erase(v_it);
+              } else { // otherwise, just move to the next element
+                  ++v_it;
+              }
+           }
+           
+           // if all the TableSpecs were added, remove the key from the queue
+           if (vlist_it->second.size() == 0) {
+               // copy the iterator to avoid invalidating it on erase
                eraser = vlist_it++;
                wantedNames_.erase(eraser);
-               continue;
-            }
-            
-            if (object) {
-               bool success = false;
-               for (v_it = vlist_it->second.begin(); v_it != vlist_it->second.end(); ) {
-                  
-                  success = AddObject(objName, v_it->tableName, v_it->converter, object);
-                  // if the TableSpec was successfully added, erase it from the queue
-                  // and move the to next element
-                  if (success) { 
-                      v_it = vlist_it->second.erase(v_it);
-                  } else { // otherwise, just move to the next element
-                      v_it++;
-                  }
-               }
-               
-               // if all the TableSpecs were added, remove the key from the queue
-               if (vlist_it->second.size() == 0) {
-                   // copy the iterator to avoid invalidating it on erase
-                   eraser = vlist_it++;
-                   wantedNames_.erase(eraser);
-               } else {
-                   ++vlist_it;
-               }
-           }
-           else{
+           } else {
                ++vlist_it;
-           }
-         } else { 
-            ++vlist_it; 
-         } 
-     }            
+           } /* end if (vlist_it->second.size() == 0) */
+       } else {
+           ++vlist_it;
+       } /* end if (object) */
+       
+     } /* end for(vlist_it) */
 
     // now, cycle through the typelist and look for objects in the frames that 
     // have the type and are not in tables_
