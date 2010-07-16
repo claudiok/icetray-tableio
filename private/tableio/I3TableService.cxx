@@ -155,13 +155,13 @@ I3TableRowConstPtr I3TableService::GetPaddingRows(I3EventHeaderConstPtr lastHead
       // scenario A (OR: newHeader NULL => table is finished, pad out all missing rows)
       if (!newHeader || !EventHeadersEqual(*newHeader, *(eventHeaderCache_.back()))) {
          log_trace("Padding up to last known event header");   
-         for(rit = eventHeaderCache_.rbegin(); !EventHeadersEqual(**rit, *lastHeader) && rit != eventHeaderCache_.rend(); rit++) nrows++;
+         for(rit = eventHeaderCache_.rbegin(); rit != eventHeaderCache_.rend() && !EventHeadersEqual(**rit, *lastHeader); rit++) nrows++;
          --rit; // go to the first missed event (reverse iterator)
                 // fill up to and including this event
       } else { // scenario B: another table already reported this event
          log_trace("Another table already reported this event.");
          // start at 
-         for(rit = eventHeaderCache_.rbegin(); !EventHeadersEqual(**rit, *lastHeader) && rit != eventHeaderCache_.rend(); rit++) {
+         for(rit = eventHeaderCache_.rbegin(); rit != eventHeaderCache_.rend() && !EventHeadersEqual(**rit, *lastHeader); rit++) {
             nrows++;
          }
          --rit;  // go to the first missed event (reverse iterator)
