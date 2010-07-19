@@ -79,6 +79,28 @@ You can also pass a list of dicts specifying the type and converter::
     types = [dict(type=dataclasses.I3Particle, converter=dataclasses.converters.I3ParticleConverter(),
              dict(type=dataclasses.I3DOMLaunchSeriesMap, dataclasses.converters.I3DOMLaunchSeriesMapConverter())]
 
+Specifying a default booker
+***************************
+
+You may want to use a special converter for some types, and default
+converters for others.  You can specify that particular *keys* or
+*types* should be processed with the default converter by passing in
+``tableio.default``.
+
+.. rubric:: Example
+
+To use a custom converter named ``MyCustomConverter`` for the
+``I3MCTree`` and the default/builtin converter for ``I3Particle``::
+
+  types = { dataclasses.I3MCTree   : MyCustomConverter(),
+            dataclasses.I3Particle : tableio.default }
+
+similarly::
+
+  keys = { 'LineFit' : tableio.default,
+           'I3MCTree' : MyCustomConverter() }
+
+
 Booking everything in the file
 *********************************
 

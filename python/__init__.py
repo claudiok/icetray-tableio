@@ -6,7 +6,7 @@ import icecube.icetray # be nice and pull in our dependencies
 import icecube.dataclasses
 load_pybindings(__name__,__path__)
 
-from I3TableWriterModule import I3TableWriter
+from I3TableWriterModule import I3TableWriter, default
 
 import types
 
@@ -14,3 +14,4 @@ from enum import enum
 
 # clean up the local dictionary
 del icecube
+
