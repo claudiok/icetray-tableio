@@ -13,11 +13,13 @@
 #include "tableio/I3ConverterFactory.h"
 #include "boost/foreach.hpp"
 
-I3TableRowDescriptionPtr I3MapStringDoubleConverter::CreateDescription(const I3MapStringDouble& map) {
+I3TableRowDescriptionPtr I3MapStringDoubleConverter::CreateDescription(const I3MapStringDouble& m) {
     I3TableRowDescriptionPtr desc(new I3TableRowDescription());
-    BOOST_FOREACH( I3MapStringDouble::value_type pair, map ) {
-        desc->AddField<double>(pair.first,"","");
+    BOOST_FOREACH( I3MapStringDouble::value_type p, m) {
+        desc->AddField<double>(p.first,"","");
     }
+    if (m.size() == 0)
+      log_error("Warning:  I3MapStringDouble used for converter configuration is EMPTY, nothing will be booked");
     return desc;
 };
 
