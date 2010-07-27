@@ -2,7 +2,7 @@
  * copyright  (C) 2010
  * The Icecube Collaboration
  *
- * $Id: I3WaveformConverter.h 64296 2010-05-25 16:13:48Z jvansanten $
+ * $Id$
  *
  * @version $Revision$
  * @date $LastChangedDate$
