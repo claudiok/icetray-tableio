@@ -19,6 +19,7 @@
 #include "tableio/converter/PODConverter.h"
 #include "tableio/converter/I3EventHeaderConverter.h"
 #include "tableio/converter/I3VectorConverter.h"
+#include "tableio/converter/I3WaveformSeriesMapConverter.h"
 
 void register_dataclasses_converters() {
     I3CONVERTER_NAMESPACE(dataclasses);
@@ -85,4 +86,8 @@ void register_dataclasses_converters() {
                          "Dumps ATWD and FADC waveforms together", 
                          bp::init<std::string, std::string, bool>())
     ;
+
+    I3CONVERTER_EXPORT(I3WaveformSeriesMapConverter,
+		       "Dumps a single I3WaveformSeriesMap (good for IceTop people not interested in FADC)")
+      .def(bp::init<bool>());
 };
