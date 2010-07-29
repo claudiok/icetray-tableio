@@ -151,9 +151,17 @@ $I3_BUILD/doc/projects/tableio/howto.html .
         
         # now, pull in all of the registered converters from Python-land
         converter_list = vector_I3ConverterPtr()
-        for converters in I3ConverterRegistry.registry.itervalues():
-            # only instantiate the _first_ registered converter
-            converter_list.append(converters[0]())
+        defaults = dict(I3ConverterRegistry.defaults)
+
+        # if no default was registered for a type, pick the first one registered
+        # in the normal converter registry.
+        for typus, converters in I3ConverterRegistry.registry.iteritems():
+            if typus not in defaults:
+                defaults[typus] = converters[0]
+
+        for converter in I3ConverterRegistry.defaults.itervalues():
+            # only instantiate the converter registered as default
+            converter_list.append(converter())
         
         self.writer = I3TableWriterWorker(self.table_service,converter_list)
         tablespec = I3TableWriterWorker.TableSpec

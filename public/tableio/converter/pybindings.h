@@ -35,7 +35,10 @@ namespace bp = boost::python;
 // converter must be a legal python identifier (you can typedef this if necessary)
 
 #define I3CONVERTER_EXPORT(converter,docstring)                    \
-    register_converter<converter>(registry,I3CONVERTER_EXPORT_IMPL(converter,docstring))
+    register_converter<converter>(registry,I3CONVERTER_EXPORT_IMPL(converter,docstring),false)
+    
+#define I3CONVERTER_EXPORT_DEFAULT(converter,docstring)             \
+    register_converter<converter>(registry,I3CONVERTER_EXPORT_IMPL(converter,docstring),true)
     
 
 #define I3CONVERTER_EXPORT_IMPL(converter,docstring)               \
@@ -47,10 +50,11 @@ namespace bp = boost::python;
 // put the converter in a python-side registry, then return the class
 // scope for more method-adding.
 template<typename Converter,class W,class X1,class X2,class X3> // template args for bp::class_
-bp::class_<W,X1,X2,X3> register_converter(bp::object& registry, bp::class_<W,X1,X2,X3> classy) {
+bp::class_<W,X1,X2,X3> register_converter(bp::object& registry, bp::class_<W,X1,X2,X3> classy,
+    bool is_default) {
     bp::object type = bp::object(typename Converter::booked_type()).attr("__class__");
     bp::scope class_scope = classy;
-    registry.attr("register")(class_scope,type);
+    registry.attr("register")(class_scope,type,is_default);
     return classy;
 };
 
