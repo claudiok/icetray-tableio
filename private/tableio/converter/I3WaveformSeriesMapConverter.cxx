@@ -134,6 +134,9 @@ size_t I3WaveformSeriesMapConverter::FillRows(const I3WaveformSeriesMap& wavefor
       // /!\ only the first atwd waveform is extracted
       const I3Waveform& wf = iter->second.front();
       const std::vector<double>& readout = wf.GetWaveform();
+      rows->Set<int8_t>("string", key.GetString());
+      rows->Set<uint8_t>("om", key.GetOM());
+      rows->Set<bool>("ok", ok);
       rows->Set<double>("t0", wf.GetStartTime()/I3Units::ns);
       rows->Set<double>("dt", wf.GetBinWidth()/I3Units::ns);
       double VoltToNPE = wf.GetBinWidth()/GI;
