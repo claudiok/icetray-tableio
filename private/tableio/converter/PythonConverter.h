@@ -1,6 +1,7 @@
 #include <tableio/I3Converter.h>
 #include <boost/python.hpp>
 #include <icetray/I3FrameObject.h>
+#include <icetray/I3Frame.h>
 
 struct PythonConverter : I3Converter, boost::python::wrapper<I3Converter>
 {
@@ -32,6 +33,8 @@ struct PythonConverter : I3Converter, boost::python::wrapper<I3Converter>
 
     bool CanConvert(I3FrameObjectConstPtr object);
     bool CanConvert(I3FrameObjectPtr object);
+
+    I3FramePtr GetCurrentFrame();
 
     SET_LOGGER("PythonConverter");
 };

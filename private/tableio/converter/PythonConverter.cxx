@@ -79,7 +79,10 @@ size_t PythonConverter::Convert(I3FrameObjectConstPtr object,
                              I3FramePtr frame) {
 	log_trace("%s",__PRETTY_FUNCTION__);
 	if (bp::override fillrows = this->get_override("FillRows")) {
-		return fillrows(boost::const_pointer_cast<I3FrameObject>(object),rows);
+        currentFrame_ = frame;
+		size_t nrows = fillrows(boost::const_pointer_cast<I3FrameObject>(object),rows);
+        currentFrame_.reset();
+        return nrows;
 	} else if (bp::override convert = this->get_override("Convert")) {
 		return convert(boost::const_pointer_cast<I3FrameObject>(object),rows,frame);
 	} else {
@@ -128,3 +131,12 @@ bool PythonConverter::CanConvert(I3FrameObjectPtr obj) {
 	}
 }
 
+
+I3FramePtr PythonConverter::GetCurrentFrame() {
+	log_trace("%s",__PRETTY_FUNCTION__);    
+	if (currentFrame_)
+	        return currentFrame_;
+	else {
+		log_fatal("currentFrame_ is not set");
+	}
+}
