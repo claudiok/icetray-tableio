@@ -6,37 +6,15 @@
  *
  * @version $Revision$
  * @date $LastChangedDate$
- * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
+ * @author Fabian Kislat <fabian.kislat@desy.de> $LastChangedBy$
  */
 
-// A converter can be made for frame objects of the form map<OMKey, vector<T>> by
-// specializing the following templated structs for T. 
+#ifndef TABLEIO_DATACLASSES_MAP_CONVERTERS_H_INCLUDED
+#define TABLEIO_DATACLASSES_MAP_CONVERTERS_H_INCLUDED
 
-// the converters should be written to be indifferent on the state of the I3TableRow.
-// So if an I3DOMLaunch converter exists, converters for vector<I3DOMLaunch> and
-// map<omkey, vector<I3DOMLaunch>> could be obtained for free.
-//
-// FIXME: vector<I3DOMLaunch> is no I3FrameObject. how to get this through the I3Converter
-//        interface?
+#include "tableio/converter/I3MapConverter.h"
 
-#ifndef TABLEIO_I3MAPCONVERTER_H_INCLUDED
-#define TABLEIO_I3MAPCONVERTER_H_INCLUDED
-
-#include <tableio/I3ConverterFactory.h>
-#include <dataclasses/I3Map.h>
-#include <icetray/OMKey.h>
-
-#include <dataclasses/physics/I3DOMLaunch.h>
-#include <dataclasses/physics/I3RecoHit.h>
-#include <dataclasses/physics/I3RecoPulse.h>
-#include "dataclasses/physics/I3MCHit.h"
-
-
-namespace converter
-{
-  template <typename T>
-  struct convert { };
-
+namespace converter {
 
   template <>
   struct convert<I3DOMLaunch> 
@@ -70,7 +48,7 @@ namespace converter
       row->Set<I3DOMLaunch::TriggerType>("trigger_type",dl.GetTriggerType());
       row->Set<bool>("pedestal_sub", dl.GetIsPedestalSub());
       row->Set<bool>("lc_bit", dl.GetLCBit());
-      std::vector<int>::const_iterator it;
+      std::vector<int32_t>::const_iterator it;
       size_t i; uint16_t* pointy;
       
       pointy = row->GetPointer<uint16_t>("raw_atwd_0");
@@ -103,13 +81,13 @@ namespace converter
     static void AddFields(I3TableRowDescriptionPtr desc)
     {
       desc->AddField<double>("time", "ns", "time");
-      desc->AddField<int>("id", "generic", "hit id");
+      desc->AddField<int32_t>("id", "generic", "hit id");
     }
 
     static void FillRow(const I3RecoHit& hit, I3TableRowPtr row) 
     {
       row->Set<double>("time", hit.GetTime());
-      row->Set<int>("id", hit.GetID());
+      row->Set<int32_t>("id", hit.GetID());
     }
   };
   
@@ -147,7 +125,7 @@ namespace converter
       desc->AddField<double>("time", "ns", "Leading-edge time of the pulse");
       desc->AddField<double>("width", "ns", "Duration of the pulse");
       desc->AddField<double>("charge", "PE", "Integrated pulse charge");
-      desc->AddField<int>("id", "generic", "hit id");
+      desc->AddField<int32_t>("id", "generic", "hit id");
     }
 
     static void FillRow(const I3RecoPulse& pulse, I3TableRowPtr row) 
@@ -155,78 +133,10 @@ namespace converter
       row->Set<double>("time", pulse.GetTime());
       row->Set<double>("width", pulse.GetWidth());
       row->Set<double>("charge", pulse.GetCharge());
-      row->Set<int>("id", pulse.GetID());
+      row->Set<int32_t>("id", pulse.GetID());
     }
   };
+
 }
 
-template <class T, 
-	  typename mapped_type = typename T::mapped_type::value_type,
-	  typename converter_type = typename converter::convert<mapped_type> >
-class I3MapOMKeyVectorConverter 
-  : public I3ConverterImplementation<I3Map<OMKey, std::vector<mapped_type> > > 
-{
-
-private:
-  size_t GetNumberOfRows(const T& m) {
-    log_trace("%s", __PRETTY_FUNCTION__);
-    typename T::const_iterator iter = m.begin();
-    size_t nrows = 0;
-    while (iter != m.end())
-      {
-	nrows += iter->second.size();
-	++iter;
-      }
-    return nrows;
-  }
-
-  I3TableRowDescriptionPtr CreateDescription(const T& m) 
-  {
-    log_trace("%s", __PRETTY_FUNCTION__);
-    I3TableRowDescriptionPtr desc = 
-      I3TableRowDescriptionPtr(new I3TableRowDescription() );
-    desc->isMultiRow_ = true;
-    desc->AddField<int8_t>("string", "", "String number");
-    desc->AddField<uint8_t>("om", "", "OM number");
-    desc->AddField<tableio_size_t>("vector_index", "", "index in vector");
-      
-    converter_type::AddFields(desc);
-
-    return desc;
-  }
-
-  size_t FillRows(const T& m, I3TableRowPtr rows) 
-  {
-    log_trace("%s", __PRETTY_FUNCTION__);
-    size_t index = 0;
-    for(typename T::const_iterator mapiter = m.begin();
-	mapiter != m.end();
-	mapiter++)
-      {
-	int vecindex = 0;
-	for (typename T::mapped_type::const_iterator veciter = mapiter->second.begin();
-	     veciter != mapiter->second.end();
-	     veciter++)
-	  {
-	    rows->SetCurrentRow(index);
-	    rows->Set<int8_t>("string", mapiter->first.GetString());
-	    rows->Set<uint8_t>("om", mapiter->first.GetOM());
-	    rows->Set<tableio_size_t>("vector_index", vecindex);
-
-	    converter_type::FillRow(*veciter, rows);
-	    
-	    log_trace("String: %d OM: %d", mapiter->first.GetString(), mapiter->first.GetOM());
-
-
-	    index++;
-	    vecindex++;
-	  }
-      }
-    // loop over vector
-    return index;
-  }
-
-  std::string  converterName_;
-};
-
-#endif // TABLEIO_I3MAPCONVERTER_H_INCLUDED
+#endif // TABLEIO_DATACLASSES_MAP_CONVERTERS_H_INCLUDED

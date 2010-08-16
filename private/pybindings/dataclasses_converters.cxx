@@ -10,7 +10,8 @@
  */
 
 #include "tableio/converter/pybindings.h"
-#include "tableio/converter/I3MapConverter.h"
+#include "tableio/converter/dataclasses_map_converters.h"
+#include "tableio/converter/dataclasses_vector_converters.h"
 #include "tableio/converter/I3MapStringConverter.h"
 #include "tableio/converter/I3ParticleConverter.h"
 #include "tableio/converter/I3TreeConverter.h"
@@ -18,7 +19,6 @@
 #include "tableio/converter/I3WaveformConverter.h"
 #include "tableio/converter/PODConverter.h"
 #include "tableio/converter/I3EventHeaderConverter.h"
-#include "tableio/converter/I3VectorConverter.h"
 #include "tableio/converter/I3WaveformSeriesMapConverter.h"
 
 void register_dataclasses_converters() {
@@ -90,4 +90,5 @@ void register_dataclasses_converters() {
     I3CONVERTER_EXPORT_DEFAULT(I3WaveformSeriesMapConverter,
 		       "Dumps a single I3WaveformSeriesMap (good for IceTop people not interested in FADC)")
       .def(bp::init<bool>());
+
 };

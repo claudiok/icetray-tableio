@@ -10,9 +10,10 @@
  */
 
 #include "tableio/I3ConverterFactory.h"
-#include "tableio/converter/I3VectorConverter.h"
+#include "tableio/converter/dataclasses_vector_converters.h"
 
 #include <boost/preprocessor.hpp>
+
 
 I3_CONVERTER(I3VectorConverter<bool>, I3Vector<bool>);
 

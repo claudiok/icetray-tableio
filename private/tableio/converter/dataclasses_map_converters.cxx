@@ -10,7 +10,8 @@
  */
 
 #include "tableio/I3ConverterFactory.h"
-#include "tableio/converter/I3MapConverter.h"
+#include "tableio/converter/dataclasses_map_converters.h"
+
 
 I3_CONVERTER(I3MapOMKeyVectorConverter<I3DOMLaunchSeriesMap>, I3DOMLaunchSeriesMap);
 I3_CONVERTER(I3MapOMKeyVectorConverter<I3RecoPulseSeriesMap>, I3RecoPulseSeriesMap);
