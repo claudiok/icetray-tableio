@@ -68,5 +68,6 @@ Table of Contents:
    cpp_converter
    make_a_writer_service
    transcriber
+   faq
 
 
