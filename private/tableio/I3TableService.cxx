@@ -100,6 +100,7 @@ void I3TableService::HeaderWritten(I3EventHeaderConstPtr lastHeader, size_t nrow
 
 // Get the last header the service has seen
 I3EventHeaderConstPtr I3TableService::GetLastHeader() {
+   if (!eventHeaderCache_.size()) return I3EventHeaderConstPtr();
    return eventHeaderCache_.back();
 }
 
