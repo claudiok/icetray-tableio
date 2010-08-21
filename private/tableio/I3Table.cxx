@@ -122,7 +122,7 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
     nevents_++;
     nrows_ += row->GetNumberOfRows();
     nrowsWithPadding_ += row->GetNumberOfRows();
-    lastHeader_ = header;
+    lastHeader_ = I3EventHeaderConstPtr(new I3EventHeader(*header));
     service_.HeaderWritten(lastHeader_,row->GetNumberOfRows());
 }
 
