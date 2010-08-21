@@ -159,7 +159,7 @@ $I3_BUILD/doc/projects/tableio/howto.html .
             if typus not in defaults:
                 defaults[typus] = converters[0]
 
-        for converter in I3ConverterRegistry.defaults.itervalues():
+        for converter in defaults.itervalues():
             # only instantiate the converter registered as default
             converter_list.append(converter())
         
