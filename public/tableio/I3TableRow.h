@@ -68,6 +68,22 @@ class I3TableRow {
         template<class T>
         T* GetPointer(size_t index, size_t row);
 
+        // get a pointer to the beginning of field for the current row
+        template<class T>
+        const T* GetPointer(const std::string& fieldName) const;
+        
+        // get a pointer to the beginning of field for the current row
+        template<class T>
+        const T* GetPointer(size_t index) const;
+        
+        // get a pointer to the beginning of field for the given row
+        template<class T>
+        const T* GetPointer(const std::string& fieldName, size_t row) const;
+        
+        // get a pointer to the beginning of field for the given row
+        template<class T>
+        const T* GetPointer(size_t index, size_t row) const;
+
         // get a void pointer to whole memory block
         void const* GetPointer() const;
         
@@ -104,7 +120,7 @@ class I3TableRow {
         // check if the templated type is compatible with the
         // field at index
         template<class T>
-        bool CheckType(size_t index);
+        bool CheckType(size_t index) const;
         
         I3TableRow();
         void init();
@@ -124,7 +140,7 @@ I3_POINTER_TYPEDEFS( I3TableRow );
 /******************************************************************************/
 
 template<class T>
-bool I3TableRow::CheckType(size_t index) {
+bool I3TableRow::CheckType(size_t index) const {
     bool compatible = false;
     I3Datatype requested_dtype = I3DatatypeFromNativeType<T>();
     I3Datatype this_dtype = description_->GetFieldTypes().at(index);
@@ -223,6 +239,46 @@ T* I3TableRow::GetPointer(size_t index, size_t row) {
     
     return ( reinterpret_cast<T*>( &data_[description_->GetTotalChunkSize()*row + 
                                           description_->GetFieldChunkOffsets().at(index)]) );
+}
+
+
+// const versions:
+template<class T>
+const T* I3TableRow::GetPointer(const std::string& fieldName) const {
+    return GetPointer<T>(fieldName, currentRow_);
+}
+
+template<class T>
+const T* I3TableRow::GetPointer(size_t index) const {
+    return GetPointer<T>(index, currentRow_);
+}
+
+
+template<class T>
+const T* I3TableRow::GetPointer(const std::string& fieldName, size_t row) const {
+    size_t index;
+    if ( (index = description_->GetFieldColumn(fieldName)) >= description_->GetNumberOfFields() ) 
+        log_fatal("trying to get the address of unknown field %s", fieldName.c_str());
+
+    return GetPointer<T>(index, row);
+}
+
+template<class T>
+const T* I3TableRow::GetPointer(size_t index, size_t row) const {
+    
+    CheckType<const T>(index);
+
+    if ( !(( 0 <= row) && (row < nrows_)) )
+        log_fatal("requested pointer to row %zu which is not in [0,%zu]", row, nrows_);
+    
+    /*
+    if (description_->GetFieldArrayLengths().at(index) > 1 )
+        log_fatal("trying to use I3TableRow::Get() on array element %s. Use GetPointer() instead",
+                fieldName.c_str());
+    */
+    
+    return ( reinterpret_cast<const T*>( &data_[description_->GetTotalChunkSize()*row + 
+						description_->GetFieldChunkOffsets().at(index)]) );
 }
 
 
