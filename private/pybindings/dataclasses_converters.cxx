@@ -48,33 +48,33 @@ void register_dataclasses_converters() {
     I3CONVERTER_EXPORT_DEFAULT(I3IntConverter,"Dumps I3Int objects");
     I3CONVERTER_EXPORT_DEFAULT(I3BoolConverter,"Dumps I3Bool objects");
 
-    typedef I3VectorConverter< convert_vector::pod<bool> > I3VectorBoolConverter;
+    typedef I3VectorConverter< convert::pod<bool> > I3VectorBoolConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorBoolConverter, "Dumps an I3Vector of bools");
 
-    typedef I3VectorConverter< convert_vector::pod<int16_t> > I3VectorShortConverter;
+    typedef I3VectorConverter< convert::pod<int16_t> > I3VectorShortConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorShortConverter, "Dumps an I3Vector of shorts");
-    typedef I3VectorConverter< convert_vector::pod<uint16_t> > I3VectorUShortConverter;
+    typedef I3VectorConverter< convert::pod<uint16_t> > I3VectorUShortConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorUShortConverter, "Dumps an I3Vector of unsigned shorts");
 
-    typedef I3VectorConverter< convert_vector::pod<int32_t> > I3VectorIntConverter;
+    typedef I3VectorConverter< convert::pod<int32_t> > I3VectorIntConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorIntConverter, "Dumps an I3Vector of ints");
-    typedef I3VectorConverter< convert_vector::pod<uint32_t> > I3VectorUIntConverter;
+    typedef I3VectorConverter< convert::pod<uint32_t> > I3VectorUIntConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorUIntConverter, "Dumps an I3Vector of unsigned ints");
 
-    typedef I3VectorConverter< convert_vector::pod<I3VectorInt64::value_type> > I3VectorInt64Converter;
+    typedef I3VectorConverter< convert::pod<I3VectorInt64::value_type> > I3VectorInt64Converter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorInt64Converter, "Dumps an I3Vector of 64bit ints");
-    typedef I3VectorConverter< convert_vector::pod<I3VectorUInt64::value_type> > I3VectorUInt64Converter;
+    typedef I3VectorConverter< convert::pod<I3VectorUInt64::value_type> > I3VectorUInt64Converter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorUInt64Converter, "Dumps an I3Vector of unsigned 64bit ints");
 
-    typedef I3VectorConverter< convert_vector::pod<float> > I3VectorFloatConverter;
+    typedef I3VectorConverter< convert::pod<float> > I3VectorFloatConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorFloatConverter, "Dumps an I3Vector of floats");
-    typedef I3VectorConverter< convert_vector::pod<double> > I3VectorDoubleConverter;
+    typedef I3VectorConverter< convert::pod<double> > I3VectorDoubleConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorDoubleConverter, "Dumps an I3Vector of doubles");
   
-    typedef I3VectorConverter< convert_vector::double_pair > I3VectorDoubleDoubleConverter;
+    typedef I3VectorConverter< convert::double_pair > I3VectorDoubleDoubleConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorDoubleDoubleConverter, "Dumps an I3Vector of double-double pairs");
 
-    typedef I3VectorConverter< convert_vector::I3FlasherInfo > I3FlasherInfoVectConverter;
+    typedef I3VectorConverter< convert::I3FlasherInfo > I3FlasherInfoVectConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3FlasherInfoVectConverter, "Dumps and I3FlasherInfoVect");
 
     // waveform converter has a non-default constructor

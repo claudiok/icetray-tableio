@@ -16,7 +16,7 @@
 #include <utility>
 #include <dataclasses/physics/I3FlasherInfo.h>
 
-namespace convert_vector {
+namespace convert {
 
   namespace detail {
 
