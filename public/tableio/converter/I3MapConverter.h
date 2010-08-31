@@ -26,31 +26,17 @@
 #include <dataclasses/I3Map.h>
 #include <icetray/OMKey.h>
 
-#include <dataclasses/physics/I3DOMLaunch.h>
-#include <dataclasses/physics/I3RecoHit.h>
-#include <dataclasses/physics/I3RecoPulse.h>
-#include "dataclasses/physics/I3MCHit.h"
 
-
-namespace converter
-{
-
-  template <typename T>
-  struct convert { };
-
-}
-
-template <class T, 
-	  typename mapped_type = typename T::mapped_type::value_type,
-	  typename converter_type = typename converter::convert<mapped_type> >
+template <class converter_type,
+	  typename map_type = I3Map<OMKey, std::vector<typename converter_type::value_type> > >
 class I3MapOMKeyVectorConverter 
-  : public I3ConverterImplementation<I3Map<OMKey, std::vector<mapped_type> > > 
+  : public I3ConverterImplementation< map_type > 
 {
 
 private:
-  size_t GetNumberOfRows(const T& m) {
+  size_t GetNumberOfRows(const map_type& m) {
     log_trace("%s", __PRETTY_FUNCTION__);
-    typename T::const_iterator iter = m.begin();
+    typename map_type::const_iterator iter = m.begin();
     size_t nrows = 0;
     while (iter != m.end())
       {
@@ -60,7 +46,7 @@ private:
     return nrows;
   }
 
-  I3TableRowDescriptionPtr CreateDescription(const T& m) 
+  I3TableRowDescriptionPtr CreateDescription(const map_type& m) 
   {
     log_trace("%s", __PRETTY_FUNCTION__);
     I3TableRowDescriptionPtr desc = 
@@ -75,16 +61,16 @@ private:
     return desc;
   }
 
-  size_t FillRows(const T& m, I3TableRowPtr rows) 
+  size_t FillRows(const map_type& m, I3TableRowPtr rows) 
   {
     log_trace("%s", __PRETTY_FUNCTION__);
     size_t index = 0;
-    for(typename T::const_iterator mapiter = m.begin();
+    for(typename map_type::const_iterator mapiter = m.begin();
 	mapiter != m.end();
 	mapiter++)
       {
 	int vecindex = 0;
-	for (typename T::mapped_type::const_iterator veciter = mapiter->second.begin();
+	for (typename map_type::mapped_type::const_iterator veciter = mapiter->second.begin();
 	     veciter != mapiter->second.end();
 	     veciter++)
 	  {
@@ -93,10 +79,9 @@ private:
 	    rows->Set<uint8_t>("om", mapiter->first.GetOM());
 	    rows->Set<tableio_size_t>("vector_index", vecindex);
 
-	    converter_type::FillRow(*veciter, rows);
+	    converter_type::FillSingleRow(*veciter, rows);
 	    
 	    log_trace("String: %d OM: %d", mapiter->first.GetString(), mapiter->first.GetOM());
-
 
 	    index++;
 	    vecindex++;
