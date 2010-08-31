@@ -35,7 +35,7 @@ namespace convert {
     typedef ::I3RecoHit value_type;
 
     static void AddFields(I3TableRowDescriptionPtr desc);
-    static void FillSingleRow(const value_type& hit, I3TableRowPtr row) ;
+    static void FillSingleRow(const value_type& hit, I3TableRowPtr row);
   };
   
   struct I3MCHit

@@ -14,7 +14,9 @@ Writing an I3Converter in C++
 .. highlight:: c++
 
 You can also define your converters in C++. To do this, you need to inherit
-from the templated C++ class I3ConverterImplementation<YourFrameObject>. The mechanics of adding the converter to your project are more convoluted The following will demonstrate how this in done for I3FilterResultMap from jebclasses.
+from the templated C++ class I3ConverterImplementation<YourFrameObject>. The mechanics of
+adding the converter to your project are more convoluted The following will demonstrate
+how this in done for I3FilterResultMap from jebclasses.
 
 CMakeLists.txt
 ___________________
