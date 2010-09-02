@@ -33,6 +33,8 @@ namespace convert {
     desc->AddField<uint16_t>("raw_charge_stamp", "counts",
 			     "The number of counts in highest-charge bin of the first 16 fADC bins (400 ns), plus the bins immediately before and after.",
 			     3);
+    desc->AddField<uint32_t>("raw_atwd_charge_stamp", "counts", "ATWD charge stamp used for IceTop style SLC readout");
+    desc->AddField<uint8_t>("raw_atwd_charge_stamp_channel", "atwd_channel", "ATWD channel used for the ATWD charge stamp");
     desc->AddField<uint16_t>("raw_fadc", "counts", "Raw digitizer counts from fADC", 256);
   }
 
@@ -44,6 +46,8 @@ namespace convert {
     row->Set< ::I3DOMLaunch::TriggerType>("trigger_type",dl.GetTriggerType());
     row->Set<bool>("pedestal_sub", dl.GetIsPedestalSub());
     row->Set<bool>("lc_bit", dl.GetLCBit());
+    row->Set<uint32_t>("raw_atwd_charge_stamp", dl.GetRawATWDChargeStamp());
+    row->Set<uint8_t>("raw_atwd_charge_stamp_channel", dl.GetWhichATWDChargeStamp());
     std::vector<int32_t>::const_iterator it;
     size_t i; uint16_t* pointy;
       
