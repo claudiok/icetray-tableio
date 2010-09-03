@@ -24,6 +24,7 @@
 
 #include <tableio/I3ConverterFactory.h>
 #include <dataclasses/I3Map.h>
+#include <dataclasses/geometry/I3Geometry.h>
 #include <icetray/OMKey.h>
 
 
@@ -32,6 +33,10 @@ template <class converter_type,
 class I3MapOMKeyVectorConverter 
   : public I3ConverterImplementation< map_type > 
 {
+public:
+  I3MapOMKeyVectorConverter(bool bookGeometry = false)
+    : bookGeometry_(bookGeometry)
+  {}
 
 private:
   size_t GetNumberOfRows(const map_type& m) {
@@ -54,6 +59,11 @@ private:
     desc->isMultiRow_ = true;
     desc->AddField<int8_t>("string", "", "String number");
     desc->AddField<uint8_t>("om", "", "OM number");
+    if (bookGeometry_) {
+      desc->AddField<double>("x", "m", "X coordinate of the DOM");
+      desc->AddField<double>("y", "m", "Y coordinate of the DOM");
+      desc->AddField<double>("z", "m", "Z coordinate of the DOM");
+    }
     desc->AddField<tableio_size_t>("vector_index", "", "index in vector");
       
     converter_type::AddFields(desc);
@@ -65,10 +75,29 @@ private:
   {
     log_trace("%s", __PRETTY_FUNCTION__);
     size_t index = 0;
+
+    I3GeometryConstPtr geometry =
+      I3ConverterImplementation< map_type >::currentFrame_->template Get<I3GeometryConstPtr>();
+    if (!geometry) {
+      log_error("%s: No geometry in frame", __PRETTY_FUNCTION__);
+      return 0;
+    }
+
     for(typename map_type::const_iterator mapiter = m.begin();
 	mapiter != m.end();
 	mapiter++)
       {
+
+	OMKey key = mapiter->first;
+	I3OMGeoMap::const_iterator geoiter = geometry->omgeo.find(key);
+	I3OMGeo omgeo;
+	if (geoiter == geometry->omgeo.end()) {
+	  log_warn("%s: OMKey (%d,%d) not in geometry!", __PRETTY_FUNCTION__,
+		   key.GetString(), key.GetOM());
+	} else {
+	  omgeo = geoiter->second;
+	}
+
 	int vecindex = 0;
 	for (typename map_type::mapped_type::const_iterator veciter = mapiter->second.begin();
 	     veciter != mapiter->second.end();
@@ -77,6 +106,11 @@ private:
 	    rows->SetCurrentRow(index);
 	    rows->Set<int8_t>("string", mapiter->first.GetString());
 	    rows->Set<uint8_t>("om", mapiter->first.GetOM());
+	    if (bookGeometry_) {
+	      rows->Set<double>("x", omgeo.position.GetX());
+	      rows->Set<double>("y", omgeo.position.GetY());
+	      rows->Set<double>("z", omgeo.position.GetZ());
+	    }
 	    rows->Set<tableio_size_t>("vector_index", vecindex);
 
 	    converter_type::FillSingleRow(*veciter, rows);
@@ -91,7 +125,12 @@ private:
     return index;
   }
 
-  std::string  converterName_;
+  bool bookGeometry_;
 };
+
+
+#define I3_MAP_CONVERTER_EXPORT_DEFAULT(converter, docstring)	\
+  I3CONVERTER_EXPORT_DEFAULT(converter, docstring)		\
+  .def(bp::init<bool>())
 
 #endif // TABLEIO_I3MAPCONVERTER_H_INCLUDED

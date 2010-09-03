@@ -28,13 +28,13 @@ void register_dataclasses_converters() {
     I3CONVERTER_EXPORT_DEFAULT(I3EventHeaderConverter,"Dumps I3EventHeader objects");
     
     typedef I3MapOMKeyVectorConverter< convert::I3DOMLaunch > I3DOMLaunchSeriesMapConverter;
-    I3CONVERTER_EXPORT_DEFAULT(I3DOMLaunchSeriesMapConverter,"Dumps all DOMLaunches verbatim.");
+    I3_MAP_CONVERTER_EXPORT_DEFAULT(I3DOMLaunchSeriesMapConverter,"Dumps all DOMLaunches verbatim.");
     typedef I3MapOMKeyVectorConverter< convert::I3RecoPulse > I3RecoPulseSeriesMapConverter;
-    I3CONVERTER_EXPORT_DEFAULT(I3RecoPulseSeriesMapConverter,"Dumps all RecoPulses verbatim.");
+    I3_MAP_CONVERTER_EXPORT_DEFAULT(I3RecoPulseSeriesMapConverter,"Dumps all RecoPulses verbatim.");
     typedef I3MapOMKeyVectorConverter< convert::I3RecoHit > I3RecoHitSeriesMapConverter;
-    I3CONVERTER_EXPORT_DEFAULT(I3RecoHitSeriesMapConverter,"Dumps all RecoHits verbatim.");
+    I3_MAP_CONVERTER_EXPORT_DEFAULT(I3RecoHitSeriesMapConverter,"Dumps all RecoHits verbatim.");
     typedef I3MapOMKeyVectorConverter< convert::I3MCHit > I3MCHitSeriesMapConverter;
-    I3CONVERTER_EXPORT_DEFAULT(I3MCHitSeriesMapConverter,"Dumps all MCHits verbatim.");
+    I3_MAP_CONVERTER_EXPORT_DEFAULT(I3MCHitSeriesMapConverter,"Dumps all MCHits verbatim.");
     
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringDoubleConverter,"Dumps a std::map<string,double> verbatim");
     I3CONVERTER_EXPORT_DEFAULT(I3ParticleConverter,"Dumps an I3Particle verbatim");
