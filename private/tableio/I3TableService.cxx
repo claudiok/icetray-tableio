@@ -190,7 +190,31 @@ I3TableRowConstPtr I3TableService::GetPaddingRows(I3EventHeaderConstPtr lastHead
 /******************************************************************************/
 
 void I3TableService::Finish() {
-    // TODO: walk through tables, make sure all are disconnected and flush them
-    CloseFile();
+    bool finished = true;
+    std::map<std::string, I3TablePtr>::iterator table_it = tables_.begin();
+    
+    for ( ; table_it != tables_.end(); ++table_it) {
+        if (table_it->second->IsConnectedToWriter()) {
+            finished = false;
+            break;
+        } else {
+            table_it->second->Flush();
+        }
+    }
+
+    /* Only close the file if all the tables are disconnected. */
+    if (finished) CloseFile();
 }
 
+I3TableService::~I3TableService() {    
+    std::map<std::string, I3TablePtr>::iterator table_it = tables_.begin();
+    
+    for ( ; table_it != tables_.end(); ++table_it) {
+        if (table_it->second->IsConnectedToWriter()) {
+            log_fatal("Table '%s' is still connected, which means that the "
+                "output file was never properly closed. This is a BUG!\n",
+                table_it->first.c_str());
+            break;
+        } 
+    }
+} 

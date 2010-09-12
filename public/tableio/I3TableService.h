@@ -26,6 +26,7 @@ I3_FORWARD_DECLARATION(I3Converter);
 class I3TableService {
     public:
         I3TableService();
+        virtual ~I3TableService();
 
         virtual I3TablePtr GetTable(std::string tableName, 
                             I3TableRowDescriptionConstPtr description);

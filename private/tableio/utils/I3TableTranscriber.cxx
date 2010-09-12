@@ -51,9 +51,7 @@ I3TableTranscriber::I3TableTranscriber(I3TableServicePtr input, I3TableServicePt
             name = t_it->first;
             table = t_it->second;
             log_trace("Creating output table '%s'",name.c_str());
-            // otable = ConnectTable(name,*table->GetDescription());
-            otable = outputService_->GetTable(name,table->GetDescription());
-            if (!otable) log_fatal("Could not create output table '%s'",name.c_str());
+            otable = ConnectTable(name,*table->GetDescription());
             transcriptions_.push_back(std::make_pair(table,otable));
         }
         
@@ -103,6 +101,8 @@ void I3TableTranscriber::Finish() {
     for (pair_it = transcriptions_.begin(); pair_it != transcriptions_.end(); pair_it++) {
         DisconnectTable(pair_it->second);
     }
+
+    outputService_->Finish();
 
 }
 

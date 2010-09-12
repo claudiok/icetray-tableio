@@ -398,7 +398,9 @@ void I3TableWriter::Finish() {
         }
     }
 
-    service_->Finish();
+    /* Tell the table service to clean up disconnected tables and
+     * close its files if appropriate. */
+    service_->Finish(); 
 }
 
 /******************************************************************************/
