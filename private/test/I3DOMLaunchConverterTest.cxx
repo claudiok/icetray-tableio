@@ -13,9 +13,12 @@
 
 #include "tableio/I3Converter.h"
 #include "tableio/I3ConverterFactory.h"
+#include "tableio/converter/dataclasses_map_converters.h"
 
 #include "dataclasses/physics/I3DOMLaunch.h"
+#include "dataclasses/geometry/I3Geometry.h"
 
+typedef I3MapOMKeyVectorConverter<convert::I3DOMLaunch> I3DOMLaunchSeriesMapConverter;
 
 TEST_GROUP(I3DOMLaunchConverterTests);
 
@@ -62,10 +65,14 @@ TEST(type_id) {
 }
 
 TEST(assignment) {
-    I3ConverterPtr converter = BuildConverter("I3DOMLaunchSeriesMap");
+    /* Explicitly construct a converter with geometry-booking on */
+    I3ConverterPtr converter(new I3DOMLaunchSeriesMapConverter(true));
     
     I3DOMLaunchSeriesMapPtr dlsm(new I3DOMLaunchSeriesMap());
-    
+    I3FramePtr frame(new I3Frame()); /* A fake frame */
+    I3GeometryPtr geo(new I3Geometry());
+    I3OMGeo omgeo;
+
     OMKey omk(35,35);
     std::vector<I3DOMLaunch> dls;
     I3DOMLaunch dl;
@@ -75,9 +82,15 @@ TEST(assignment) {
     dls.push_back(dl);
     (*dlsm)[omk] = dls;
 
+    omgeo.position = I3Position(37., 42., 141.);
+    geo->omgeo[omk] = omgeo;
+
+    frame->Put("InIceRawData", dlsm);
+    frame->Put("I3Geometry", geo);
+
     I3TableRowDescriptionConstPtr desc = converter->GetDescription(dlsm);
     I3TableRowPtr rows(new I3TableRow(desc,converter->GetNumberOfRows(dlsm)));
-    converter->Convert(dlsm, rows);
+    converter->Convert(dlsm, rows, frame);
     
     ENSURE_EQUAL( rows->Get<double>("start_time"), 42.0);
     ENSURE_EQUAL( rows->Get<I3DOMLaunch::TriggerType>("trigger_type"), I3DOMLaunch::ONBOARD_LED);
@@ -88,6 +101,40 @@ TEST(assignment) {
     std::vector<int>::const_iterator it;
     uint16_t* pointy = rows->GetPointer<uint16_t>("raw_atwd_0");
     size_t i;
+    for (it = dl.GetRawATWD(0).begin(), i = 0; it != dl.GetRawATWD(0).end(); it++, i++) {
+        ENSURE_EQUAL( pointy[i], *it, "Vector and array contents match.");
+    }
+
+    ENSURE_EQUAL( rows->Get<int8_t>("string"), 35);
+    ENSURE_EQUAL( rows->Get<uint8_t>("om"), unsigned(35));
+    ENSURE_EQUAL( rows->Get<double>("x"), 37., "OM position was booked properly.");
+    ENSURE_EQUAL( rows->Get<double>("y"), 42., "OM position was booked properly.");
+    ENSURE_EQUAL( rows->Get<double>("z"), 141., "OM position was booked properly.");
+
+    /* Make sure it fails without the geometry */
+    frame->Delete("I3Geometry");
+
+    rows = I3TableRowPtr(new I3TableRow(desc,converter->GetNumberOfRows(dlsm)));
+    int nrows = converter->Convert(dlsm, rows, frame);
+
+    ENSURE_EQUAL( nrows, 0, "Converter fails if no geometry is present");
+
+    /* Make sure it still works without geometry, but with geobooking off */
+    converter = BuildConverter("I3DOMLaunchSeriesMap");
+    rows = I3TableRowPtr(new I3TableRow(desc,converter->GetNumberOfRows(dlsm)));
+
+    converter->Convert(dlsm, rows, frame);
+
+    ENSURE_EQUAL( rows->Get<int8_t>("string"), 35);
+    ENSURE_EQUAL( rows->Get<uint8_t>("om"), unsigned(35));
+
+    ENSURE_EQUAL( rows->Get<double>("start_time"), 42.0);
+    ENSURE_EQUAL( rows->Get<I3DOMLaunch::TriggerType>("trigger_type"), I3DOMLaunch::ONBOARD_LED);
+
+    index = desc->GetFieldColumn("raw_atwd_0");
+    ENSURE_EQUAL( dl.GetRawATWD(0).size(), desc->GetFieldArrayLengths().at(index), "Array is the same length as the vector");
+
+    pointy = rows->GetPointer<uint16_t>("raw_atwd_0");
     for (it = dl.GetRawATWD(0).begin(), i = 0; it != dl.GetRawATWD(0).end(); it++, i++) {
         ENSURE_EQUAL( pointy[i], *it, "Vector and array contents match.");
     }
