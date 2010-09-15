@@ -73,14 +73,20 @@ private:
 
   size_t FillRows(const map_type& m, I3TableRowPtr rows) 
   {
+    static int nGeometryWarnings = 0;
+
     log_trace("%s", __PRETTY_FUNCTION__);
     size_t index = 0;
 
-    I3GeometryConstPtr geometry =
-      I3ConverterImplementation< map_type >::currentFrame_->template Get<I3GeometryConstPtr>();
-    if (!geometry) {
-      log_error("%s: No geometry in frame", __PRETTY_FUNCTION__);
-      return 0;
+    I3GeometryConstPtr geometry;
+    if (bookGeometry_) {
+      if (!this->currentFrame_)  // obsolete check?
+	log_fatal("Trying to book geometry, but the current frame is not set.");
+      geometry = this->currentFrame_->template Get<I3GeometryConstPtr>();
+      if (!geometry) {
+	log_error("%s: No geometry in frame", __PRETTY_FUNCTION__);
+	return 0;
+      }
     }
 
     for(typename map_type::const_iterator mapiter = m.begin();
@@ -89,13 +95,19 @@ private:
       {
 
 	OMKey key = mapiter->first;
-	I3OMGeoMap::const_iterator geoiter = geometry->omgeo.find(key);
 	I3OMGeo omgeo;
-	if (geoiter == geometry->omgeo.end()) {
-	  log_warn("%s: OMKey (%d,%d) not in geometry!", __PRETTY_FUNCTION__,
-		   key.GetString(), key.GetOM());
-	} else {
-	  omgeo = geoiter->second;
+
+	if (bookGeometry_) {
+	  I3OMGeoMap::const_iterator geoiter = geometry->omgeo.find(key);
+	  if (geoiter == geometry->omgeo.end()) {
+	    log_warn("%s: OMKey (%d,%d) not in geometry!", __PRETTY_FUNCTION__,
+		     key.GetString(), key.GetOM());
+	    ++nGeometryWarnings;
+	    if (nGeometryWarnings >= 100)
+	      log_info("Warned 100 times. Will suppress any further warnings.");
+	  } else {
+	    omgeo = geoiter->second;
+	  }
 	}
 
 	int vecindex = 0;
