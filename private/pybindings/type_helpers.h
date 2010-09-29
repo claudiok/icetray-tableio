@@ -49,7 +49,7 @@ struct I3DatatypeDispatcher
                    else if (dtype.size == 8) visitor.template call<int64_t>();
                    else {
                        message << dtype.size << "-byte integers are not supported";
-                       visitor.template fail(message.str());
+                       visitor.fail(message.str());
                    }
                } else {
                    if (dtype.size == 1)      visitor.template call<uint8_t>();
@@ -58,7 +58,7 @@ struct I3DatatypeDispatcher
                    else if (dtype.size == 8) visitor.template call<uint64_t>();
                    else {
                        message << dtype.size << "-byte integers are not supported";
-                       visitor.template fail(message.str());
+                       visitor.fail(message.str());
                    }
                }
                break;
@@ -67,11 +67,11 @@ struct I3DatatypeDispatcher
                else if (dtype.size == 8) visitor.template call<double>();
                else {
                       message << dtype.size << "-byte floats are not supported";
-                      visitor.template fail(message.str());
+                      visitor.fail(message.str());
                }
                break;
            default:
-               visitor.template fail(std::string("I don't know how to handle your datatype."));
+               visitor.fail(std::string("I don't know how to handle your datatype."));
       }
   };
 };
@@ -120,7 +120,7 @@ struct I3VectorDispatcher
       CHECK_CALL(float);
       CHECK_CALL(double);
       else {
-          visitor.template fail(std::string("I don't know how to handle your datatype."));
+          visitor.fail(std::string("I don't know how to handle your datatype."));
       }
       
   };
