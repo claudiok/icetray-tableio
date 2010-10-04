@@ -180,36 +180,41 @@ size_t I3TableRowDescription::GetNumberOfFields() const {
 
 /******************************************************************************/
 
-I3TableRowDescription operator|(const I3TableRowDescription& lhs, 
+I3TableRowDescription& operator<<(I3TableRowDescription& lhs, 
                                 const I3TableRowDescription& rhs) {
-    I3TableRowDescription newlhs = I3TableRowDescription(lhs);
     size_t nfields_new = rhs.GetNumberOfFields();
     size_t nfields_old = lhs.GetNumberOfFields();
     for (size_t i = 0; i < nfields_new; i++) {
         size_t byteOffset=0;
         size_t chunkOffset=0;
-        if (newlhs.GetNumberOfFields() > 0) {
-          byteOffset = newlhs.GetTotalByteSize();
-          chunkOffset = newlhs.GetTotalChunkSize();
+        if (lhs.GetNumberOfFields() > 0) {
+          byteOffset = lhs.GetTotalByteSize();
+          chunkOffset = lhs.GetTotalChunkSize();
         }
         std::string fieldName = rhs.fieldNames_.at(i);
 
-        newlhs.isMultiRow_ = (lhs.isMultiRow_ || rhs.isMultiRow_);
+        lhs.isMultiRow_ = (lhs.isMultiRow_ || rhs.isMultiRow_);
 
         // values that are just copied:
-        newlhs.fieldNames_.push_back( fieldName );
-        newlhs.fieldTypeSizes_.push_back( rhs.fieldTypeSizes_.at(i) );
-        newlhs.fieldTypes_.push_back( rhs.fieldTypes_.at(i) );
-        // newlhs.fieldTypeCodes_.push_back( rhs.fieldTypeCodes_.at(i) );
-        newlhs.fieldArrayLengths_.push_back( rhs.fieldArrayLengths_.at(i) );
-        newlhs.fieldUnits_.push_back( rhs.fieldUnits_.at(i) );
-        newlhs.fieldDocStrings_.push_back( rhs.fieldDocStrings_.at(i) );
+        lhs.fieldNames_.push_back( fieldName );
+        lhs.fieldTypeSizes_.push_back( rhs.fieldTypeSizes_.at(i) );
+        lhs.fieldTypes_.push_back( rhs.fieldTypes_.at(i) );
+        lhs.fieldArrayLengths_.push_back( rhs.fieldArrayLengths_.at(i) );
+        lhs.fieldUnits_.push_back( rhs.fieldUnits_.at(i) );
+        lhs.fieldDocStrings_.push_back( rhs.fieldDocStrings_.at(i) );
 
         // values that have to be recalculated:
-        newlhs.fieldNameToIndex_[fieldName] = nfields_old + i;
-        newlhs.fieldByteOffsets_.push_back(byteOffset);
-        newlhs.fieldChunkOffsets_.push_back(chunkOffset);
+        lhs.fieldNameToIndex_[fieldName] = nfields_old + i;
+        lhs.fieldByteOffsets_.push_back(byteOffset);
+        lhs.fieldChunkOffsets_.push_back(chunkOffset);
     }
+    return lhs;
+}
+
+I3TableRowDescription operator|(const I3TableRowDescription& lhs, 
+                                const I3TableRowDescription& rhs) {
+    I3TableRowDescription newlhs = I3TableRowDescription(lhs);
+    newlhs << rhs;
     return newlhs;
 }
 

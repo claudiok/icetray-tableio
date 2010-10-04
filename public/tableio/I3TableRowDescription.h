@@ -114,7 +114,8 @@ private:
     std::vector<std::string> fieldDocStrings_;
 
     friend I3TableRowDescription operator|(const I3TableRowDescription& lhs, const I3TableRowDescription& rhs);
-
+    friend I3TableRowDescription& operator<<(I3TableRowDescription& lhs, const I3TableRowDescription& rhs);
+    
     SET_LOGGER("I3TableRowDescription");
 };
     

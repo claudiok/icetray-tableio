@@ -52,22 +52,17 @@ I3TableRowDescriptionConstPtr I3ConverterBundle::GetDescription(I3FrameObjectCon
     std::vector<I3ConverterPtr>::iterator it;
     
     // start with a blank description
-    I3TableRowDescription combinedDescription; 
+    I3TableRowDescriptionPtr combinedDescription(new I3TableRowDescription); 
     I3TableRowDescriptionConstPtr description;
     
     for (it = converters_.begin(); it != converters_.end(); it++) {
         description = (*it)->GetDescription(object);
         // concatenate the descriptions
         // FIXME: check if any field names collide and raise an error
-        if (it == converters_.begin()) {
-            combinedDescription = I3TableRowDescription(*description);
-        } else {
-            combinedDescription = I3TableRowDescription(combinedDescription | *description);
-        }
+        *combinedDescription << *description;
     }
     
-    // copy the combined description into a shared pointer
-    return I3TableRowDescriptionPtr(new I3TableRowDescription(combinedDescription));
+    return combinedDescription;
 };
 
 //***************************************************************************//
@@ -75,24 +70,19 @@ I3TableRowDescriptionConstPtr I3ConverterBundle::GetDescription(I3FrameObjectCon
 // FIXME: this is just a copy of the pointer-taking method
 I3TableRowDescriptionConstPtr I3ConverterBundle::GetDescription(const I3FrameObject& object) {
     std::vector<I3ConverterPtr>::iterator it;
-    
+
     // start with a blank description
-    I3TableRowDescription combinedDescription = I3TableRowDescription(); 
+    I3TableRowDescriptionPtr combinedDescription(new I3TableRowDescription); 
     I3TableRowDescriptionConstPtr description;
-    
+
     for (it = converters_.begin(); it != converters_.end(); it++) {
         description = (*it)->GetDescription(object);
         // concatenate the descriptions
         // FIXME: check if any field names collide and raise an error
-        if (it == converters_.begin()) {
-            combinedDescription = I3TableRowDescription(*description);
-        } else {
-            combinedDescription = I3TableRowDescription(combinedDescription | *description);
-        }
+        *combinedDescription << *description;
     }
-    
-    // copy the combined description into a shared pointer
-    return I3TableRowDescriptionPtr(new I3TableRowDescription(combinedDescription));
+
+    return combinedDescription;
 };
 
 //***************************************************************************//
