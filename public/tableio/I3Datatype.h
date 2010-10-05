@@ -1,4 +1,4 @@
-/**
+/*
  * copyright  (C) 2010
  * The Icecube Collaboration
  *
@@ -22,29 +22,46 @@
 
 #include <I3/name_of.h>
 
-// represents an atomic datatype
+/**
+ * \brief Represents an atomic datatype
+ */
 struct I3Datatype {
-    enum TypeClass {
-        Float = 0,
-        Int   = 1,
-        Enum  = 2,
-        Bool  = 3  
-    };
-    TypeClass kind;
-    size_t size;
-    bool is_signed;
-    std::vector<std::pair<std::string,long> > enum_members;
-  std::string description;
+  /**
+   * \brief Categories describing types of atomic data objects
+   */
+  enum TypeClass {
+    Float = 0,  /*!< A floating point number */
+    Int   = 1,  /*!< An integer type number */
+    Enum  = 2,  /*!< An enumeration */
+    Bool  = 3   /*!< A boolean value */
+  };
+  TypeClass kind;  ///< The type class.
+  size_t size;     ///< The size of the data type in memory.
+  bool is_signed;  ///< True if the data type has a sign bit.
+  /**
+   * \brief Associates enum members with a string.
+   *
+   * This information is used by tableio to write strings into
+   * tables instead of simply the integer numbers associated with
+   * the enumeration.
+   */
+  std::vector<std::pair<std::string,long> > enum_members;
+  std::string description;  ///< A description of the data type
   bool operator!=(const I3Datatype& rhs) const;
   bool operator==(const I3Datatype& rhs) const;
+  /**
+   * \brief Tests if two data types are compatible
+   */
   bool CompatibleWith(const I3Datatype& rhs, bool enums_are_ints = false) const;
   std::string TypeClassAsString() const;
   std::string AsString() const;
 
-    I3Datatype() {};
-    I3Datatype(TypeClass k, size_t s, bool sign) : kind(k),size(s),is_signed(sign) {};
+  I3Datatype() {};
+  I3Datatype(TypeClass k, size_t s, bool sign) : kind(k),size(s),is_signed(sign) {};
 };
 
+
+/// Generates an I3Datatype data description object from a native type
 template <typename T>
 I3Datatype I3DatatypeFromNativeType() 
 {
@@ -68,9 +85,19 @@ I3Datatype I3DatatypeFromNativeType()
     return dtype;
 };
 
+/// Generates an I3Datatype describing a native bool.
 template <>
 I3Datatype I3DatatypeFromNativeType<bool>();
 
+/**
+ * \brief Generates an I3Datatype object from an enum type
+ *
+ * This is an overload of the function above to treat enumerations.
+ *
+ * \param enum_labels Passing the labels associated with each enum value
+ * to this function allows tableio to store these labels in the output
+ * file.
+ */
 template <typename T>
 static I3Datatype I3DatatypeFromNativeType(const std::vector<std::pair< std::string, T> >& enum_labels) 
 {

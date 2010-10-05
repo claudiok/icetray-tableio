@@ -22,6 +22,9 @@ I3_FORWARD_DECLARATION(I3TableRow);
 I3_FORWARD_DECLARATION(I3EventHeader);
 I3_FORWARD_DECLARATION(I3TableService);
 
+/**
+ * \brief Base class for tableio tables.
+ */
 class I3Table {
     public:
         I3Table(I3TableService& service, std::string name,
