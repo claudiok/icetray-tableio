@@ -37,9 +37,9 @@ private:
     desc->AddField<tableio_size_t>("vector_index", "", "index in vector");
 
     if (v.size()) {
-      converter_type::AddFields(desc, v[0]);
+      converter_.AddFields(desc, v[0]);
     } else {
-      converter_type::AddFields(desc);
+      converter_.AddFields(desc);
     }
 
     return desc;
@@ -55,7 +55,7 @@ private:
 	rows->SetCurrentRow(row);
 	rows->Set<tableio_size_t>("vector_index", row);
 	
-	converter_type::FillSingleRow(*iter, rows);
+	converter_.FillSingleRow(*iter, rows);
 	
 	++row;
       } // loop over vector
@@ -63,6 +63,7 @@ private:
     return v.size();
   }
 
+  converter_type converter_;
 };
 
 #endif // TABLEIO_I3VECTORCONVERTER_H_INCLUDED

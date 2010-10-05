@@ -68,9 +68,9 @@ private:
       
     // is it okay to assume that there should not be empty vectors in ...SeriesMaps?
     if (m.size() && m.begin()->second.size()) {
-      converter_type::AddFields(desc, m.begin()->second[0]);
+      converter_.AddFields(desc, m.begin()->second[0]);
     } else {
-      converter_type::AddFields(desc);
+      converter_.AddFields(desc);
     }
 
     return desc;
@@ -130,7 +130,7 @@ private:
 	    }
 	    rows->Set<tableio_size_t>("vector_index", vecindex);
 
-	    converter_type::FillSingleRow(*veciter, rows);
+	    converter_.FillSingleRow(*veciter, rows);
 	    
 	    log_trace("String: %d OM: %d", mapiter->first.GetString(), mapiter->first.GetOM());
 
@@ -143,6 +143,7 @@ private:
   }
 
   bool bookGeometry_;
+  converter_type converter_;
 };
 
 

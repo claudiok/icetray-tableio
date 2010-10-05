@@ -26,36 +26,32 @@ namespace convert {
   { 
     typedef ::I3DOMLaunch value_type;
 
-    static void AddFields(I3TableRowDescriptionPtr desc,
-			  const value_type& = value_type());
-    static void FillSingleRow(const value_type& dl, I3TableRowPtr row);
+    void AddFields(I3TableRowDescriptionPtr desc, const value_type& = value_type());
+    void FillSingleRow(const value_type& dl, I3TableRowPtr row);
   };
   
   struct I3RecoHit
   {
     typedef ::I3RecoHit value_type;
 
-    static void AddFields(I3TableRowDescriptionPtr desc,
-			  const value_type& = value_type());
-    static void FillSingleRow(const value_type& hit, I3TableRowPtr row);
+    void AddFields(I3TableRowDescriptionPtr desc, const value_type& = value_type());
+    void FillSingleRow(const value_type& hit, I3TableRowPtr row);
   };
   
   struct I3MCHit
   {
     typedef ::I3MCHit value_type;
 
-    static void AddFields(I3TableRowDescriptionPtr desc,
-			  const value_type& = value_type());
-    static void FillSingleRow(const value_type& hit, I3TableRowPtr row);
+    void AddFields(I3TableRowDescriptionPtr desc, const value_type& = value_type());
+    void FillSingleRow(const value_type& hit, I3TableRowPtr row);
   };
   
   struct I3RecoPulse
   {
     typedef ::I3RecoPulse value_type;
 
-    static void AddFields(I3TableRowDescriptionPtr desc,
-			  const value_type& = value_type());
-    static void FillSingleRow(const value_type& pulse, I3TableRowPtr row);
+    void AddFields(I3TableRowDescriptionPtr desc, const value_type& = value_type());
+    void FillSingleRow(const value_type& pulse, I3TableRowPtr row);
   };
 
 }
