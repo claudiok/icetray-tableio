@@ -22,15 +22,18 @@ requirements:
 
 * defines a type called value_type, which is the type converted by
   this struct;
-* defines two functions
+* has two functions
   ::
-    static void AddFields(I3TableRowDescriptionPtr);
-    static void AddFields(I3TableRowDescriptionPtr, const value_type&);
+    void AddFields(I3TableRowDescriptionPtr);
+    void AddFields(I3TableRowDescriptionPtr, const value_type&);
  
   that add the required fields to the given I3TableRowDescription - the first
   one can of course be replaced by adding a default value to the second
   parameter of the second version; and
-* defines a function static void FillSingleRow(const value_type&, I3TableRowPtr)
+* has a function
+  ::
+    void FillSingleRow(const value_type&, I3TableRowPtr);
+
   that takes a single object of value_type and fills the given table row.
 
 The same struct can be used both for the I3VectorConverter and the
@@ -50,8 +53,7 @@ converter. Mind the required typedef value_type.
 
       typedef I3RecoPulse value_type;
 
-      static void AddFields(I3TableRowDescriptionPtr desc,
-                            const I3RecoPulse& = I3RecoPulse())
+      void AddFields(I3TableRowDescriptionPtr desc, const I3RecoPulse& = I3RecoPulse())
       {
         desc->AddField<double>("time", "ns", "Leading-edge time of the pulse");
     	desc->AddField<double>("width", "ns", "Duration of the pulse");
@@ -59,7 +61,7 @@ converter. Mind the required typedef value_type.
     	desc->AddField<int32_t>("id", "generic", "hit id");
       }
 
-      static void I3RecoPulse::FillSingleRow(const value_type& pulse, I3TableRowPtr row)
+      void I3RecoPulse::FillSingleRow(const value_type& pulse, I3TableRowPtr row)
       {
         row->Set<double>("time", pulse.GetTime());
     	row->Set<double>("width", pulse.GetWidth());
