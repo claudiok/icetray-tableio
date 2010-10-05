@@ -22,8 +22,14 @@ requirements:
 
 * defines a type called value_type, which is the type converted by
   this struct;
-* defines a function static void AddFields(I3TableRowDescriptionPtr) that adds
-  the required fields to the given I3TableRowDescription; and
+* defines two functions
+  ::
+    static void AddFields(I3TableRowDescriptionPtr);
+    static void AddFields(I3TableRowDescriptionPtr, const value_type&);
+ 
+  that add the required fields to the given I3TableRowDescription - the first
+  one can of course be replaced by adding a default value to the second
+  parameter of the second version; and
 * defines a function static void FillSingleRow(const value_type&, I3TableRowPtr)
   that takes a single object of value_type and fills the given table row.
 
@@ -44,7 +50,8 @@ converter. Mind the required typedef value_type.
 
       typedef I3RecoPulse value_type;
 
-      static void AddFields(I3TableRowDescriptionPtr desc)
+      static void AddFields(I3TableRowDescriptionPtr desc,
+                            const I3RecoPulse& = I3RecoPulse())
       {
         desc->AddField<double>("time", "ns", "Leading-edge time of the pulse");
     	desc->AddField<double>("width", "ns", "Duration of the pulse");

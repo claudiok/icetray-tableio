@@ -72,7 +72,8 @@ namespace convert {
   struct pod {
     typedef T value_type;
 
-    static void AddFields(I3TableRowDescriptionPtr desc)
+    static void AddFields(I3TableRowDescriptionPtr desc,
+			  const value_type& = value_type())
     {
       desc->AddField< typename detail::pod_converter_type_mapping<T>::type >("item", "", "Item in the booked vector");
     }
@@ -87,7 +88,8 @@ namespace convert {
   struct double_pair {
     typedef std::pair<double, double> value_type;
 
-    static void AddFields(I3TableRowDescriptionPtr desc);
+    static void AddFields(I3TableRowDescriptionPtr desc,
+			  const value_type& = value_type());
     static void FillSingleRow(const value_type &item, I3TableRowPtr row);
   };
 
@@ -95,7 +97,8 @@ namespace convert {
   struct I3FlasherInfo {
     typedef ::I3FlasherInfo value_type;
 
-    static void AddFields(I3TableRowDescriptionPtr desc);
+    static void AddFields(I3TableRowDescriptionPtr desc,
+			  const value_type& = value_type());
     static void FillSingleRow(const value_type &flasherinfo, I3TableRowPtr row);
   };
 

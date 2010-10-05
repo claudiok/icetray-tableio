@@ -17,7 +17,7 @@
 
 namespace convert {
 
-  void double_pair::AddFields(I3TableRowDescriptionPtr desc)
+  void double_pair::AddFields(I3TableRowDescriptionPtr desc, const value_type&)
   {
     desc->AddField< double >("first", "", "Vector of double-double pair: first item");
     desc->AddField< double >("second", "", "Vector of double-double pair: second item");
@@ -30,7 +30,7 @@ namespace convert {
   }
 
 
-  void I3FlasherInfo::AddFields(I3TableRowDescriptionPtr desc)
+  void I3FlasherInfo::AddFields(I3TableRowDescriptionPtr desc, const value_type&)
   {
     desc->AddField<int8_t>("string", "", "String number of the flashing DOM");
     desc->AddField<uint8_t>("om", "", "OM number of the flashing DOM");

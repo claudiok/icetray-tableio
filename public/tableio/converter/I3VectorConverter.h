@@ -36,7 +36,11 @@ private:
     desc->isMultiRow_ = true;
     desc->AddField<tableio_size_t>("vector_index", "", "index in vector");
 
-    converter_type::AddFields(desc);
+    if (v.size()) {
+      converter_type::AddFields(desc, v[0]);
+    } else {
+      converter_type::AddFields(desc);
+    }
 
     return desc;
   }

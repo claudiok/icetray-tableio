@@ -66,7 +66,12 @@ private:
     }
     desc->AddField<tableio_size_t>("vector_index", "", "index in vector");
       
-    converter_type::AddFields(desc);
+    // is it okay to assume that there should not be empty vectors in ...SeriesMaps?
+    if (m.size() && m.begin()->second.size()) {
+      converter_type::AddFields(desc, m.begin()->second[0]);
+    } else {
+      converter_type::AddFields(desc);
+    }
 
     return desc;
   }
@@ -143,6 +148,6 @@ private:
 
 #define I3_MAP_CONVERTER_EXPORT_DEFAULT(converter, docstring)	\
   I3CONVERTER_EXPORT_DEFAULT(converter, docstring)		\
-  .def(bp::init<bool>())
+  .def(bp::init<bool>(bp::args("bookGeometry")))
 
 #endif // TABLEIO_I3MAPCONVERTER_H_INCLUDED

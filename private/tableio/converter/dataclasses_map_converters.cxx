@@ -14,7 +14,7 @@
 
 namespace convert {
 
-  void I3DOMLaunch::AddFields(I3TableRowDescriptionPtr desc)
+  void I3DOMLaunch::AddFields(I3TableRowDescriptionPtr desc, const value_type&)
   {
     desc->AddField<double>("start_time","ns","Time at which the DOM went over threshold");
     desc->AddField<bool>("pedestal_sub","bool","Has the pedestal been subtracted from the waveform?");
@@ -74,7 +74,7 @@ namespace convert {
   }
 
 
-  void I3RecoHit::AddFields(I3TableRowDescriptionPtr desc)
+  void I3RecoHit::AddFields(I3TableRowDescriptionPtr desc, const value_type&)
   {
     desc->AddField<double>("time", "ns", "time");
     desc->AddField<int32_t>("id", "generic", "hit id");
@@ -87,7 +87,7 @@ namespace convert {
   }
 
 
-  void I3MCHit::AddFields(I3TableRowDescriptionPtr desc)
+  void I3MCHit::AddFields(I3TableRowDescriptionPtr desc, const value_type&)
   {
     desc->AddField<double>("time", "ns", "time");
     desc->AddField<double>("weight", "PE", "The number of photoelectrons the hit represents.");
@@ -108,7 +108,7 @@ namespace convert {
   }
 
 
-  void I3RecoPulse::AddFields(I3TableRowDescriptionPtr desc)
+  void I3RecoPulse::AddFields(I3TableRowDescriptionPtr desc, const value_type&)
   {
     desc->AddField<double>("time", "ns", "Leading-edge time of the pulse");
     desc->AddField<double>("width", "ns", "Duration of the pulse");
