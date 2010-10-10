@@ -16,11 +16,10 @@ Writing a converter for an I3Map or an I3Vector
 In order to simplify the creation of converters for objects of type I3...Series
 or I3...SeriesMap (i.e. I3Map<OMKey, std::vector<...> >), two converter
 templates have been implemented in C++: I3VectorConverter and
-I3MapOMKeyVectorConverter. All that is needed for a converter for a custom
-I3Map or Vector class is a simple struct that fulfills the following
-requirements:
+I3MapOMKeyVectorConverter. The template parameter is a simple struct to convert
+the stored data. This struct needs to fulfill the following requirements:
 
-* defines a type called value_type, which is the type converted by
+* define a type called value_type, which is the type converted by
   this struct;
 * has two functions
   ::
@@ -38,6 +37,14 @@ requirements:
 
 The same struct can be used both for the I3VectorConverter and the
 I3MapOMKeyVectorConverter.
+
+.. note::
+    I3MapConverter has a parameter bookGeometry in its constructor that defaults
+    to false and allows users to bookGeometry together with the data in the map.
+    To make this option available in python, use the I3_MAP_CONVERTER_EXPORT or
+    I3_MAP_CONVERTER_EXPORT_DEFAULT macros instead of I3CONVERTER_EXPORT or
+    I3CONVERTER_EXPORT_DEFAULT.
+
 
 
 Example: I3RecoPulseSeriesMapConverter
