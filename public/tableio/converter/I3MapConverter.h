@@ -147,8 +147,12 @@ private:
 };
 
 
-#define I3_MAP_CONVERTER_EXPORT_DEFAULT(converter, docstring)	\
-  I3CONVERTER_EXPORT_DEFAULT(converter, docstring)		\
-  .def(bp::init<bool>(bp::args("bookGeometry")))
+#define I3_MAP_CONVERTER_EXPORT(converter, docstring)			\
+  I3CONVERTER_EXPORT(converter, docstring)				\
+  .def(boost::python::init<bool>(boost::python::args("bookGeometry")))
+
+#define I3_MAP_CONVERTER_EXPORT_DEFAULT(converter, docstring)		\
+  I3CONVERTER_EXPORT_DEFAULT(converter, docstring)			\
+  .def(boost::python::init<bool>(boost::python::args("bookGeometry")))
 
 #endif // TABLEIO_I3MAPCONVERTER_H_INCLUDED
