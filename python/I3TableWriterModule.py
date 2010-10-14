@@ -32,6 +32,9 @@ class I3TableWriter(I3Module):
         self.AddParameter('TableService','The I3TableService to recieve output.',None)
         self.AddParameter('Keys','A list or dict of FrameObject keys to convert',None)
         self.AddParameter('Types','A list or dict of types to convert',None)
+        self.AddParameter('BookEverything','Book absolutely everything in the frame, \
+using the default converters. This has the tendency to produce very, very large files, \
+and is almost certainly not what you actually want to do.', False)
         self.writer = None
 
     def _get_tableservice(self):
@@ -121,34 +124,43 @@ class I3TableWriter(I3Module):
         # The grand configuration!
         keys = self.GetParameter('Keys')
         types = self.GetParameter('Types')
+        data_flood = self.GetParameter('BookEverything')
         empty = lambda t: (t is None) or (len(t) == 0)
-        if empty(keys) and empty(types):
-            warnings.warn("""
-I3TableWriter is now going to book everything it can find in the frame. This
-has the tendency to produce very, very large files, and is almost certainly
-not what you want to do.
-
-To book only the frame objects you're interested in, pass a list of keys as
-the `keys' parameter, or a list of types as the `types' parameter when
-configuring I3TableWriter. You can find a tutorial in
-$I3_BUILD/doc/projects/tableio/howto.html .
-""")
-            types = I3ConverterRegistry.registry.keys()
-            # remove GCD types if they exist
-            for t in [dataclasses.I3Geometry,dataclasses.I3DetectorStatus,dataclasses.I3Calibration]:
-                if t in types:
-                    del types[t]
-        if (not keys is None) and (not types is None):
-            # raise ValueError, "You must specify either Keys or Types, but you may not specify both."
-            # we will allow both, but configurations specified by key must take precedence
-            pass
+        
+        if (not data_flood) and empty(keys) and empty(types):
+            raise ValueError,\
+"""You must specify which frame objects should be booked by setting Keys \
+and/or Types. If you really want to dump every object from every frame, \
+set BookEverything = True."""
         
         # convert whatever was passed as 'Keys' to a list of dicts
         keys = self._parse_args(keys,self._transform_keyitem)
         
         # convert whatever was passed as 'Types' to a list of dicts
         types = self._parse_args(types,self._transform_typeitem)
-        
+
+        if data_flood:
+            warnings.warn("""
+I3TableWriter is now going to book everything it can find in the frame. This \
+has the tendency to produce very, very large files, and is almost certainly \
+not what you want to do.
+
+To book only the frame objects you're interested in, pass a list of keys as \
+the `keys' parameter, or a list of types as the `types' parameter when \
+configuring I3TableWriter. You can find a tutorial in \
+$I3_BUILD/doc/projects/tableio/howto.html .
+""")
+            # add type-specifications for everything we know about that wasn't included in 'Types'            
+            all_types = I3ConverterRegistry.registry.keys()
+            # remove GCD types if they exist
+            for t in [dataclasses.I3Geometry,dataclasses.I3DetectorStatus,dataclasses.I3Calibration]:
+                if t in all_types:
+                    del all_types[t]
+            specified_types = [d['type'] for d in types]
+            for t in all_types:
+                if not t in specified_types:
+                    types.append(dict(type=t, converter=default))
+
         # now, pull in all of the registered converters from Python-land
         converter_list = vector_I3ConverterPtr()
         defaults = dict(I3ConverterRegistry.defaults)

@@ -9,7 +9,7 @@
 .. @author Fabian Kislat <fabian.kislat@desy.de> $LastChangedBy$
 
 Writing a converter for an I3Map or an I3Vector
-**********************************
+***************************************************
 
 .. highlight:: c++
 
@@ -48,7 +48,7 @@ I3MapOMKeyVectorConverter.
 
 
 Example: I3RecoPulseSeriesMapConverter
-___________________
+_________________________________________
 
 .. highlight:: c++
 

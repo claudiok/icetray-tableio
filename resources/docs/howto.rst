@@ -108,9 +108,9 @@ Booking everything in the file
     You should really avoid doing this whenever possible, as it's likely to create very, very large files.
 
 If you really want dump *absolutely everything* in an I3 file using the
-default converters, you can omit both the `Types` and `Keys` parameters::
+default converters, you can set BookEverything to True::
 
-    tray.AddModule(I3TableWriter,'writer', tableservice = table_service)
+    tray.AddModule(I3TableWriter,'writer', tableservice = table_service, BookEverything = True)
 
 This gives you absolutely no control over how objects are booked. If you just
 want to discover which converters are defined, you can inspect
