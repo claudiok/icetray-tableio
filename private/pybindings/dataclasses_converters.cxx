@@ -35,6 +35,10 @@ void register_dataclasses_converters() {
     I3_MAP_CONVERTER_EXPORT_DEFAULT(I3RecoHitSeriesMapConverter,"Dumps all RecoHits verbatim.");
     typedef I3MapOMKeyVectorConverter< convert::I3MCHit > I3MCHitSeriesMapConverter;
     I3_MAP_CONVERTER_EXPORT_DEFAULT(I3MCHitSeriesMapConverter,"Dumps all MCHits verbatim.");
+    typedef I3MapOMKeyVectorConverter< convert::pod<double> > I3MapKeyVectorDoubleConverter;
+    I3_MAP_CONVERTER_EXPORT_DEFAULT(I3MapKeyVectorDoubleConverter, "Dumps all numbers verbatim");
+    typedef I3MapOMKeyVectorConverter< convert::pod<int> > I3MapKeyVectorIntConverter;
+    I3_MAP_CONVERTER_EXPORT_DEFAULT(I3MapKeyVectorIntConverter, "Dumps all numbers verbatim");
     
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringDoubleConverter,"Dumps a std::map<string,double> verbatim");
     I3CONVERTER_EXPORT_DEFAULT(I3ParticleConverter,"Dumps an I3Particle verbatim");
