@@ -13,6 +13,7 @@
 #define I3BROADCASTTABLE_H_INCLUDED
 
 #include <tableio/I3Table.h>
+#include <vector>
 
 class I3BroadcastTable : public I3Table {
     public:
