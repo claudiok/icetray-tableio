@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # 
 # copyright  (C) 2010
 # The Icecube Collaboration
