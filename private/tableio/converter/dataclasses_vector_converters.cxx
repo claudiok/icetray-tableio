@@ -30,3 +30,11 @@ typedef I3VectorConverter< convert::double_pair > I3VectorDoubleDoubleConverter;
 I3_CONVERTER(I3VectorDoubleDoubleConverter, I3VectorDoubleDouble);
 
 I3_CONVERTER(I3VectorConverter< convert::I3FlasherInfo >, I3FlasherInfoVect);
+
+/*
+  // A compilation test: I3VectorConverter should be able to accept any 
+  // I3Converter as a template parameter. Remove comments to check.
+  // Note: importing this would also require pybindings for I3Vector<I3Particle>
+#include "tableio/converter/I3ParticleConverter.h"
+  I3_CONVERTER(I3VectorConverter< I3ParticleConverter >, I3Vector<I3Particle>);
+*/

@@ -29,14 +29,14 @@ namespace convert {
 
   template <typename T>
   struct pod {
-    typedef T value_type;
+    typedef T booked_type;
 
-    void AddFields(I3TableRowDescriptionPtr desc, const value_type& = value_type())
+    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type())
     {
       desc->AddField< typename detail::pod_converter_type_mapping<T>::type >("item", "", "Item in the booked vector");
     }
 
-    void FillSingleRow(const value_type &item, I3TableRowPtr row)
+    void FillSingleRow(const booked_type &item, I3TableRowPtr row)
     {
       row->Set< typename detail::pod_converter_type_mapping<T>::type >("item", item);
     }
@@ -44,48 +44,48 @@ namespace convert {
 
   struct I3DOMLaunch
   { 
-    typedef ::I3DOMLaunch value_type;
+    typedef ::I3DOMLaunch booked_type;
 
-    void AddFields(I3TableRowDescriptionPtr desc, const value_type& = value_type());
-    void FillSingleRow(const value_type& dl, I3TableRowPtr row);
+    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
+    void FillSingleRow(const booked_type& dl, I3TableRowPtr row);
   };
   
   struct I3RecoHit
   {
-    typedef ::I3RecoHit value_type;
+    typedef ::I3RecoHit booked_type;
 
-    void AddFields(I3TableRowDescriptionPtr desc, const value_type& = value_type());
-    void FillSingleRow(const value_type& hit, I3TableRowPtr row);
+    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
+    void FillSingleRow(const booked_type& hit, I3TableRowPtr row);
   };
   
   struct I3MCHit
   {
-    typedef ::I3MCHit value_type;
+    typedef ::I3MCHit booked_type;
 
-    void AddFields(I3TableRowDescriptionPtr desc, const value_type& = value_type());
-    void FillSingleRow(const value_type& hit, I3TableRowPtr row);
+    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
+    void FillSingleRow(const booked_type& hit, I3TableRowPtr row);
   };
   
   struct I3RecoPulse
   {
-    typedef ::I3RecoPulse value_type;
+    typedef ::I3RecoPulse booked_type;
 
-    void AddFields(I3TableRowDescriptionPtr desc, const value_type& = value_type());
-    void FillSingleRow(const value_type& pulse, I3TableRowPtr row);
+    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
+    void FillSingleRow(const booked_type& pulse, I3TableRowPtr row);
   };
 
   struct double_pair {
-    typedef std::pair<double, double> value_type;
+    typedef std::pair<double, double> booked_type;
 
-    void AddFields(I3TableRowDescriptionPtr desc, const value_type& = value_type());
-    void FillSingleRow(const value_type &item, I3TableRowPtr row);
+    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
+    void FillSingleRow(const booked_type &item, I3TableRowPtr row);
   };
 
   struct I3FlasherInfo {
-    typedef ::I3FlasherInfo value_type;
+    typedef ::I3FlasherInfo booked_type;
 
-    void AddFields(I3TableRowDescriptionPtr desc, const value_type& = value_type());
-    void FillSingleRow(const value_type &flasherinfo, I3TableRowPtr row);
+    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
+    void FillSingleRow(const booked_type &flasherinfo, I3TableRowPtr row);
   };
 
 }

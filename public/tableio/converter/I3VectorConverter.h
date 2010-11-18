@@ -14,10 +14,11 @@
 
 #include <tableio/I3ConverterFactory.h>
 #include <dataclasses/I3Vector.h>
+#include <tableio/converter/container_converter_detail.h>
 
 
 template <class converter_type,
-	  typename value_type = typename converter_type::value_type >
+	  typename value_type = typename converter_type::booked_type >
 class I3VectorConverter : public I3ConverterImplementation< I3Vector< value_type > > {
 private:
   typedef I3Vector< value_type > vector_type;
@@ -36,11 +37,7 @@ private:
     desc->isMultiRow_ = true;
     desc->AddField<tableio_size_t>("vector_index", "", "index in vector");
 
-    if (v.size()) {
-      converter_.AddFields(desc, v[0]);
-    } else {
-      converter_.AddFields(desc);
-    }
+    detail::add_fields(converter_, desc, v);
 
     return desc;
   }
@@ -55,7 +52,7 @@ private:
 	rows->SetCurrentRow(row);
 	rows->Set<tableio_size_t>("vector_index", row);
 	
-	converter_.FillSingleRow(*iter, rows);
+	detail::fill_single_row(converter_, *iter, rows, this->currentFrame_);
 	
 	++row;
       } // loop over vector

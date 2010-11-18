@@ -95,4 +95,17 @@ void register_dataclasses_converters() {
 		       "Dumps a single I3WaveformSeriesMap (good for IceTop people not interested in FADC)")
       .def(bp::init<bool>());
 
+
+/*
+    // A compilation test: I3MapConverter and I3VectorConverter should be able
+    // to accept any I3Converter as a template parameter. Remove comments to
+    // check.
+    typedef I3Map<OMKey, std::vector<I3Particle> > I3MapKeyVectorI3Particle;
+    typedef I3MapOMKeyVectorConverter< I3ParticleConverter > I3MapKeyVectorI3ParticleConverter;
+    I3_MAP_CONVERTER_EXPORT_DEFAULT(I3MapKeyVectorI3ParticleConverter, "Dumps all particles ... just a compilation test");
+    
+    typedef I3VectorConverter< I3ParticleConverter > I3VectorI3ParticleConverter;
+    I3CONVERTER_EXPORT_DEFAULT(I3VectorI3ParticleConverter, "Dumps an I3Vector<I3Particle>");
+*/
+
 };

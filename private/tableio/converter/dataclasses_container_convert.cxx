@@ -13,7 +13,7 @@
 
 namespace convert {
 
-  void I3DOMLaunch::AddFields(I3TableRowDescriptionPtr desc, const value_type&)
+  void I3DOMLaunch::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
   {
     desc->AddField<double>("start_time","ns","Time at which the DOM went over threshold");
     desc->AddField<bool>("pedestal_sub","bool","Has the pedestal been subtracted from the waveform?");
@@ -37,7 +37,7 @@ namespace convert {
     desc->AddField<uint16_t>("raw_fadc", "counts", "Raw digitizer counts from fADC", 256);
   }
 
-  void I3DOMLaunch::FillSingleRow(const value_type& dl, I3TableRowPtr row) 
+  void I3DOMLaunch::FillSingleRow(const booked_type& dl, I3TableRowPtr row) 
   {
     row->Set<double>("start_time", dl.GetStartTime());
     row->Set< ::I3DOMLaunch::ATWDselect>("which_atwd",dl.GetWhichATWD());
@@ -73,20 +73,20 @@ namespace convert {
   }
 
 
-  void I3RecoHit::AddFields(I3TableRowDescriptionPtr desc, const value_type&)
+  void I3RecoHit::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
   {
     desc->AddField<double>("time", "ns", "time");
     desc->AddField<int32_t>("id", "generic", "hit id");
   }
 
-  void I3RecoHit::FillSingleRow(const value_type& hit, I3TableRowPtr row)
+  void I3RecoHit::FillSingleRow(const booked_type& hit, I3TableRowPtr row)
   {
     row->Set<double>("time", hit.GetTime());
     row->Set<int32_t>("id", hit.GetID());
   }
 
 
-  void I3MCHit::AddFields(I3TableRowDescriptionPtr desc, const value_type&)
+  void I3MCHit::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
   {
     desc->AddField<double>("time", "ns", "time");
     desc->AddField<double>("weight", "PE", "The number of photoelectrons the hit represents.");
@@ -98,7 +98,7 @@ namespace convert {
     
   }
 
-  void I3MCHit::FillSingleRow(const value_type& hit, I3TableRowPtr row)
+  void I3MCHit::FillSingleRow(const booked_type& hit, I3TableRowPtr row)
   {
     row->Set<double>("time", hit.GetTime());
     row->Set<double>("weight", hit.GetWeight());
@@ -107,7 +107,7 @@ namespace convert {
   }
 
 
-  void I3RecoPulse::AddFields(I3TableRowDescriptionPtr desc, const value_type&)
+  void I3RecoPulse::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
   {
     desc->AddField<double>("time", "ns", "Leading-edge time of the pulse");
     desc->AddField<double>("width", "ns", "Duration of the pulse");
@@ -115,7 +115,7 @@ namespace convert {
     desc->AddField<int32_t>("id", "generic", "hit id");
   }
 
-  void I3RecoPulse::FillSingleRow(const value_type& pulse, I3TableRowPtr row)
+  void I3RecoPulse::FillSingleRow(const booked_type& pulse, I3TableRowPtr row)
   {
     row->Set<double>("time", pulse.GetTime());
     row->Set<double>("width", pulse.GetWidth());
@@ -124,20 +124,20 @@ namespace convert {
   }
 
 
-  void double_pair::AddFields(I3TableRowDescriptionPtr desc, const value_type&)
+  void double_pair::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
   {
     desc->AddField< double >("first", "", "Vector of double-double pair: first item");
     desc->AddField< double >("second", "", "Vector of double-double pair: second item");
   }
 
-  void double_pair::FillSingleRow(const value_type &item, I3TableRowPtr row)
+  void double_pair::FillSingleRow(const booked_type &item, I3TableRowPtr row)
   {
     row->Set< double >("first", item.first);
     row->Set< double >("second", item.second);
   }
 
 
-  void I3FlasherInfo::AddFields(I3TableRowDescriptionPtr desc, const value_type&)
+  void I3FlasherInfo::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
   {
     desc->AddField<int8_t>("string", "", "String number of the flashing DOM");
     desc->AddField<uint8_t>("om", "", "OM number of the flashing DOM");
@@ -153,7 +153,7 @@ namespace convert {
     desc->AddField<int32_t>("raw_atwd3", "counts", "ATWD waveform of the LED current pulse", 128);  // <-- a vector!
   }
 
-  void I3FlasherInfo::FillSingleRow(const value_type &flasherinfo, I3TableRowPtr row)
+  void I3FlasherInfo::FillSingleRow(const booked_type &flasherinfo, I3TableRowPtr row)
   {
     row->Set<int8_t>("string", flasherinfo.GetFlashingOM().GetString());
     row->Set<uint8_t>("om", flasherinfo.GetFlashingOM().GetOM());

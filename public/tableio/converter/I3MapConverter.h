@@ -26,10 +26,11 @@
 #include <dataclasses/I3Map.h>
 #include <dataclasses/geometry/I3Geometry.h>
 #include <icetray/OMKey.h>
+#include <tableio/converter/container_converter_detail.h>
 
 
 template <class converter_type,
-	  typename map_type = I3Map<OMKey, std::vector<typename converter_type::value_type> > >
+	  typename map_type = I3Map<OMKey, std::vector<typename converter_type::booked_type> > >
 class I3MapOMKeyVectorConverter 
   : public I3ConverterImplementation< map_type > 
 {
@@ -66,11 +67,11 @@ private:
     }
     desc->AddField<tableio_size_t>("vector_index", "", "index in vector");
       
-    // is it okay to assume that there should not be empty vectors in ...SeriesMaps?
     if (m.size() && m.begin()->second.size()) {
-      converter_.AddFields(desc, m.begin()->second[0]);
+      detail::add_fields(converter_, desc, m.begin()->second);
     } else {
-      converter_.AddFields(desc);
+      typedef typename map_type::mapped_type mapped_type;
+      detail::add_fields(converter_, desc, mapped_type());
     }
 
     return desc;
@@ -130,7 +131,7 @@ private:
 	    }
 	    rows->Set<tableio_size_t>("vector_index", vecindex);
 
-	    converter_.FillSingleRow(*veciter, rows);
+	    detail::fill_single_row(converter_, *veciter, rows, this->currentFrame_);
 	    
 	    log_trace("String: %d OM: %d", mapiter->first.GetString(), mapiter->first.GetOM());
 
