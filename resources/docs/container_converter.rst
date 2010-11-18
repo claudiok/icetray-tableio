@@ -19,21 +19,21 @@ templates have been implemented in C++: I3VectorConverter and
 I3MapOMKeyVectorConverter. The template parameter is a simple struct to convert
 the stored data. This struct needs to fulfill the following requirements:
 
-* define a type called value_type, which is the type converted by
+* define a type called booked_type, which is the type converted by
   this struct;
 * has two functions
   ::
     void AddFields(I3TableRowDescriptionPtr);
-    void AddFields(I3TableRowDescriptionPtr, const value_type&);
+    void AddFields(I3TableRowDescriptionPtr, const booked_type&);
  
   that add the required fields to the given I3TableRowDescription - the first
   one can of course be replaced by adding a default value to the second
   parameter of the second version; and
 * has a function
   ::
-    void FillSingleRow(const value_type&, I3TableRowPtr);
+    void FillSingleRow(const booked_type&, I3TableRowPtr);
 
-  that takes a single object of value_type and fills the given table row.
+  that takes a single object of booked_type and fills the given table row.
 
 The same struct can be used both for the I3VectorConverter and the
 I3MapOMKeyVectorConverter.
@@ -53,12 +53,12 @@ _________________________________________
 .. highlight:: c++
 
 The following example shows the conversion struct for the I3RecoPulseSeriesMap
-converter. Mind the required typedef value_type.
+converter. Mind the required typedef booked_type.
 ::
 
     struct convert_I3RecoPulse {
 
-      typedef I3RecoPulse value_type;
+      typedef I3RecoPulse booked_type;
 
       void AddFields(I3TableRowDescriptionPtr desc, const I3RecoPulse& = I3RecoPulse())
       {
@@ -68,7 +68,7 @@ converter. Mind the required typedef value_type.
     	desc->AddField<int32_t>("id", "generic", "hit id");
       }
 
-      void I3RecoPulse::FillSingleRow(const value_type& pulse, I3TableRowPtr row)
+      void I3RecoPulse::FillSingleRow(const booked_type& pulse, I3TableRowPtr row)
       {
         row->Set<double>("time", pulse.GetTime());
     	row->Set<double>("width", pulse.GetWidth());
