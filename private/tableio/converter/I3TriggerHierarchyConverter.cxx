@@ -34,7 +34,7 @@ I3TableRowDescriptionPtr I3TriggerHierarchyConverter::CreateDescription(const I3
                                            "Enumeration describing what 'algorithm' issued a trigger");
     desc->AddEnumField<TriggerKey::SubtypeID>("subtype_id", subtypeID, "",
                                               "Enumeration describing how a software trigger was orginally 'configured' within the TWR DAQ trigger system");
-    desc->AddField<int32_t>("config_id", "", "configID member of TriggerKey"); // FIXME: docs
+    desc->AddField<int32_t>("config_id", "", "Internal ID of the trigger settings in the DAQ. This can be used to retrieve the threshold, readout window, DOM set, etc from the DetectorStatus.");
     
     return desc;
 };
@@ -62,7 +62,9 @@ size_t I3TriggerHierarchyConverter::FillRows(const I3TriggerHierarchy& triggers,
         rows->Set<TriggerKey::SourceID> ("source_id",   key.GetSource());
         rows->Set<TriggerKey::TypeID> ("type_id",       key.GetType());
         rows->Set<TriggerKey::SubtypeID> ("subtype_id", key.GetSubtype());
-
+        if (key.CheckConfigID())
+            rows->Set<int32_t>("config_id", key.GetConfigID());
+        
         i_row++; 
     }
 
