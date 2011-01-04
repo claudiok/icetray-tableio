@@ -10,7 +10,7 @@
 # @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
 # 
 
-from icecube.icetray import I3Module
+from icecube.icetray import I3ConditionalModule
 from icecube.tableio import I3TableService, I3Converter, I3ConverterBundle, I3TableWriterWorker, I3ConverterRegistry, vector_I3ConverterPtr, I3BroadcastTableService
 from icecube import dataclasses
 import re,warnings
@@ -26,10 +26,9 @@ default = DefaultConverter()
 
 
 
-class I3TableWriter(I3Module):
+class I3TableWriter(I3ConditionalModule):
     def __init__(self,context):
-        I3Module.__init__(self,context)
-        self.AddOutBox('OutBox')
+        I3ConditionalModule.__init__(self,context)
         self.AddParameter('TableService','The I3TableService to recieve output.',None)
         self.AddParameter('Keys','A list or dict of FrameObject keys to convert',None)
         self.AddParameter('Types','A list or dict of types to convert',None)
@@ -70,7 +69,7 @@ and is almost certainly not what you actually want to do.', False)
             raise TypeError, "Keys must be dicts, tuples, or strings."
     
     # FIXME (HACK): there has to be a better way to get at <type 'Boost.Python.class'>
-    bp_class = type(I3Module)
+    bp_class = type(I3TableService)
         
     def _transform_typeitem(self,item):
         typus = None
