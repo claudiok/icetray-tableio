@@ -102,8 +102,7 @@ void I3TableTranscriber::Finish() {
         DisconnectTable(pair_it->second);
     }
 
-    outputService_->Finish();
-
+    /* NB: the user is responsible for closing the output service. */
 }
 
 /******************************************************************************/
