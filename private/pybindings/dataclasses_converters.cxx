@@ -74,6 +74,9 @@ void register_dataclasses_converters() {
     I3CONVERTER_EXPORT_DEFAULT(I3VectorFloatConverter, "Dumps an I3Vector of floats");
     typedef I3VectorConverter< convert::pod<double> > I3VectorDoubleConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorDoubleConverter, "Dumps an I3Vector of doubles");
+
+    typedef I3VectorConverter< convert::OMKey > I3VectorOMKeyConverter;
+    I3CONVERTER_EXPORT_DEFAULT(I3VectorOMKeyConverter, "Dumps an I3Vector of OMKeys");
   
     typedef I3VectorConverter< convert::double_pair > I3VectorDoubleDoubleConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorDoubleDoubleConverter, "Dumps an I3Vector of double-double pairs");

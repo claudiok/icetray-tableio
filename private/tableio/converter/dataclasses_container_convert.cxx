@@ -173,4 +173,17 @@ namespace convert {
     
   }
 
+
+  void OMKey::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
+  {
+    desc->AddField<int8_t>("string", "", "String number");
+    desc->AddField<uint8_t>("om", "", "OM number");
+  }
+
+  void OMKey::FillSingleRow(const booked_type &key, I3TableRowPtr row)
+  {
+    row->Set<int8_t>("string", key.GetString());
+    row->Set<uint8_t>("om", key.GetOM());
+  }
+
 }
