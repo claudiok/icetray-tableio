@@ -15,9 +15,13 @@ Writing a converter for an I3Map or an I3Vector
 
 In order to simplify the creation of converters for objects of type I3...Series
 or I3...SeriesMap (i.e. I3Map<OMKey, std::vector<...> >), two converter
-templates have been implemented in C++: I3VectorConverter and
-I3MapOMKeyVectorConverter. The template parameter is a simple struct to convert
-the stored data. This struct needs to fulfill the following requirements:
+templates have been implemented in C++: I3VectorConverter<T> and
+I3MapOMKeyVectorConverter<T>. The template parameter T is either a simple struct
+to convert the stored data as defined below, or an existing I3Converter
+implementation. If the objects stored in the I3Vector are I3FrameObjects, then
+an I3Converter for those is prefered or might already exist. If it is not
+an I3FrameObject, the convert-struct approach has to be used. This struct needs
+to fulfill the following requirements:
 
 * define a type called booked_type, which is the type converted by
   this struct;
