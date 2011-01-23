@@ -41,7 +41,7 @@ namespace detail {
   };
 
   template <class Converter_T, class booked_type>
-  void add_fields(Converter_T &converter, I3TableRowDescriptionPtr desc, const std::vector<booked_type> &v)
+  inline void add_fields(Converter_T &converter, I3TableRowDescriptionPtr desc, const std::vector<booked_type> &v)
   {
     add_fields_impl< Converter_T, booked_type, typename boost::is_base_of<I3Converter, Converter_T>::type >::do_add(converter, desc, v);
   }
@@ -64,7 +64,7 @@ namespace detail {
   };
 
   template <class Converter_T, class booked_type>
-  void fill_single_row(Converter_T &converter, const booked_type &value, I3TableRowPtr rows, I3FramePtr frame)
+  inline void fill_single_row(Converter_T &converter, const booked_type &value, I3TableRowPtr rows, I3FramePtr frame)
   {
     fill_single_row_impl< Converter_T, booked_type, typename boost::is_base_of<I3Converter, Converter_T>::type >::do_fill(converter, value, rows, frame);
   }
