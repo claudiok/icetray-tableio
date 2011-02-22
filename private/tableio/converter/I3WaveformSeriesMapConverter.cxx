@@ -107,6 +107,8 @@ size_t I3WaveformSeriesMapConverter::FillRows(const I3WaveformSeriesMap& wavefor
   I3Map<OMKey, std::vector<I3Waveform> >::const_iterator iter;
     
   const size_t startRow = rows->GetCurrentRow();
+  const I3TableRowDescription &desc = *rows->GetDescription();
+  const size_t wfsize = desc.GetFieldArrayLengths()[desc.GetFieldColumn("wf")];
 
   size_t currentRow;
   for (iter = waveforms.begin(), currentRow = rows->GetCurrentRow(); 
@@ -143,18 +145,18 @@ size_t I3WaveformSeriesMapConverter::FillRows(const I3WaveformSeriesMap& wavefor
 
       std::vector<double>::const_iterator wfiter;
       double* buffer = rows->GetPointer<double>("wf");
-      int i = 0;
+      unsigned i = 0;
 
       if (calibrate_) {
 	for (wfiter = readout.begin(); 
-	     i < 128 && wfiter != readout.end(); 
+	     i < wfsize && wfiter != readout.end(); 
 	     ++i, ++wfiter++)
 	  {
 	    buffer[i] = (*wfiter)*VoltToNPE;
 	  }
       } else {
 	for (wfiter = readout.begin(); 
-	     i < 128 && wfiter != readout.end(); 
+	     i < wfsize && wfiter != readout.end(); 
 	     ++i, ++wfiter++)
 	  {
 	    buffer[i] = *wfiter/I3Units::mV;
