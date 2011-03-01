@@ -21,4 +21,4 @@ i3_test_executable(test
     private/test/*.cxx
     USE_PROJECTS dataclasses icetray phys-services tableio)
 
-i3_test_scripts(resources/scripts/test_pybindings.py)
+i3_test_scripts(resources/test/test_pybindings.py)
