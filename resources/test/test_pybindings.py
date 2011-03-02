@@ -252,15 +252,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 			load("libphys-services")
 			
 			tray = I3Tray()
-			# tray.AddService("I3EmptyStreamsFactory","sound_and_fury_signifying_nothing",
-			#         installGeometry=True,
-			#         installCalibration=True,
-			#         installStatus=True,
-			#         eventTimeYear=2008,
-			#         eventTimeNnanosec=163163250000000011,
-			#         nFrames=1)
-			tray.AddService("I3EmptyStreamsFactory","sound_and_fury_signifying_nothing")
-			tray.AddModule("I3Muxer","muxalot")
+			tray.AddModule("I3InfiniteSource","streams", Stream=icetray.I3Frame.Physics)
 			self.tray = tray
 			self.tempfile = tempfile.NamedTemporaryFile()
 			self.hdf_service = hdfwriter.I3HDFTableService(self.tempfile.name,0)
@@ -295,7 +287,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 				keys = ['I3EventHeader','InIceRawData']
 				)
 			self.tray.AddModule('TrashCan','tc')
-			self.tray.Execute()
+			self.tray.Execute(1)
 			self.tray.Finish()
 		def testKeyDict(self):
 			"""A dict key: booker"""
@@ -304,7 +296,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 				keys = {'InIceRawData': self.bookie}
 				)
 			self.tray.AddModule('TrashCan','tc')
-			self.tray.Execute()
+			self.tray.Execute(1)
 			self.tray.Finish()
 		def testKeyTuples(self):
 			"""Tuples of (key, booker)"""
@@ -313,7 +305,7 @@ class I3TableWriterPythonModuleTest(unittest.TestCase):
 				keys = [('InIceRawData', self.bookie),('InIceRawData',None)] # repeat with default booker
 				)
 			self.tray.AddModule('TrashCan','tc')
-			self.tray.Execute()
+			self.tray.Execute(1)
 			self.tray.Finish()
 		
 def test(fname='/Users/jakob/Documents/IceCube/nugen_nue_ic80_dc6.001568.000000.hits.001.1881140.domsim.001.2028732.i3.gz'):
