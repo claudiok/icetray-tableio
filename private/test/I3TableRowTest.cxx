@@ -74,7 +74,7 @@ TEST(type_checking) {
 // this enum will be represented as a 32-bit signed integer
 struct Foo {
 enum DummyEnummy {
-    foo = -INT32_MAX ,bar = INT32_MAX
+    foo = INT32_MIN ,bar = INT32_MAX
 };
 };
 #define DUMMY_ENUMMY (foo)(bar)
