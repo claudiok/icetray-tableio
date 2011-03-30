@@ -77,6 +77,7 @@ I3TableRowDescriptionPtr I3WaveformSeriesMapConverter::CreateDescription(const I
   desc->AddField<bool>("ok", "bool", "status flag that waveform has been convertered");
   desc->AddField<double>("t0", "ns", "start time of waveform");
   desc->AddField<double>("dt", "ns", "width of waveform bins");
+  desc->AddField<int16_t>("nbins", "", "number of waveform bins");
   desc->AddField<double>("wf", unit, doc, wfSize);
     
   return desc;
@@ -167,6 +168,7 @@ size_t I3WaveformSeriesMapConverter::FillRows(const I3WaveformSeriesMap& wavefor
       rows->Set<bool>("ok", ok);
       rows->Set<double>("t0", wf.GetStartTime()/I3Units::ns);
       rows->Set<double>("dt", wf.GetBinWidth()/I3Units::ns);
+      rows->Set<int16_t>("nbins", readout.size());
 
       if (bookGeometry_) {
 	rows->Set<double>("x", omgeo.position.GetX());
