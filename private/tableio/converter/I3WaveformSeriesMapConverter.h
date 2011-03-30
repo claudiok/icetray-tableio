@@ -17,8 +17,7 @@
 
 class I3WaveformSeriesMapConverter : public I3ConverterImplementation< I3WaveformSeriesMap > {
 public:
-    I3WaveformSeriesMapConverter();
-    I3WaveformSeriesMapConverter(bool calibrate);
+    I3WaveformSeriesMapConverter(bool calibrate = false, bool bookGeometry = false);
 
 private:
     I3TableRowDescriptionPtr CreateDescription(const I3WaveformSeriesMap& waveforms);
@@ -26,6 +25,7 @@ private:
     size_t GetNumberOfRows(const I3WaveformSeriesMap& waveforms);
 
     bool calibrate_;
+    bool bookGeometry_;
 };
 
 #endif // TABLEIO_I3WAVEFORMCONVERTER_H_INCLUDED

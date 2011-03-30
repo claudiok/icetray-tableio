@@ -21,6 +21,15 @@
 #include "tableio/converter/I3EventHeaderConverter.h"
 #include "tableio/converter/I3WaveformSeriesMapConverter.h"
 
+namespace {
+
+  static boost::shared_ptr<I3WaveformSeriesMapConverter> makeWaveformSeriesMapConverter(bool bookGeometry)
+  {
+    return boost::shared_ptr<I3WaveformSeriesMapConverter>(new I3WaveformSeriesMapConverter(false, bookGeometry));
+  }
+
+}
+
 void register_dataclasses_converters() {
     I3CONVERTER_NAMESPACE(dataclasses);
     
@@ -94,10 +103,15 @@ void register_dataclasses_converters() {
                          bp::init<std::string, std::string, bool>())
     ;
 
-    I3CONVERTER_EXPORT_DEFAULT(I3WaveformSeriesMapConverter,
-		       "Dumps a single I3WaveformSeriesMap (good for IceTop people not interested in FADC)")
-      .def(bp::init<bool>());
-
+    register_converter<I3WaveformSeriesMapConverter>(registry,
+						     bp::class_<I3WaveformSeriesMapConverter,
+								boost::shared_ptr<I3WaveformSeriesMapConverter>,
+								bp::bases<I3Converter>,
+								boost::noncopyable >("I3WaveformSeriesMapConverter",
+										     "Dumps a single I3WaveformSeriesMap (good for IceTop people not interested in FADC)",
+										     bp::init< bp::optional<bool, bool> >(bp::args("calibrate", "bookGeometry"))),
+						     true)
+      .def("__init__", bp::make_constructor(&::makeWaveformSeriesMapConverter, boost::python::default_call_policies(), (bp::arg("bookGeometry"))));
 
 /*
     // A compilation test: I3MapConverter and I3VectorConverter should be able
