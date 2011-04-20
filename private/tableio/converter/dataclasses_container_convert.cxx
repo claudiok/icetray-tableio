@@ -143,7 +143,7 @@ namespace convert {
     desc->AddField<uint8_t>("om", "", "OM number of the flashing DOM");
     desc->AddField<double>("flash_time", "ns", "Time (in nsec) in 25 nsec units, of the LED flash time.");
     desc->AddField<uint32_t>("mask", "bitmask", "Indicates which LEDs were flashing");
-#warning TODO: improve doc strings
+    // #warning TODO: improve doc strings
     desc->AddField<int32_t>("width", "", "Flasher width");
     desc->AddField<int32_t>("rate", "", "Flasher rate");
     desc->AddField<int32_t>("brightness", "", "Brightness level (1..127)");
