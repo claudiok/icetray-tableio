@@ -27,6 +27,7 @@ to fulfill the following requirements:
   this struct;
 * has two functions
   ::
+ 
     void AddFields(I3TableRowDescriptionPtr);
     void AddFields(I3TableRowDescriptionPtr, const booked_type&);
  
@@ -35,6 +36,7 @@ to fulfill the following requirements:
   parameter of the second version; and
 * has a function
   ::
+
     void FillSingleRow(const booked_type&, I3TableRowPtr);
 
   that takes a single object of booked_type and fills the given table row.
