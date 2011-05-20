@@ -102,8 +102,8 @@ size_t I3WaveformConverter::FillRows(const I3WaveformSeriesMap& atwdWaveformMap,
     }
 
   
-    const map<OMKey,I3DOMCalibration> &domcalmap = calibration->domCal;
-    const map<OMKey,I3DOMStatus> &domstatusmap   = detectorstatus->domStatus;
+    const std::map<OMKey,I3DOMCalibration> &domcalmap = calibration->domCal;
+    const std::map<OMKey,I3DOMStatus> &domstatusmap   = detectorstatus->domStatus;
 
     I3Map<OMKey, std::vector<I3Waveform> >::const_iterator iter;
     

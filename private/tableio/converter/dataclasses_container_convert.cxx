@@ -9,6 +9,7 @@
  * @author Eike Middell <eike.middell@desy.de> $LastChangedBy: kislat $
  */
 
+#include <vector>
 #include "dataclasses_container_convert.h"
 
 namespace convert {
@@ -164,7 +165,7 @@ namespace convert {
     row->Set<int32_t>("brightness", flasherinfo.GetLEDBrightness());
     row->Set<double>("atwd_bin_size", flasherinfo.GetATWDBinSize());
     
-    const vector<int> &waveform(flasherinfo.GetRawATWD3());
+    const std::vector<int> &waveform(flasherinfo.GetRawATWD3());
     size_t bins = std::max(waveform.size(), size_t(128));   // maybe paranoid, but safer
     int32_t *buffer = row->GetPointer<int32_t>("raw_atwd3");
     for (size_t i = 0; i < bins; ++i) {
