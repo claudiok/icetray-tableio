@@ -113,7 +113,6 @@ namespace convert {
     desc->AddField<double>("time", "ns", "Leading-edge time of the pulse");
     desc->AddField<double>("width", "ns", "Duration of the pulse");
     desc->AddField<double>("charge", "PE", "Integrated pulse charge");
-    desc->AddField<int32_t>("id", "generic", "hit id");
   }
 
   void I3RecoPulse::FillSingleRow(const booked_type& pulse, I3TableRowPtr row)
@@ -121,7 +120,6 @@ namespace convert {
     row->Set<double>("time", pulse.GetTime());
     row->Set<double>("width", pulse.GetWidth());
     row->Set<double>("charge", pulse.GetCharge());
-    row->Set<int32_t>("id", pulse.GetID());
   }
 
 
