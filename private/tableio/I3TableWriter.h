@@ -25,7 +25,7 @@ I3_FORWARD_DECLARATION(I3Table);
 
 class I3TableWriter {
     public:
-        I3TableWriter(I3TableServicePtr service, std::vector<I3ConverterPtr>& converters);
+        I3TableWriter(I3TableServicePtr service, std::vector<I3ConverterPtr>& converters, std::vector<std::string>& streams);
         virtual ~I3TableWriter();
         
         // register one specific object, lazily. if type and converter are empty the writer 
@@ -102,6 +102,7 @@ class I3TableWriter {
         std::map<std::string, std::vector<TableBundle> > tables_;
         std::map<std::string, I3ConverterPtr> converters_;
         std::vector<I3ConverterPtr> converterCache_;
+        std::vector<std::string> streams_;
         // keys that have been examined and found useless
         std::set<std::string> uselessKeys_;
          

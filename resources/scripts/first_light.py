@@ -52,7 +52,7 @@ def counter(frame):
         print "%d frames"%count
     count +=1
 
-tray.AddModule(tableio.I3TableWriter,'writer', tableservice = tabler)
+tray.AddModule(tableio.I3TableWriter,'writer', tableservice = tabler, bookeverything=True)
 tray.AddModule(counter,'count-count')
 tray.AddModule('TrashCan','yeswecan')
 

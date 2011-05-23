@@ -14,13 +14,18 @@
 #include "tableio/I3TableWriter.h"
 #include "tableio/I3TableService.h"
 #include "tableio/I3ConverterFactory.h"
+#include "tableio/converter/I3IndexColumnsGenerator.h"
 #include <I3/name_of.h>
+
+#include <boost/foreach.hpp>
+#include <boost/make_shared.hpp>
 
 /******************************************************************************/
 
-I3TableWriter::I3TableWriter(I3TableServicePtr service, std::vector<I3ConverterPtr>& converters) {
+I3TableWriter::I3TableWriter(I3TableServicePtr service, std::vector<I3ConverterPtr>& converters,
+    std::vector<std::string>& streams) : streams_(streams) {
     service_ = service;
-    ticConverter_ = BuildConverter("I3IndexColumnsGenerator");
+    ticConverter_ = boost::make_shared<I3IndexColumnsGenerator>(streams_);
     
     // pull in the converters registered in Python-land instead
     std::vector<I3ConverterPtr>::const_iterator it_conv;
@@ -217,6 +222,16 @@ void I3TableWriter::Convert(I3FramePtr frame) {
        log_error("This frame is missing an I3EventHeader and will not be booked!");
        return;
     }
+    bool handle_stream = false;
+    const std::string &stream = header->GetSubEventStream();
+    BOOST_FOREACH(const std::string &target_stream, streams_)
+        if (target_stream == stream) {
+            handle_stream = true;
+            break;
+        }
+
+    if (!handle_stream)
+        return;
 
     // lazily initialize the header
     if (!ticConverter_->HasDescription()) { ticConverter_->GetDescription(header); }

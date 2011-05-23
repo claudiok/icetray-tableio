@@ -10,7 +10,7 @@
 # @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
 # 
 
-from icecube.icetray import I3ConditionalModule
+from icecube.icetray import I3ConditionalModule, vector_string
 from icecube.tableio import I3TableService, I3Converter, I3ConverterBundle, I3TableWriterWorker, I3ConverterRegistry, vector_I3ConverterPtr, I3BroadcastTableService
 from icecube import dataclasses
 import re,warnings
@@ -30,6 +30,7 @@ class I3TableWriter(I3ConditionalModule):
     def __init__(self,context):
         I3ConditionalModule.__init__(self,context)
         self.AddParameter('TableService','The I3TableService to recieve output.',None)
+        self.AddParameter('Streams','The names of the SubEvent streams to run on',[""])
         self.AddParameter('Keys','A list or dict of FrameObject keys to convert',None)
         self.AddParameter('Types','A list or dict of types to convert',None)
         self.AddParameter('BookEverything','Book absolutely everything in the frame, \
@@ -121,6 +122,9 @@ and is almost certainly not what you actually want to do.', False)
     def Configure(self):
         self._get_tableservice()
         
+        streams = vector_string()
+        streams.extend(self.GetParameter('Streams'))
+
         # The grand configuration!
         keys = self.GetParameter('Keys')
         types = self.GetParameter('Types')
@@ -175,7 +179,7 @@ $I3_BUILD/doc/projects/tableio/howto.html .
             # only instantiate the converter registered as default
             converter_list.append(converter())
         
-        self.writer = I3TableWriterWorker(self.table_service,converter_list)
+        self.writer = I3TableWriterWorker(self.table_service, converter_list, streams)
         tablespec = I3TableWriterWorker.TableSpec
         typespec = I3TableWriterWorker.TypeSpec
         
