@@ -120,6 +120,6 @@ wrap the whole export block in #ifdefs to avoid hard dependencies::
 
 The macro I3CONVERTER_NAMESPACE(jebclasses) sets up a Python module
 icecube.jebclasses.converters into which pybindings for
-I3FilterResultMapConverter are exported. Each :cfunc:`I3CONVERTER_EXPORT` call
+I3FilterResultMapConverter are exported. Each :c:func:`I3CONVERTER_EXPORT` call
 creates pybindings for the specified converter and registers it for use in
 tableio.
