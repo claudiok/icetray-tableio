@@ -20,6 +20,7 @@ def fakeit(frame):
 	pulses.append(pulse)
 
 	pulsemap[icetray.OMKey(7,42)] = pulses
+	pulsemap[icetray.OMKey(9,42)] = pulses
 	frame['Pulses'] = pulsemap
 	mask = dataclasses.I3RecoPulseSeriesMapMask(frame, 'Pulses')
 	frame['PulseMask'] = mask

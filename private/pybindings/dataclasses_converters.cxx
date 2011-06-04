@@ -45,6 +45,10 @@ public:
 		I3RecoPulseSeriesMap mappy;
 		return Base::CreateDescription(mappy);
 	}
+	size_t GetNumberOfRows(const I3RecoPulseSeriesMapMask &mask)
+	{
+		return mask.GetSum();
+	}
 	size_t FillRows(const I3RecoPulseSeriesMapMask &mask, I3TableRowPtr rows)
 	{
 		I3RecoPulseSeriesMapConstPtr pulses = mask.Apply(*currentFrame_);
