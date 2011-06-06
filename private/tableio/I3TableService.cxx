@@ -17,10 +17,9 @@
 
 I3TableService::I3TableService()  { 
     ticConverter_ = BuildConverter("I3IndexColumnsGenerator");
-    I3TableRowDescriptionPtr desc = I3TableRowDescriptionPtr(new I3TableRowDescription());
-    desc->AddField<uint32_t>("Run", "", "run number");
-    desc->AddField<uint32_t>("Event", "", "event number");
-    desc->AddField<bool>("exists", "", "object was found in the frame");
+    // My house, my rules.
+    I3TableRowDescriptionPtr desc =
+        boost::const_pointer_cast<I3TableRowDescription>(ticConverter_->GetDescription(I3EventHeader()));
     desc->AddField<tableio_size_t>("start", "", "Offset at which the rows for this event start");
     desc->AddField<tableio_size_t>("stop", "", "Offset at which the rows for the next event start");
     indexDescription_ = desc;
