@@ -41,6 +41,8 @@ class I3TableService {
         I3TableRowDescriptionConstPtr GetIndexDescription();
         // Phone home to tell the service that an event has been written
         void HeaderWritten(I3EventHeaderConstPtr lastHeader,size_t nrows);
+        // Set the shared indexer to the same one used by the table writer
+        void SetIndexConverter(I3ConverterPtr gen);
         void Finish();
 
     protected:

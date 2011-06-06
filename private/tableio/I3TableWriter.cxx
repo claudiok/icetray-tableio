@@ -26,6 +26,7 @@ I3TableWriter::I3TableWriter(I3TableServicePtr service, std::vector<I3ConverterP
     std::vector<std::string>& streams) : streams_(streams) {
     service_ = service;
     ticConverter_ = boost::make_shared<I3IndexColumnsGenerator>(streams_);
+    service_->SetIndexConverter(ticConverter_);
     
     // pull in the converters registered in Python-land instead
     std::vector<I3ConverterPtr>::const_iterator it_conv;

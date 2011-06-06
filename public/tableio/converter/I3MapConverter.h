@@ -30,16 +30,17 @@
 
 
 template <class converter_type,
-	  typename map_type = I3Map<OMKey, std::vector<typename converter_type::booked_type> > >
+	  typename map_type = I3Map<OMKey, std::vector<typename converter_type::booked_type> >,
+          typename frameobject_type = map_type >
 class I3MapOMKeyVectorConverter 
-  : public I3ConverterImplementation< map_type > 
+  : public I3ConverterImplementation< frameobject_type > 
 {
 public:
   I3MapOMKeyVectorConverter(bool bookGeometry = false)
     : bookGeometry_(bookGeometry)
   {}
 
-private:
+protected:
   size_t GetNumberOfRows(const map_type& m) {
     log_trace("%s", __PRETTY_FUNCTION__);
     typename map_type::const_iterator iter = m.begin();
@@ -143,6 +144,7 @@ private:
     return index;
   }
 
+private:
   bool bookGeometry_;
   converter_type converter_;
 };

@@ -21,6 +21,8 @@
 #include "tableio/converter/I3EventHeaderConverter.h"
 #include "tableio/converter/I3WaveformSeriesMapConverter.h"
 
+#include "dataclasses/I3MapOMKeyMask.h"
+
 namespace {
 
   static boost::shared_ptr<I3WaveformSeriesMapConverter> makeWaveformSeriesMapConverter(bool bookGeometry)
@@ -29,6 +31,30 @@ namespace {
   }
 
 }
+
+// Make the RecoPulseSeriesMapConverter work on pulse masks.
+class I3RecoPulseSeriesMapMaskConverter : public I3MapOMKeyVectorConverter<
+    convert::I3RecoPulse, I3RecoPulseSeriesMap, I3RecoPulseSeriesMapMask > {
+public:
+	typedef I3MapOMKeyVectorConverter< convert::I3RecoPulse,
+	    I3RecoPulseSeriesMap, I3RecoPulseSeriesMapMask > Base;
+	I3RecoPulseSeriesMapMaskConverter() : Base() {};
+	I3RecoPulseSeriesMapMaskConverter(bool b) : Base(b) {};
+	I3TableRowDescriptionPtr CreateDescription(const I3RecoPulseSeriesMapMask& m) 
+	{
+		I3RecoPulseSeriesMap mappy;
+		return Base::CreateDescription(mappy);
+	}
+	size_t GetNumberOfRows(const I3RecoPulseSeriesMapMask &mask)
+	{
+		return mask.GetSum();
+	}
+	size_t FillRows(const I3RecoPulseSeriesMapMask &mask, I3TableRowPtr rows)
+	{
+		I3RecoPulseSeriesMapConstPtr pulses = mask.Apply(*currentFrame_);
+		return Base::FillRows(*pulses, rows);
+	}
+};
 
 void register_dataclasses_converters() {
     I3CONVERTER_NAMESPACE(dataclasses);
@@ -40,6 +66,7 @@ void register_dataclasses_converters() {
     I3_MAP_CONVERTER_EXPORT_DEFAULT(I3DOMLaunchSeriesMapConverter,"Dumps all DOMLaunches verbatim.");
     typedef I3MapOMKeyVectorConverter< convert::I3RecoPulse > I3RecoPulseSeriesMapConverter;
     I3_MAP_CONVERTER_EXPORT_DEFAULT(I3RecoPulseSeriesMapConverter,"Dumps all RecoPulses verbatim.");
+    I3_MAP_CONVERTER_EXPORT_DEFAULT(I3RecoPulseSeriesMapMaskConverter,"Applies the mask, then dumps the resulting RecoPulses verbatim.");
     typedef I3MapOMKeyVectorConverter< convert::I3RecoHit > I3RecoHitSeriesMapConverter;
     I3_MAP_CONVERTER_EXPORT_DEFAULT(I3RecoHitSeriesMapConverter,"Dumps all RecoHits verbatim.");
     typedef I3MapOMKeyVectorConverter< convert::I3MCHit > I3MCHitSeriesMapConverter;
