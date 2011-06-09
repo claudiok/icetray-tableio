@@ -15,8 +15,26 @@
 I3IndexColumnsGenerator::I3IndexColumnsGenerator(const std::vector<std::string> &streams)
 {
 	int num = 0;
-	BOOST_FOREACH(const std::string &stream, streams)
+	BOOST_FOREACH(const std::string &stream, streams) {
 		streams_[stream] = num++;
+		istreams_.push_back(stream);
+	}
+}
+
+I3IndexColumnsGenerator::I3IndexColumnsGenerator(I3TableRowDescriptionConstPtr desc)
+{
+	size_t idx = desc->GetFieldColumn("SubEventStream");
+	if (idx == desc->GetNumberOfFields())
+		return;
+
+	const I3Datatype &dtype = desc->GetFieldTypes()[idx];
+
+	
+	typedef std::pair<std::string,long> enum_map_t;
+	BOOST_FOREACH(const enum_map_t &pair, dtype.enum_members)
+		streams_[pair.first] = pair.second;
+	BOOST_FOREACH(const stream_map_t::value_type &pair, streams_)
+		istreams_.push_back(pair.first);
 }
 
 I3TableRowDescriptionPtr
@@ -53,11 +71,25 @@ I3IndexColumnsGenerator::FillRows(const I3EventHeader& header, I3TableRowPtr row
             rows->Set<uint32_t>("Run", header.GetRunID());
             rows->Set<uint32_t>("Event", header.GetEventID());
             rows->Set<uint32_t>("SubEvent", header.GetSubEventID());
-            rows->SetEnumsAreInts(true); /* Disconnect seatbelt */	
+            rows->SetEnumsAreInts(true); /* Disconnect seatbelt */
+	// printf("Stream %s: %d\n", header.GetSubEventStream().c_str(), streams_[header.GetSubEventStream()]);
             rows->Set<int32_t>("SubEventStream", streams_[header.GetSubEventStream()]);
             rows->Set<bool>("exists", false); // to be overwritten by someone else, e.g. I3TableWriter
             return 1;
         }
+
+I3EventHeaderPtr
+I3IndexColumnsGenerator::Resurrect(I3TableRowPtr rows) {
+	I3EventHeaderPtr header(new I3EventHeader());
+	header->SetRunID(rows->Get<uint32_t>("Run"));
+	header->SetEventID(rows->Get<uint32_t>("Event"));
+	header->SetSubEventID(rows->Get<uint32_t>("SubEvent"));
+	rows->SetEnumsAreInts(true); /* Disconnect seatbelt */
+	int32_t idx = rows->Get<int32_t>("SubEventStream");
+	header->SetSubEventStream(istreams_.at(idx));
+	
+	return header;
+}
 
 I3_CONVERTER(I3IndexColumnsGenerator, I3IndexColumnsGenerator);
 

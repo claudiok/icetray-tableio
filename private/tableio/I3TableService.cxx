@@ -69,9 +69,10 @@ I3TablePtr I3TableService::CreateTable(std::string tableName,
         
 bool I3TableService::EventHeadersEqual(const I3EventHeader& header1,
                                        const I3EventHeader& header2) {
-    //  ignore subeventid
     return ( (header1.GetRunID() == header2.GetRunID()) &&
-             (header1.GetEventID() == header2.GetEventID()) );
+             (header1.GetEventID() == header2.GetEventID()) &&
+             (header1.GetSubEventID() == header2.GetSubEventID()) &&
+             (header1.GetSubEventStream() == header2.GetSubEventStream()));
 }
 
 /******************************************************************************/

@@ -11,6 +11,7 @@
 
 #include <tableio/I3TableService.h>
 #include <tableio/I3Table.h>
+#include <tableio/converter/I3IndexColumnsGenerator.h>
 
 #ifndef	I3TABLETRANSCRIBER_H_INCLUDED
 #define I3TABLETRANSCRIBER_H_INCLUDED
@@ -33,6 +34,7 @@ class I3TableTranscriber {
         I3TableServicePtr inputService_;
         I3TableServicePtr outputService_;
         // std::map<std::string, I3TablePtr> inputTables_;
+	boost::shared_ptr<I3IndexColumnsGenerator> indexer_;
         std::vector<std::pair<I3TablePtr,I3TablePtr> > transcriptions_;
         size_t nEvents_;
     SET_LOGGER("I3TableTranscriber");

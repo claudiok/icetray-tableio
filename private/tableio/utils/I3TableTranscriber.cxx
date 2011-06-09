@@ -15,6 +15,8 @@
 
 #include <dataclasses/physics/I3EventHeader.h>
 
+#include <boost/make_shared.hpp>
+
 I3TableTranscriber::I3TableTranscriber(I3TableServicePtr input, I3TableServicePtr output) 
     : inputService_(input), outputService_(output), nEvents_(0) {
         
@@ -34,6 +36,10 @@ I3TableTranscriber::I3TableTranscriber(I3TableServicePtr input, I3TableServicePt
                 log_fatal("Input tables '%s' '%s' have different sizes (%zu vs. %zu)",
                     nEvents_reference.c_str(),table->GetName().c_str(),nEvents,table->GetNumberOfEvents());
             }
+
+            if ((nEvents > 0) && (!indexer_))
+                indexer_ = boost::make_shared<I3IndexColumnsGenerator>(table->GetDescription());
+
            
             inputTableMap[*it] = table;
         }
@@ -41,7 +47,9 @@ I3TableTranscriber::I3TableTranscriber(I3TableServicePtr input, I3TableServicePt
         if (nEvents == 0) {
             log_fatal("Input file contains no events.");
         }
-        
+
+        outputService_->SetIndexConverter(indexer_);
+
         nEvents_ = nEvents;
         
         std::map<std::string, I3TablePtr>::iterator t_it;
@@ -54,7 +62,6 @@ I3TableTranscriber::I3TableTranscriber(I3TableServicePtr input, I3TableServicePt
             otable = ConnectTable(name,*table->GetDescription());
             transcriptions_.push_back(std::make_pair(table,otable));
         }
-        
 }
 
 void I3TableTranscriber::Execute() {
@@ -69,7 +76,7 @@ void I3TableTranscriber::Execute(size_t nframes) {
     I3TablePtr in,out;
     I3EventHeaderPtr header;
     I3TableRowPtr rows;
-    
+
     // loop over the given number of row-groups
     for (i = 0; i<nframes; i++) {
         log_trace("Transcribing event #%zu",i+1);
@@ -82,9 +89,8 @@ void I3TableTranscriber::Execute(size_t nframes) {
             // convention: if a block is padding, its first row
             // should always be marked as such
             if ((!rows) || (!rows->Get<bool>("exists"))) continue;
-            header = I3EventHeaderPtr(new I3EventHeader());
-            header->SetRunID(rows->Get<unsigned int>("Run"));
-            header->SetEventID(rows->Get<unsigned int>("Event"));
+            header = indexer_->Resurrect(rows);
+
             log_trace("R%u/E%u '%s': %zu row(s)",
                 header->GetRunID(),header->GetEventID(),in->GetName().c_str(),rows->GetNumberOfRows());
             
