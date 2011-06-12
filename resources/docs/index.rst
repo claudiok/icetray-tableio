@@ -63,6 +63,7 @@ Table of Contents:
    :maxdepth: 3
 
    howto
+   existing_converters
    converters
    python_converter
    cpp_converter
