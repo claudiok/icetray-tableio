@@ -118,7 +118,7 @@ void register_dataclasses_converters() {
     I3CONVERTER_EXPORT_DEFAULT(I3VectorDoubleDoubleConverter, "Dumps an I3Vector of double-double pairs");
 
     typedef I3VectorConverter< convert::I3FlasherInfo > I3FlasherInfoVectConverter;
-    I3CONVERTER_EXPORT_DEFAULT(I3FlasherInfoVectConverter, "Dumps and I3FlasherInfoVect");
+    I3CONVERTER_EXPORT_DEFAULT(I3FlasherInfoVectConverter, "Dumps an I3FlasherInfoVect");
 
     // waveform converter has a non-default constructor
     // don't register this converter, since registered converters need default constructors
