@@ -12,7 +12,7 @@
 #include "I3Test.h"
 
 #include "dataclasses/I3Double.h"
-#include "dataclasses/I3Bool.h"
+#include "icetray/I3Bool.h"
 
 
 #include "tableio/I3TableService.h"

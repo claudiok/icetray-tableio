@@ -14,7 +14,7 @@
 
 #include "tableio/I3ConverterFactory.h"
 #include "dataclasses/I3Double.h"
-#include "dataclasses/I3Bool.h"
+#include "icetray/I3Bool.h"
 #include "icetray/I3Int.h"
 
 template<class FrmObj, typename TableType, const char* unit>
