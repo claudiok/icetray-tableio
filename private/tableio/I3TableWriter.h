@@ -103,6 +103,7 @@ class I3TableWriter {
         std::map<std::string, I3ConverterPtr> converters_;
         std::vector<I3ConverterPtr> converterCache_;
         std::vector<std::string> streams_;
+        std::set<std::string> ignoredStreams_;
         // keys that have been examined and found useless
         std::set<std::string> uselessKeys_;
          

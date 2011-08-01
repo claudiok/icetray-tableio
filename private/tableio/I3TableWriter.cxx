@@ -231,8 +231,10 @@ void I3TableWriter::Convert(I3FramePtr frame) {
             break;
         }
 
-    if (!handle_stream)
+    if (!handle_stream) {
+        ignoredStreams_.insert(stream);
         return;
+    }
 
     // lazily initialize the header
     if (!ticConverter_->HasDescription()) { ticConverter_->GetDescription(header); }
@@ -419,6 +421,19 @@ void I3TableWriter::Finish() {
         for(it = list_it->second.begin(); it != list_it->second.end(); ++it) {
             DisconnectTable(it->table);
         }
+    }
+
+    if (ignoredStreams_.size() > 0) {
+        std::ostringstream buf1, buf2;
+        BOOST_FOREACH(const std::string &stream, ignoredStreams_)
+            buf1 << "'" << stream << "',";
+        BOOST_FOREACH(const std::string &stream, streams_)
+            buf2 << "'" << stream << "',";
+        log_warn("%zu SubEventStreams [%s] were seen but not booked because"
+            " they were not passed as part of the 'Streams' parameter of"
+            " I3TableWriter (which was configured as [%s]). To book events"
+            " from these streams, add them to the 'Streams' parameter of I3TableWriter.",
+            ignoredStreams_.size(), buf1.str().c_str(), buf2.str().c_str());
     }
 
     /* Tell the table service to clean up disconnected tables and
