@@ -366,13 +366,20 @@ void I3TableWriter::Convert(I3FramePtr frame) {
                       bundle.table->GetDescription()->GetFieldNames().at(0).c_str(),
                       bundle.table->GetDescription()->GetFieldNames().at(bundle.table->GetDescription()->GetNumberOfFields()-1).c_str()); 
             I3FrameObjectConstPtr obj = frame->Get<I3FrameObjectConstPtr>(objName);
-            if (!obj) {
-                // TODO error logic
-                // rows->Set<bool>("exists", false);
+            if (!obj)
+                continue;
+
+            try {
+                nrows = bundle.converter->GetNumberOfRows(obj);
+            } catch (std::bad_cast) {
+                log_fatal("The frame object '%s' has switched types since the"
+                    " last time it was seen. This sort of behavior is"
+                    " unsupported!", objName.c_str());
             }
+
             // ask the converter how many rows he will write
             // skip the object if there is nothing to be written
-            else if ((nrows = bundle.converter->GetNumberOfRows(obj)) != 0) {
+            if (nrows != 0) {
             
                 // with this information the table can create the rows
                 I3TableRowPtr rows = bundle.table->CreateRow(nrows);
