@@ -14,6 +14,7 @@
 
 #include <icetray/I3PointerTypedefs.h>
 #include <icetray/OMKey.h>
+#include <dataclasses/TankKey.h>
 #include <dataclasses/physics/I3DOMLaunch.h>
 #include <dataclasses/physics/I3RecoHit.h>
 #include <dataclasses/physics/I3RecoPulse.h>
@@ -91,6 +92,13 @@ namespace convert {
 
   struct OMKey {
     typedef ::OMKey booked_type;
+
+    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
+    void FillSingleRow(const booked_type &key, I3TableRowPtr row);
+  };
+
+  struct TankKey {
+    typedef ::TankKey booked_type;
 
     void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
     void FillSingleRow(const booked_type &key, I3TableRowPtr row);

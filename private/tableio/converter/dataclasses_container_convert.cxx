@@ -11,6 +11,7 @@
 
 #include <vector>
 #include "dataclasses_container_convert.h"
+#include <icetray/I3Logging.h>
 
 namespace convert {
 
@@ -183,6 +184,27 @@ namespace convert {
   {
     row->Set<int8_t>("string", key.GetString());
     row->Set<uint8_t>("om", key.GetOM());
+  }
+
+
+  void TankKey::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
+  {
+    desc->AddField<int8_t>("string", "", "String number");
+    desc->AddField<char>("tank", "", "Tank ID (A or B)");
+  }
+
+  void TankKey::FillSingleRow(const booked_type &key, I3TableRowPtr row)
+  {
+    row->Set<int8_t>("string", key.string);
+    switch (key.tank) {
+    case ::TankKey::TankA:
+      row->Set<char>("tank", 'A');
+      break;
+    case ::TankKey::TankB:
+      row->Set<char>("tank", 'B');
+      break;
+    default: log_fatal("Encountered an IceTop tank that is neither 'A' nor 'B'!!!");
+    }
   }
 
 }

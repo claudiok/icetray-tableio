@@ -113,6 +113,9 @@ void register_dataclasses_converters() {
 
     typedef I3VectorConverter< convert::OMKey > I3VectorOMKeyConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorOMKeyConverter, "Dumps an I3Vector of OMKeys");
+
+    typedef I3VectorConverter< convert::TankKey > I3VectorTankKeyConverter;
+    I3CONVERTER_EXPORT_DEFAULT(I3VectorTankKeyConverter, "Dumps an I3Vector of TankKeys");
   
     typedef I3VectorConverter< convert::double_pair > I3VectorDoubleDoubleConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorDoubleDoubleConverter, "Dumps an I3Vector of double-double pairs");

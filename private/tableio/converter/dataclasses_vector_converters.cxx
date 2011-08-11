@@ -31,6 +31,9 @@ I3_CONVERTER(I3VectorDoubleDoubleConverter, I3VectorDoubleDouble);
 
 I3_CONVERTER(I3VectorConverter< convert::I3FlasherInfo >, I3FlasherInfoVect);
 
+I3_CONVERTER(I3VectorConverter< convert::OMKey >, I3VectorOMKey);
+I3_CONVERTER(I3VectorConverter< convert::TankKey >, I3VectorTankKey);
+
 /*
   // A compilation test: I3VectorConverter should be able to accept any 
   // I3Converter as a template parameter. Remove comments to check.
