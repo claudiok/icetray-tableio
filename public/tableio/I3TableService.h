@@ -42,7 +42,8 @@ class I3TableService {
         // Phone home to tell the service that an event has been written
         void HeaderWritten(I3EventHeaderConstPtr lastHeader,size_t nrows);
         // Set the shared indexer to the same one used by the table writer
-        void SetIndexConverter(I3ConverterPtr gen);
+        // Overrides of this method must call the base class implementation.
+        virtual void SetIndexConverter(I3ConverterPtr gen);
         void Finish();
 
     protected:

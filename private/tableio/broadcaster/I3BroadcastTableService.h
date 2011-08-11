@@ -17,6 +17,7 @@
 class I3BroadcastTableService : public I3TableService {
     public:
         I3BroadcastTableService(const std::vector<I3TableServicePtr>& clients);
+        void SetIndexConverter(I3ConverterPtr gen);
     protected:
         virtual I3TablePtr CreateTable(const std::string& tableName, 
                                        I3TableRowDescriptionConstPtr description);
