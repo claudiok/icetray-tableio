@@ -1,0 +1,44 @@
+# $Id$
+# $Author$
+# $Date$
+#
+
+August 11, 2011, Alex Olivas  (olivas@icecube.umd.edu)
+--------------------------------------------------------------------
+Release V11-08-00
+
+This is a minor bugfix release.
+
+Feature:
+- A converter for I3VectorTankKey
+  -- Fabian Kislat
+
+Bugfix:
+- Fix a bug (introduced in the previous release) that prevented
+  I3TableWriter from writing to multiple I3TableServices at once.
+  -- Jakob van Santen
+
+August 2, 2011, Erik Blaufuss  (blaufuss@icecube.umd.edu)
+--------------------------------------------------------------------
+Release V11-07-00
+
+This is a major release, adding support for Q frames and
+I3RecoPulse masks.
+
+Features added:
+- A converter for I3RecoPulseSeriesMapMask.
+  -- Jakob van Santen
+- Support for booking multiple P frames that inherit from the same
+  Q frame.
+  -- Jakob van Santen
+- Enable booking of geometry and waveform length in
+  I3WaveformSeriesMapConverter.
+  -- Fabian Kislat
+
+Documentation:
+- Add a list of common converters and their projects.
+  -- Fabian Kislat
+
+Bugfix:
+- Make I3WaveformSeriesMapConverter work for FADC waveforms.
+  -- Jakob van Santen
