@@ -100,6 +100,19 @@ similarly::
   keys = { 'LineFit' : tableio.default,
            'I3MCTree' : MyCustomConverter() }
 
+Finding out which converters exist
+**********************************
+
+If you want to discover which converters are already defined, you can inspect
+:data:`tableio.I3ConverterRegistry.registry` in ipython. This dictionary
+contains all the converters tableio knows about. The I3ConverterRegistry is also used
+by I3TableWriter to automatically find an appropriate converter. So your converter has
+to be listed there in order to be used by I3TableWriter.
+
+.. note::
+    Please note that only those converters for which the library has been loaded are listed in the I3ConverterRegistry.
+    This means that if you want to book a class I3Class that lives in library mylib, you have to do a :data:`from icecube import mylib`
+    first. The reason is that the converters are residing in the pybindings of the libraries.
 
 Booking everything in the file
 *********************************
@@ -144,3 +157,23 @@ I3TableServices rather than a single instance::
     tray.AddModule('TrashCan','yeswecan')
     tray.Execute()
     tray.Finish()
+
+Booking from files with Q-frames
+********************************
+
+Using files that contain Q-frames, you have to know that there may be different 
+SubEventStreams and that you have to tell I3TableWriter which one you want to book.
+Otherwise, it will just produce empty files. If this happens, you should get a WARN 
+message telling you that there were SubEventStreams present that were not booked.
+Book the ones you want to write out using parameter *Streams*. E.g. you can do::
+
+    tray.AddModule("I3NullSplitter", "fullevent")
+     
+    tableservice = hdfwriter.I3HDFTableService("foo.hdf5")  
+     
+    tray.AddModule(tableio.I3TableWriter, "scribe",
+       tableservice=tableservice,
+       keys=["LineFit", "MPEFit"],
+       streams=["fullevent"],
+       )
+
