@@ -77,6 +77,9 @@ void register_dataclasses_converters() {
     I3_MAP_CONVERTER_EXPORT_DEFAULT(I3MapKeyVectorIntConverter, "Dumps all numbers verbatim");
     
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringDoubleConverter,"Dumps a std::map<string,double> verbatim");
+    I3CONVERTER_EXPORT_DEFAULT(I3MapStringIntConverter,"Dumps a std::map<string,int> verbatim");
+    I3CONVERTER_EXPORT_DEFAULT(I3MapStringBoolConverter,"Dumps a std::map<string,bool> verbatim");
+
     I3CONVERTER_EXPORT_DEFAULT(I3ParticleConverter,"Dumps an I3Particle verbatim");
     
     typedef I3TreeConverter<I3Particle> I3MCTreeConverter;
