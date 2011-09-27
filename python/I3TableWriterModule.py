@@ -29,7 +29,7 @@ default = DefaultConverter()
 class I3TableWriter(I3ConditionalModule):
     def __init__(self,context):
         I3ConditionalModule.__init__(self,context)
-        self.AddParameter('TableService','The I3TableService to recieve output.',None)
+        self.AddParameter('TableService','The I3TableService to receive output.',None)
         self.AddParameter('Streams','The names of the SubEvent streams to run on',[""])
         self.AddParameter('Keys','A list or dict of FrameObject keys to convert',None)
         self.AddParameter('Types','A list or dict of types to convert',None)
