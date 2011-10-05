@@ -9,7 +9,8 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
-#include "icetray/I3Frame.h"
+#include <icetray/I3Frame.h>
+#include <dataclasses/physics/I3RecoPulse.h>
 
 #include "tableio/I3TableWriter.h"
 #include "tableio/I3TableService.h"
@@ -19,6 +20,18 @@
 
 #include <boost/foreach.hpp>
 #include <boost/make_shared.hpp>
+
+// Some things can pretend to be I3RecoPulseSeriesMaps, and we want them
+// to do that, so wrap frame->Get(). Any similar future hacks should also
+// go here.
+inline I3FrameObjectConstPtr GetFrameObject(I3FramePtr frame, std::string name, bool quietly = false)
+{
+    I3FrameObjectConstPtr object = frame->Get<I3RecoPulseSeriesMapConstPtr>(name, quietly);
+    if (!object)
+        object = frame->Get<I3FrameObjectConstPtr>(name, quietly);
+
+    return object;
+}
 
 /******************************************************************************/
 
@@ -258,7 +271,7 @@ void I3TableWriter::Convert(I3FramePtr frame) {
         I3FrameObjectConstPtr object;
         
         try {
-           object = frame->Get<I3FrameObjectConstPtr>(objName);
+           object = GetFrameObject(frame, objName);
         } catch (...) {
            log_error("Frame object '%s' could not be deserialized and will not be booked.",objName.c_str());
            eraser = vlist_it++;
@@ -328,7 +341,7 @@ void I3TableWriter::Convert(I3FramePtr frame) {
                I3FrameObjectConstPtr object;
                
                try {
-                  object = frame->Get<I3FrameObjectConstPtr>(objName,true);
+                  object = GetFrameObject(frame, objName,true);
                } catch (...) {
                   uselessKeys_.insert(objName);
                   log_trace("Added key '%s' to ban list (unregistered class)",objName.c_str());
@@ -367,7 +380,7 @@ void I3TableWriter::Convert(I3FramePtr frame) {
                       bundle.table->GetDescription()->GetNumberOfFields(),
                       bundle.table->GetDescription()->GetFieldNames().at(0).c_str(),
                       bundle.table->GetDescription()->GetFieldNames().at(bundle.table->GetDescription()->GetNumberOfFields()-1).c_str()); 
-            I3FrameObjectConstPtr obj = frame->Get<I3FrameObjectConstPtr>(objName);
+            I3FrameObjectConstPtr obj = GetFrameObject(frame, objName);
             if (!obj)
                 continue;
 
