@@ -30,7 +30,9 @@ class I3TableWriter(I3ConditionalModule):
     def __init__(self,context):
         I3ConditionalModule.__init__(self,context)
         self.AddParameter('TableService','The I3TableService to receive output.',None)
-        self.AddParameter('Streams','The names of the SubEvent streams to run on',[""])
+        # FIXME: remove this parameter in the next release
+        self.AddParameter('Streams','DEPRECATED; use SubEventStreams instead',None)
+        self.AddParameter('SubEventStreams','The names of the SubEvent streams to be booked',[""])
         self.AddParameter('Keys','A list or dict of FrameObject keys to convert',None)
         self.AddParameter('Types','A list or dict of types to convert',None)
         self.AddParameter('BookEverything','Book absolutely everything in the frame, \
@@ -123,7 +125,12 @@ and is almost certainly not what you actually want to do.', False)
         self._get_tableservice()
         
         streams = vector_string()
-        streams.extend(self.GetParameter('Streams'))
+        streams.extend(self.GetParameter('SubEventStreams'))
+        # FIXME: remove in the next release
+        old_streams = self.GetParameter('Streams')
+        if old_streams is not None:
+            warnings.warn("The 'Streams' parameter is deprecated; use SubEventStreams instead!")
+            streams.extend(old_streams)
 
         # The grand configuration!
         keys = self.GetParameter('Keys')
