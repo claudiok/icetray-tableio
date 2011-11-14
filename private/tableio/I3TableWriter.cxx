@@ -312,58 +312,57 @@ void I3TableWriter::Convert(I3FramePtr frame) {
     // TODO rather expensive loop -> restructure to optimize?
     const std::vector<std::string>& objectsInFrame = frame->keys();
 
-   std::set<std::string>::const_iterator it_skipkeys;
    // if the user specified types to be booked, loop through the frame's keys
    if (wantedTypes_.size() > 0) {
       // .. loop through the frame
       for (k_it = objectsInFrame.begin(); k_it != objectsInFrame.end(); ++k_it) {
-         // skip this key if we've already examined it before
-         // and decided we don't need it        
-         it_skipkeys = std::find(uselessKeys_.begin(),uselessKeys_.end(),*k_it);
-         if (it_skipkeys != uselessKeys_.end()) {  
-            log_trace("Skipping examination of key '%s'",k_it->c_str());
-            continue;
-         }
-         
          bool selected = false;
          const std::string& objName = *k_it;
          
+         // skip this key if we've already examined it before
+         // and decided we don't need it        
+         if (uselessKeys_.find(objName) != uselessKeys_.end()) {  
+            log_trace("Skipping examination of key '%s'",objName.c_str());
+            continue;
+         }
+         
+         // if the object is already in tables ignore it 
+         if ( tables_.find(objName) != tables_.end() ) {
+            uselessKeys_.insert(objName);
+            log_trace("Added key '%s' to ban list (already booked)",objName.c_str());
+            continue;
+         }
+         
+         I3FrameObjectConstPtr object;
+         
+         try {
+            object = GetFrameObject(frame, objName,true);
+         } catch (...) {
+            uselessKeys_.insert(objName);
+            log_trace("Added key '%s' to ban list (unregistered class)",objName.c_str());
+            continue;
+         }
+
          // for every type in wantedTypes_ ...
          for (typelist_it = wantedTypes_.begin(); typelist_it != wantedTypes_.end(); ++typelist_it) {
-               const TypeSpec& typeSpec = typelist_it->first;
-               // if the object is already in tables ignore it 
-               if ( tables_.find(objName) != tables_.end() ) {
-                  uselessKeys_.insert(objName);
-                  log_trace("Added key '%s' to ban list (already booked)",objName.c_str());
-                  continue;
-               }
+             const TypeSpec& typeSpec = typelist_it->first;
                
-               I3FrameObjectConstPtr object;
-               
-               try {
-                  object = GetFrameObject(frame, objName,true);
-               } catch (...) {
-                  uselessKeys_.insert(objName);
-                  log_trace("Added key '%s' to ban list (unregistered class)",objName.c_str());
-                  continue;
-               }
-               
-               log_trace("Checking type of '%s'",objName.c_str());
-               if ( typeSpec.check(object) ) {
-                  selected = true;
-                  for (v_it = typelist_it->second.begin(); v_it != typelist_it->second.end(); v_it++) {
-                     // FIXME: any action necessary if AddObject fails?
-                     AddObject(objName, v_it->tableName, v_it->converter, object);
-                  }
-               } // if (typeName == objTypeName)
-               
-               if (!selected) {
-                  uselessKeys_.insert(objName);
-                  log_trace("Added key '%s' to ban list (nobody wants it)",objName.c_str());
-               } // if !selected
-            } // for (k_it
-         } // for (vlist_it
-      } // if wantedTypes_.size() > 0
+             log_trace("Checking type of '%s'",objName.c_str());
+             if ( typeSpec.check(object) ) {
+                selected = true;
+                for (v_it = typelist_it->second.begin(); v_it != typelist_it->second.end(); v_it++) {
+                   // FIXME: any action necessary if AddObject fails?
+                   AddObject(objName, v_it->tableName, v_it->converter, object);
+                }
+             } // if (typeName == objTypeName)
+         } // for (typelist_it
+
+         if (!selected) {
+             uselessKeys_.insert(objName);
+             log_trace("Added key '%s' to ban list (nobody wants it)",objName.c_str());
+         } // if !selected
+       } // for (k_it
+    } // if wantedTypes_.size() > 0
 
     // now walk through tables_ and convert what is there
     for(tlist_it = tables_.begin(); tlist_it != tables_.end(); ++tlist_it) {  
