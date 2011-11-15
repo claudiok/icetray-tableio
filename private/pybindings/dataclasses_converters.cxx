@@ -13,6 +13,7 @@
 #include "tableio/converter/dataclasses_map_converters.h"
 #include "tableio/converter/dataclasses_vector_converters.h"
 #include "tableio/converter/I3MapStringConverter.h"
+#include "tableio/converter/I3MapStringVectorDoubleConverter.h"
 #include "tableio/converter/I3ParticleConverter.h"
 #include "tableio/converter/I3TreeConverter.h"
 #include "tableio/converter/I3TriggerHierarchyConverter.h"
@@ -77,6 +78,7 @@ void register_dataclasses_converters() {
     I3_MAP_CONVERTER_EXPORT_DEFAULT(I3MapKeyVectorIntConverter, "Dumps all numbers verbatim");
     
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringDoubleConverter,"Dumps a std::map<string,double> verbatim");
+    I3CONVERTER_EXPORT_DEFAULT(I3MapStringVectorDoubleConverter,"Dumps a std::map<string,vector<double> > verbatim");
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringIntConverter,"Dumps a std::map<string,int> verbatim");
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringBoolConverter,"Dumps a std::map<string,bool> verbatim");
 
