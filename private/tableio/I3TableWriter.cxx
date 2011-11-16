@@ -442,9 +442,9 @@ void I3TableWriter::Finish() {
         BOOST_FOREACH(const std::string &stream, streams_)
             buf2 << "'" << stream << "',";
         log_warn("%zu SubEventStreams [%s] were seen but not booked because"
-            " they were not passed as part of the 'Streams' parameter of"
+            " they were not passed as part of the 'SubEventStreams' parameter of"
             " I3TableWriter (which was configured as [%s]). To book events"
-            " from these streams, add them to the 'Streams' parameter of I3TableWriter.",
+            " from these streams, add them to the 'SubEventStreams' parameter of I3TableWriter.",
             ignoredStreams_.size(), buf1.str().c_str(), buf2.str().c_str());
     }
 
