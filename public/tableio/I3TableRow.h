@@ -228,7 +228,7 @@ T* I3TableRow::GetPointer(size_t index, size_t row) {
     
     CheckType<T>(index);
 
-    if ( !(( 0 <= row) && (row < nrows_)) )
+    if ( !(row < nrows_) )
         log_fatal("requested pointer to row %zu which is not in [0,%zu]", row, nrows_);
     
     /*
@@ -268,7 +268,7 @@ const T* I3TableRow::GetPointer(size_t index, size_t row) const {
     
     CheckType<const T>(index);
 
-    if ( !(( 0 <= row) && (row < nrows_)) )
+    if ( !(row < nrows_) )
         log_fatal("requested pointer to row %zu which is not in [0,%zu]", row, nrows_);
     
     /*

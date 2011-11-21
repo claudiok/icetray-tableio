@@ -144,6 +144,8 @@ class I3ConverterImplementation : public I3Converter {
     public:
         
         typedef FrmObj booked_type;
+
+        virtual ~I3ConverterImplementation() { }
         
         /**
 	 * \brief Determine the number of rows the would be produced when converting

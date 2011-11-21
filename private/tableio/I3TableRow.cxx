@@ -217,7 +217,7 @@ void I3TableRow::SetNumberOfRows(size_t nrows) {
 /******************************************************************************/
 
 void I3TableRow::SetCurrentRow(size_t row) {
-    if ( (row < 0) || (nrows_ <= row) )
+    if (nrows_ <= row)
         log_fatal("try to set current row to %zu outside of [0,%zu)", row, nrows_);
     currentRow_ = row;
 }
@@ -257,7 +257,7 @@ void* I3TableRow::GetPointer(const std::string& fieldName, size_t row) {
     if ( (index = description_->GetFieldColumn(fieldName)) >= description_->GetNumberOfFields() ) 
         log_fatal("trying to get the address of unknown field %s", fieldName.c_str());
 
-    if ( !(( 0 <= row) && (row < nrows_)) )
+    if ( !(row < nrows_) )
         log_fatal("requested pointer to row %zu which is not in [0,%zu]", row, nrows_);
     
     /*
