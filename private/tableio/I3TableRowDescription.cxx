@@ -30,10 +30,6 @@ const std::vector<I3Datatype>&  I3TableRowDescription::GetFieldTypes() const {
     return fieldTypes_;
 }
 
-// const std::vector<char>&  I3TableRowDescription::GetFieldTypeCodes() const {
-//     return fieldTypeCodes_;
-// }
-
 const std::vector<size_t>& I3TableRowDescription::GetFieldTypeSizes() const {
     return fieldTypeSizes_;
 }
@@ -44,10 +40,6 @@ const std::vector<size_t>& I3TableRowDescription::GetFieldArrayLengths() const {
 
 const std::vector<size_t>& I3TableRowDescription::GetFieldByteOffsets() const {
     return fieldByteOffsets_;
-}
-
-const std::vector<size_t>& I3TableRowDescription::GetFieldChunkOffsets() const {
-    return fieldChunkOffsets_;
 }
 
 const std::vector<std::string>& I3TableRowDescription::GetFieldUnits() const {
@@ -128,15 +120,37 @@ bool I3TableRowDescription::operator==(I3TableRowDescriptionConstPtr other) cons
 
 /******************************************************************************/
 
+// Ensure that addresses are properly aligned. As long as the base
+// address has a greater alignment than any of the types used in the
+// description, it is sufficient to ensure that offsets are multiples
+// of the type size.
+static size_t
+AlignOffset(size_t offset, size_t size)
+{
+	// We only align to powers of 2 in this house.
+	size_t align = 1;
+	while (align < size)
+		align <<= 1;
+	
+	// If alredy aligned, hunky-dory. Otherwise, shift
+	// offset up to next aligned address
+	if (offset % align == 0)
+		return offset;
+	else
+		return (offset + align) & ~(align-1);
+}
+
+/******************************************************************************/
+
 void I3TableRowDescription::AddField(const std::string& name, I3Datatype type,
                                      const std::string& unit, const std::string& doc,
                                      size_t arrayLength) {
 
     size_t chunkOffset=0;
     size_t byteOffset=0;
-    if (fieldChunkOffsets_.size() > 0) {
+    if (fieldByteOffsets_.size() > 0) {
         chunkOffset = GetTotalChunkSize();
-        byteOffset = GetTotalByteSize();
+        byteOffset = AlignOffset(GetTotalByteSize(), type.size);
     }    
     size_t nfields = fieldNameToIndex_.size();
     fieldNames_.push_back(name);
@@ -149,9 +163,9 @@ void I3TableRowDescription::AddField(const std::string& name, I3Datatype type,
     // check that the type actually fits in the memory chunk
     if (type.size > I3MEMORYCHUNK_SIZE)
         log_fatal("Type '%s' is larger than the memory chunk size!",type.description.c_str());
+
     fieldTypeSizes_.push_back(type.size);
     fieldArrayLengths_.push_back(arrayLength);
-    fieldChunkOffsets_.push_back(chunkOffset);
     fieldByteOffsets_.push_back(byteOffset);
     fieldUnits_.push_back(unit);
     fieldDocStrings_.push_back(doc);
@@ -160,15 +174,15 @@ void I3TableRowDescription::AddField(const std::string& name, I3Datatype type,
 /******************************************************************************/
         
 size_t I3TableRowDescription::GetTotalChunkSize() const {
-   if (fieldChunkOffsets_.size() == 0) { // no defined fields
-      return 0;
-   } else {
-      return fieldChunkOffsets_.back() + fieldArrayLengths_.back();
-   }
+    return (GetTotalByteSize() + I3MEMORYCHUNK_SIZE - 1)/I3MEMORYCHUNK_SIZE;
 }
 
 size_t I3TableRowDescription::GetTotalByteSize() const {
-    return I3MEMORYCHUNK_SIZE * GetTotalChunkSize();
+    if (fieldByteOffsets_.size() == 0)
+        return 0;
+    else
+        return fieldByteOffsets_.back() +
+	    fieldTypeSizes_.back()*fieldArrayLengths_.back();
 }
 
 
@@ -185,19 +199,17 @@ I3TableRowDescription& operator<<(I3TableRowDescription& lhs,
     size_t nfields_new = rhs.GetNumberOfFields();
     size_t nfields_old = lhs.GetNumberOfFields();
     for (size_t i = 0; i < nfields_new; i++) {
-        size_t byteOffset=0;
-        size_t chunkOffset=0;
-        if (lhs.GetNumberOfFields() > 0) {
-          byteOffset = lhs.GetTotalByteSize();
-          chunkOffset = lhs.GetTotalChunkSize();
-        }
-        std::string fieldName = rhs.fieldNames_.at(i);
+        const std::string &fieldName = rhs.fieldNames_.at(i);
+	size_t typesize = rhs.fieldTypeSizes_.at(i);
+	size_t byteOffset = 0;
+        if (lhs.GetNumberOfFields() > 0)
+          byteOffset = AlignOffset(lhs.GetTotalByteSize(), typesize);	
 
         lhs.isMultiRow_ = (lhs.isMultiRow_ || rhs.isMultiRow_);
 
         // values that are just copied:
         lhs.fieldNames_.push_back( fieldName );
-        lhs.fieldTypeSizes_.push_back( rhs.fieldTypeSizes_.at(i) );
+        lhs.fieldTypeSizes_.push_back( typesize );
         lhs.fieldTypes_.push_back( rhs.fieldTypes_.at(i) );
         lhs.fieldArrayLengths_.push_back( rhs.fieldArrayLengths_.at(i) );
         lhs.fieldUnits_.push_back( rhs.fieldUnits_.at(i) );
@@ -206,7 +218,6 @@ I3TableRowDescription& operator<<(I3TableRowDescription& lhs,
         // values that have to be recalculated:
         lhs.fieldNameToIndex_[fieldName] = nfields_old + i;
         lhs.fieldByteOffsets_.push_back(byteOffset);
-        lhs.fieldChunkOffsets_.push_back(chunkOffset);
     }
     return lhs;
 }

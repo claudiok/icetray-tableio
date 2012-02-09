@@ -83,7 +83,6 @@ public:
     // units of bytes
     const std::vector<size_t>& GetFieldTypeSizes() const;
     const std::vector<size_t>& GetFieldByteOffsets() const;
-    const std::vector<size_t>& GetFieldChunkOffsets() const;
     const std::vector<size_t>& GetFieldArrayLengths() const;
     const std::vector<std::string>& GetFieldUnits() const;
     const std::vector<std::string>& GetFieldDocStrings() const;
@@ -109,7 +108,6 @@ private:
     std::vector<size_t> fieldTypeSizes_;
     std::vector<size_t> fieldArrayLengths_;
     std::vector<size_t> fieldByteOffsets_;
-    std::vector<size_t> fieldChunkOffsets_;
     std::vector<std::string> fieldUnits_;
     std::vector<std::string> fieldDocStrings_;
 

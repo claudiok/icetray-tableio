@@ -26,13 +26,13 @@ TEST(simple_creation) {
     desc.AddField<int>("intval","counts", "an int variable");
 
     ENSURE_EQUAL( desc.GetNumberOfFields() , static_cast<unsigned int>(1), "number of fields should be one");
-    ENSURE_EQUAL( desc.GetTotalByteSize() , I3MEMORYCHUNK_SIZE, "total byte size should be sizeof(memory chunk)");
+    ENSURE_EQUAL( desc.GetTotalByteSize() , sizeof(int), "total byte size should be sizeof(int)");
     ENSURE_EQUAL( desc.GetTotalChunkSize() , static_cast<size_t>(1), "total chunk size should 1");
     ENSURE_EQUAL( desc.GetFieldColumn("intval"), static_cast<unsigned int>(0), "index of field should be zero");
     
     desc.AddField<double>("doubleval", "Volt", "a double variable");
     ENSURE_EQUAL( desc.GetNumberOfFields() , static_cast<unsigned int>(2), "number of fields should be one");
-    ENSURE_EQUAL( desc.GetTotalByteSize() , 2*I3MEMORYCHUNK_SIZE, "total size should be sizeof(int)+sizeof(double)");
+    ENSURE_EQUAL( desc.GetTotalByteSize() , 16u, "total size should be sizeof(int)+padding+sizeof(double)");
     ENSURE_EQUAL( desc.GetFieldColumn("intval"), static_cast<unsigned int>(0), "index lookup");
     ENSURE_EQUAL( desc.GetFieldColumn("doubleval"), static_cast<unsigned int>(1), "index lookup");
     ENSURE_EQUAL( desc.GetFieldNames().at(0), "intval", "fieldnames vector works");
@@ -51,9 +51,9 @@ TEST(simple_creation) {
     ENSURE_EQUAL( desc.GetFieldArrayLengths().at(0), static_cast<size_t>(1), "fieldArrayLengths vector works");
     ENSURE_EQUAL( desc.GetFieldArrayLengths().at(1), static_cast<size_t>(1), "fieldArrayLengths vector works");
     ENSURE_EQUAL( desc.GetFieldByteOffsets().at(0), static_cast<size_t>(0), "fieldByteOffsets vector works");
-    ENSURE_EQUAL( desc.GetFieldByteOffsets().at(1), I3MEMORYCHUNK_SIZE, "fieldByteOffsets vector works");
-    ENSURE_EQUAL( desc.GetFieldChunkOffsets().at(0), static_cast<size_t>(0), "fieldChunkOffsets vector works");
-    ENSURE_EQUAL( desc.GetFieldChunkOffsets().at(1), static_cast<size_t>(1), "fieldChunkOffsets vector works");
+    ENSURE_EQUAL( desc.GetFieldByteOffsets().at(1), 8u, "fieldByteOffsets vector works");
+    // ENSURE_EQUAL( desc.GetFieldChunkOffsets().at(0), static_cast<size_t>(0), "fieldChunkOffsets vector works");
+    // ENSURE_EQUAL( desc.GetFieldChunkOffsets().at(1), static_cast<size_t>(1), "fieldChunkOffsets vector works");
     ENSURE_EQUAL( desc.GetFieldDocStrings().at(0), "an int variable", "test docstring");
     ENSURE_EQUAL( desc.GetFieldDocStrings().at(1), "a double variable", "test docstring");
     ENSURE_EQUAL( desc.GetFieldUnits().at(0), "counts", "test unit string");
@@ -86,13 +86,27 @@ TEST(comparison) {
    ENSURE_EQUAL( *desc1 == desc2, false, "Fields with different docstrings => unequal");
 }
 
+TEST(padding) {
+        I3TableRowDescription desc;
+	desc.AddField<uint8_t>("byte", "unit", "doc");
+	desc.AddField<uint32_t>("int", "unit", "doc");
+	desc.AddField<uint16_t>("short", "unit", "doc");
+	desc.AddField<double>("double", "unit", "doc");
+	
+	ENSURE_EQUAL( desc.GetFieldByteOffsets().at(1), 4u, "int is properly aligned");
+	ENSURE_EQUAL( desc.GetFieldByteOffsets().at(2), 8u, "short is properly aligned");
+	ENSURE_EQUAL( desc.GetFieldByteOffsets().at(3), 16u, "double is properly aligned");
+}
+
 TEST(array_creation) {
     I3TableRowDescription desc;
-    desc.AddField<int>("int10", "unit", "doc", 10);
+    desc.AddField<int32_t>("int10", "unit", "doc", 10);
     desc.AddField<double>("double256", "unit", "doc", 256);
-    desc.AddField<long>("long1", "unit", "doc");
-    ENSURE_EQUAL( desc.GetTotalChunkSize() , static_cast<size_t>(10+256+1), "total chunk size");
-    ENSURE_EQUAL( desc.GetTotalByteSize() , (10+256+1)*I3MEMORYCHUNK_SIZE, "total chunk size");
+    desc.AddField<int64_t>("long1", "unit", "doc");
+    size_t bytesize = 10*sizeof(int32_t) + 256*sizeof(double) + sizeof(int64_t);
+    size_t chunksize = (bytesize + I3MEMORYCHUNK_SIZE - 1) / I3MEMORYCHUNK_SIZE;
+    ENSURE_EQUAL( desc.GetTotalChunkSize() , chunksize, "total chunk size");
+    ENSURE_EQUAL( desc.GetTotalByteSize() , bytesize, "total chunk size");
     ENSURE_EQUAL( desc.GetNumberOfFields(), static_cast<unsigned int>(3), "number of fields is three");
 
     // TODO test hdf array types
@@ -101,11 +115,8 @@ TEST(array_creation) {
     ENSURE_EQUAL( desc.GetFieldTypeSizes().at(1), sizeof(double), "typeSizes vector works");
     ENSURE_EQUAL( desc.GetFieldTypeSizes().at(2), sizeof(long), "typeSizes vector works");
     ENSURE_EQUAL( desc.GetFieldByteOffsets().at(0), static_cast<size_t>(0), "fieldByteOffsets correct");
-    ENSURE_EQUAL( desc.GetFieldByteOffsets().at(1), 10*I3MEMORYCHUNK_SIZE, "fieldByteOffsets correct");
-    ENSURE_EQUAL( desc.GetFieldByteOffsets().at(2), (10+ 256)*I3MEMORYCHUNK_SIZE, "fieldByteOffsets correct");
-    ENSURE_EQUAL( desc.GetFieldChunkOffsets().at(0), static_cast<size_t>(0), "fieldChunkOffsets correct");
-    ENSURE_EQUAL( desc.GetFieldChunkOffsets().at(1), static_cast<size_t>(10), "fieldChunkOffsets correct");
-    ENSURE_EQUAL( desc.GetFieldChunkOffsets().at(2), static_cast<size_t>(10+256), "fieldChunkOffsets correct");
+    ENSURE_EQUAL( desc.GetFieldByteOffsets().at(1), 10*sizeof(int32_t), "fieldByteOffsets correct");
+    ENSURE_EQUAL( desc.GetFieldByteOffsets().at(2), (10*sizeof(int32_t) + 256*sizeof(double)), "fieldByteOffsets correct");
 }
 
 
@@ -147,14 +158,27 @@ TEST(joining_descriptions) {
     ENSURE_EQUAL( map_omkey_pos_d.GetFieldColumn("y"),      static_cast<unsigned>(5));
     ENSURE_EQUAL( map_omkey_pos_d.GetFieldColumn("z"),      static_cast<unsigned>(6));
 
-    
+    size_t offsets[7] = {0, 4, 8, 12, 16, 24, 32};
     for (size_t i = 0; i < 7; ++i) {
-        ENSURE_EQUAL( map_omkey_pos_d.GetFieldByteOffsets().at(i), i*I3MEMORYCHUNK_SIZE, "check byte offsets");
-        ENSURE_EQUAL( map_omkey_pos_d.GetFieldChunkOffsets().at(i), i, "check byte offsets");
+        ENSURE_EQUAL( map_omkey_pos_d.GetFieldByteOffsets().at(i), offsets[i], "check byte offsets");
+        // ENSURE_EQUAL( map_omkey_pos_d.GetFieldChunkOffsets().at(i), i, "check byte offsets");
     }
 
-    ENSURE_EQUAL( map_omkey_pos_d.GetTotalChunkSize(), static_cast<size_t>(7), "check total chunk size");
-    ENSURE_EQUAL( map_omkey_pos_d.GetTotalByteSize(), 7*I3MEMORYCHUNK_SIZE, "check total chunk size");
+    ENSURE_EQUAL( map_omkey_pos_d.GetTotalChunkSize(), 3u, "check total chunk size");
+    ENSURE_EQUAL( map_omkey_pos_d.GetTotalByteSize(), 40u, "check total chunk size");
+}
+
+TEST(joining_alignment) {
+        I3TableRowDescription foo;
+	foo.AddField<uint16_t>("foo", "unit", "doc");
+	
+	I3TableRowDescription bar;
+	bar.AddField<uint32_t>("bar", "unit", "doc");
+	
+	I3TableRowDescription baz = foo | bar;
+	
+	ENSURE_EQUAL( baz.GetTotalChunkSize(), 1u, "both fields fit in a chunk");
+	ENSURE_EQUAL( baz.GetFieldByteOffsets().at(1), 4u, "int is properly aligned");
 }
 
 TEST(enum_description) {

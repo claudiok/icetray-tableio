@@ -18,11 +18,10 @@
 void I3TableRow::init() {
     // assume nrows_ and description_ are set; data_ == 0
     const size_t totalChunkSize = capacity_ * description_->GetTotalChunkSize();
-    const size_t totalByteSize = capacity_ * description_->GetTotalByteSize();
     data_ = new I3MemoryChunk[totalChunkSize];
 
     // initialize memory block with zeros - TODO useful?
-    memset(data_, 0, totalByteSize);
+    memset(data_, 0, I3MEMORYCHUNK_SIZE*totalChunkSize);
 }
 
 /******************************************************************************/
@@ -178,14 +177,16 @@ void const* I3TableRow::GetPointerToRow(size_t row) const {
 
 void const* I3TableRow::GetPointerToField(size_t index, size_t row) const {
     if (row >= nrows_) log_fatal("Tried to get pointer to a row not in range [0,%zu)", nrows_);
-    return static_cast<void*>( &data_[description_->GetTotalChunkSize()*row +
-				      description_->GetFieldChunkOffsets().at(index)] );
+    return reinterpret_cast<void const*>(&(reinterpret_cast<uint8_t*>(
+        data_)[I3MEMORYCHUNK_SIZE*description_->GetTotalChunkSize()*row + 
+        description_->GetFieldByteOffsets().at(index)]));
 }
 
 void* I3TableRow::GetPointerToField(size_t index, size_t row) {
     if (row >= nrows_) log_fatal("Tried to get pointer to a row not in range [0,%zu)", nrows_);
-    return static_cast<void*>( &data_[description_->GetTotalChunkSize()*row +
-				      description_->GetFieldChunkOffsets().at(index)] );
+    return reinterpret_cast<void*>(&(reinterpret_cast<uint8_t*>(
+        data_)[I3MEMORYCHUNK_SIZE*description_->GetTotalChunkSize()*row + 
+        description_->GetFieldByteOffsets().at(index)]));
 }
 
 /******************************************************************************/
@@ -260,13 +261,8 @@ void* I3TableRow::GetPointer(const std::string& fieldName, size_t row) {
     if ( !(row < nrows_) )
         log_fatal("requested pointer to row %zu which is not in [0,%zu]", row, nrows_);
     
-    /*
-    if (description_->GetFieldArrayLengths().at(index) > 1 )
-        log_fatal("trying to use I3TableRow::Get() on array element %s. Use GetPointer() instead",
-                fieldName.c_str());
-    */
-    
-    return ( reinterpret_cast<void*>( &data_[description_->GetTotalChunkSize()*row + 
-                                             description_->GetFieldChunkOffsets().at(index)]) );
+    return reinterpret_cast<void*>(&(reinterpret_cast<uint8_t*>(
+        data_)[I3MEMORYCHUNK_SIZE*description_->GetTotalChunkSize()*row + 
+        description_->GetFieldByteOffsets().at(index)]));
 }
 
