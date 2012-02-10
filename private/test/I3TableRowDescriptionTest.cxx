@@ -26,7 +26,7 @@ TEST(simple_creation) {
     desc.AddField<int>("intval","counts", "an int variable");
 
     ENSURE_EQUAL( desc.GetNumberOfFields() , static_cast<unsigned int>(1), "number of fields should be one");
-    ENSURE_EQUAL( desc.GetTotalByteSize() , sizeof(int), "total byte size should be sizeof(int)");
+    ENSURE_EQUAL( desc.GetTotalByteSize() , 16u, "total byte size should be sizeof(int)+padding");
     ENSURE_EQUAL( desc.GetTotalChunkSize() , static_cast<size_t>(1), "total chunk size should 1");
     ENSURE_EQUAL( desc.GetFieldColumn("intval"), static_cast<unsigned int>(0), "index of field should be zero");
     
@@ -165,7 +165,7 @@ TEST(joining_descriptions) {
     }
 
     ENSURE_EQUAL( map_omkey_pos_d.GetTotalChunkSize(), 3u, "check total chunk size");
-    ENSURE_EQUAL( map_omkey_pos_d.GetTotalByteSize(), 40u, "check total chunk size");
+    ENSURE_EQUAL( map_omkey_pos_d.GetTotalByteSize(), 48u, "check total chunk size");
 }
 
 TEST(joining_alignment) {

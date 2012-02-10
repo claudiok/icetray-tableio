@@ -150,7 +150,7 @@ void I3TableRowDescription::AddField(const std::string& name, I3Datatype type,
     size_t byteOffset=0;
     if (fieldByteOffsets_.size() > 0) {
         chunkOffset = GetTotalChunkSize();
-        byteOffset = AlignOffset(GetTotalByteSize(), type.size);
+        byteOffset = AlignOffset(GetNextOffset(), type.size);
     }    
     size_t nfields = fieldNameToIndex_.size();
     fieldNames_.push_back(name);
@@ -174,16 +174,21 @@ void I3TableRowDescription::AddField(const std::string& name, I3Datatype type,
 /******************************************************************************/
         
 size_t I3TableRowDescription::GetTotalChunkSize() const {
-    return (GetTotalByteSize() + I3MEMORYCHUNK_SIZE - 1)/I3MEMORYCHUNK_SIZE;
+    return (GetNextOffset() + I3MEMORYCHUNK_SIZE - 1)/I3MEMORYCHUNK_SIZE;
 }
 
 size_t I3TableRowDescription::GetTotalByteSize() const {
+    return I3MEMORYCHUNK_SIZE*GetTotalChunkSize();
+}
+
+size_t I3TableRowDescription::GetNextOffset() const {
     if (fieldByteOffsets_.size() == 0)
         return 0;
     else
         return fieldByteOffsets_.back() +
 	    fieldTypeSizes_.back()*fieldArrayLengths_.back();
 }
+
 
 
 /******************************************************************************/
@@ -203,7 +208,7 @@ I3TableRowDescription& operator<<(I3TableRowDescription& lhs,
 	size_t typesize = rhs.fieldTypeSizes_.at(i);
 	size_t byteOffset = 0;
         if (lhs.GetNumberOfFields() > 0)
-          byteOffset = AlignOffset(lhs.GetTotalByteSize(), typesize);	
+          byteOffset = AlignOffset(lhs.GetNextOffset(), typesize);	
 
         lhs.isMultiRow_ = (lhs.isMultiRow_ || rhs.isMultiRow_);
 

@@ -100,6 +100,8 @@ public:
 
     bool operator==(shared_ptr<const I3TableRowDescription> other) const;
 private:
+    size_t GetNextOffset() const;
+	
     std::vector<std::string> fieldNames_;
     // typedef std::map<std::string, size_t> fieldNameToIndex_t;
     typedef boost::unordered_map<std::string, size_t> fieldNameToIndex_t;
