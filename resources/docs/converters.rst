@@ -69,6 +69,11 @@ rather than the ambiguous::
 which will create a 32-bit field on 32-bit systems and a 64-bit field on
 64-bit systems.
 
+.. note:: Fields are arranged in the table in the order they were added.
+	It is best to arrange the types from largest to smallest
+	(e.g. doubles, then 32-bit integers, then bytes) in order to achieve
+	the most efficient memory layout.
+
 Writing new converters
 *****************************
 
