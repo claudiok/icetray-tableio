@@ -18,6 +18,7 @@
 #include <set>
 
 #include "tableio/I3Converter.h"
+#include "tableio/detail/I3ConverterMill.h"
 #include <boost/python.hpp>
 
 I3_FORWARD_DECLARATION(I3TableService);
@@ -25,7 +26,7 @@ I3_FORWARD_DECLARATION(I3Table);
 
 class I3TableWriter {
     public:
-        I3TableWriter(I3TableServicePtr service, std::vector<I3ConverterPtr>& converters, std::vector<std::string>& streams);
+        I3TableWriter(I3TableServicePtr service, std::vector<I3ConverterMillPtr>& converters, std::vector<std::string>& streams);
         virtual ~I3TableWriter();
         
         // register one specific object, lazily. if type and converter are empty the writer 
@@ -101,7 +102,7 @@ class I3TableWriter {
         I3TableServicePtr service_;
         std::map<std::string, std::vector<TableBundle> > tables_;
         std::map<std::string, I3ConverterPtr> converters_;
-        std::vector<I3ConverterPtr> converterCache_;
+        std::vector<I3ConverterMillPtr> converterCache_;
         std::vector<std::string> streams_;
         std::set<std::string> ignoredStreams_;
         // keys that have been examined and found useless

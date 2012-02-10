@@ -12,6 +12,12 @@
 #include "tableio/converter/I3IndexColumnsGenerator.h"
 #include <boost/foreach.hpp>
 
+I3IndexColumnsGenerator::I3IndexColumnsGenerator()
+{
+	streams_[""] = 0;
+	istreams_.push_back("");
+}
+
 I3IndexColumnsGenerator::I3IndexColumnsGenerator(const std::vector<std::string> &streams)
 {
 	int num = 0;

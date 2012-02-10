@@ -230,15 +230,10 @@ T* I3TableRow::GetPointer(size_t index, size_t row) {
 
     if ( !(row < nrows_) )
         log_fatal("requested pointer to row %zu which is not in [0,%zu]", row, nrows_);
-    
-    /*
-    if (description_->GetFieldArrayLengths().at(index) > 1 )
-        log_fatal("trying to use I3TableRow::Get() on array element %s. Use GetPointer() instead",
-                fieldName.c_str());
-    */
-    
-    return ( reinterpret_cast<T*>( &data_[description_->GetTotalChunkSize()*row + 
-                                          description_->GetFieldChunkOffsets().at(index)]) );
+
+    return reinterpret_cast<T*>(&(reinterpret_cast<uint8_t*>(
+        data_)[I3MEMORYCHUNK_SIZE*description_->GetTotalChunkSize()*row + 
+        description_->GetFieldByteOffsets().at(index)]));
 }
 
 
@@ -271,14 +266,10 @@ const T* I3TableRow::GetPointer(size_t index, size_t row) const {
     if ( !(row < nrows_) )
         log_fatal("requested pointer to row %zu which is not in [0,%zu]", row, nrows_);
     
-    /*
-    if (description_->GetFieldArrayLengths().at(index) > 1 )
-        log_fatal("trying to use I3TableRow::Get() on array element %s. Use GetPointer() instead",
-                fieldName.c_str());
-    */
-    
-    return ( reinterpret_cast<const T*>( &data_[description_->GetTotalChunkSize()*row + 
-						description_->GetFieldChunkOffsets().at(index)]) );
+    return reinterpret_cast<const T*>(&(reinterpret_cast<const uint8_t*>(
+        data_)[I3MEMORYCHUNK_SIZE*description_->GetTotalChunkSize()*row + 
+        description_->GetFieldByteOffsets().at(index)]));
+
 }
 
 

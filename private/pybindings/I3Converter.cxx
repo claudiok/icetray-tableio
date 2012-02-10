@@ -13,6 +13,7 @@
 
 
 #include <tableio/converter/PythonConverter.h>
+#include "tableio/detail/I3ConverterMill.h"
 
 namespace bp = boost::python;
 
@@ -35,6 +36,10 @@ void register_I3Converter() {
 	//.def("GetNumberOfRows",&PythonConverter::GetNumberOfRows)
 	.def("GetNumberOfRows",(size_t (PythonConverter::*)(I3FrameObjectConstPtr))
                            &PythonConverter::GetNumberOfRows)
+	;
+	
+	bp::class_<I3ConverterMill, I3ConverterMillPtr >
+	    ("I3ConverterMill", bp::init<bp::object>())
 	;
 }
 

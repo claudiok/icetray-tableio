@@ -11,7 +11,9 @@
 # 
 
 from icecube.icetray import I3ConditionalModule, vector_string
-from icecube.tableio import I3TableService, I3Converter, I3ConverterBundle, I3TableWriterWorker, I3ConverterRegistry, vector_I3ConverterPtr, I3BroadcastTableService
+from icecube.tableio import I3TableService, I3Converter, I3ConverterBundle, \
+    I3TableWriterWorker, I3ConverterRegistry, I3ConverterMill, vector_I3ConverterMillPtr, \
+    I3BroadcastTableService
 from icecube import dataclasses
 import re,warnings
 
@@ -173,7 +175,7 @@ $I3_BUILD/doc/projects/tableio/howto.html .
                     types.append(dict(type=t, converter=default))
 
         # now, pull in all of the registered converters from Python-land
-        converter_list = vector_I3ConverterPtr()
+        converter_list = vector_I3ConverterMillPtr()
         defaults = dict(I3ConverterRegistry.defaults)
 
         # if no default was registered for a type, pick the first one registered
@@ -184,7 +186,7 @@ $I3_BUILD/doc/projects/tableio/howto.html .
 
         for converter in defaults.itervalues():
             # only instantiate the converter registered as default
-            converter_list.append(converter())
+            converter_list.append(I3ConverterMill(converter))
         
         self.writer = I3TableWriterWorker(self.table_service, converter_list, streams)
         tablespec = I3TableWriterWorker.TableSpec

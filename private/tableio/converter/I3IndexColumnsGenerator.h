@@ -14,7 +14,7 @@
 
 class I3IndexColumnsGenerator : public I3ConverterImplementation<I3EventHeader> {
     public:
-	I3IndexColumnsGenerator() {};
+	I3IndexColumnsGenerator();
 	I3IndexColumnsGenerator(const std::vector<std::string> &streams);
 	I3IndexColumnsGenerator(I3TableRowDescriptionConstPtr desc);
     private:
