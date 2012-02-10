@@ -59,8 +59,8 @@ protected:
     I3TableRowDescriptionPtr desc = 
       I3TableRowDescriptionPtr(new I3TableRowDescription() );
     desc->isMultiRow_ = true;
-    desc->AddField<int8_t>("string", "", "String number");
-    desc->AddField<uint8_t>("om", "", "OM number");
+    desc->AddField<int32_t>("string", "", "String number");
+    desc->AddField<uint32_t>("om", "", "OM number");
     if (bookGeometry_) {
       desc->AddField<double>("x", "m", "X coordinate of the DOM");
       desc->AddField<double>("y", "m", "Y coordinate of the DOM");
@@ -123,8 +123,8 @@ protected:
 	     veciter++)
 	  {
 	    rows->SetCurrentRow(index);
-	    rows->Set<int8_t>("string", mapiter->first.GetString());
-	    rows->Set<uint8_t>("om", mapiter->first.GetOM());
+	    rows->Set<int32_t>("string", mapiter->first.GetString());
+	    rows->Set<uint32_t>("om", mapiter->first.GetOM());
 	    if (bookGeometry_) {
 	      rows->Set<double>("x", omgeo.position.GetX());
 	      rows->Set<double>("y", omgeo.position.GetY());

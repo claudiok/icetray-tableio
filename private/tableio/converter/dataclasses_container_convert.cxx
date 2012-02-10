@@ -139,8 +139,8 @@ namespace convert {
 
   void I3FlasherInfo::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
   {
-    desc->AddField<int8_t>("string", "", "String number of the flashing DOM");
-    desc->AddField<uint8_t>("om", "", "OM number of the flashing DOM");
+    desc->AddField<int32_t>("string", "", "String number of the flashing DOM");
+    desc->AddField<uint32_t>("om", "", "OM number of the flashing DOM");
     desc->AddField<double>("flash_time", "ns", "Time (in nsec) in 25 nsec units, of the LED flash time.");
     desc->AddField<uint32_t>("mask", "bitmask", "Indicates which LEDs were flashing");
     // #warning TODO: improve doc strings
@@ -155,8 +155,8 @@ namespace convert {
 
   void I3FlasherInfo::FillSingleRow(const booked_type &flasherinfo, I3TableRowPtr row)
   {
-    row->Set<int8_t>("string", flasherinfo.GetFlashingOM().GetString());
-    row->Set<uint8_t>("om", flasherinfo.GetFlashingOM().GetOM());
+    row->Set<int32_t>("string", flasherinfo.GetFlashingOM().GetString());
+    row->Set<uint32_t>("om", flasherinfo.GetFlashingOM().GetOM());
     row->Set<double>("flash_time", flasherinfo.GetFlashTime());
     row->Set<uint32_t>("mask", flasherinfo.GetMask());
     row->Set<int32_t>("width", flasherinfo.GetWidth());
@@ -176,26 +176,26 @@ namespace convert {
 
   void OMKey::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
   {
-    desc->AddField<int8_t>("string", "", "String number");
-    desc->AddField<uint8_t>("om", "", "OM number");
+    desc->AddField<int32_t>("string", "", "String number");
+    desc->AddField<uint32_t>("om", "", "OM number");
   }
 
   void OMKey::FillSingleRow(const booked_type &key, I3TableRowPtr row)
   {
-    row->Set<int8_t>("string", key.GetString());
-    row->Set<uint8_t>("om", key.GetOM());
+    row->Set<int32_t>("string", key.GetString());
+    row->Set<uint32_t>("om", key.GetOM());
   }
 
 
   void TankKey::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
   {
-    desc->AddField<int8_t>("string", "", "String number");
+    desc->AddField<int32_t>("string", "", "String number");
     desc->AddField<char>("tank", "", "Tank ID (A or B)");
   }
 
   void TankKey::FillSingleRow(const booked_type &key, I3TableRowPtr row)
   {
-    row->Set<int8_t>("string", key.string);
+    row->Set<int32_t>("string", key.string);
     switch (key.tank) {
     case ::TankKey::TankA:
       row->Set<char>("tank", 'A');

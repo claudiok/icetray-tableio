@@ -105,8 +105,8 @@ TEST(assignment) {
         ENSURE_EQUAL( pointy[i], *it, "Vector and array contents match.");
     }
 
-    ENSURE_EQUAL( rows->Get<int8_t>("string"), 35);
-    ENSURE_EQUAL( rows->Get<uint8_t>("om"), unsigned(35));
+    ENSURE_EQUAL( rows->Get<int32_t>("string"), 35);
+    ENSURE_EQUAL( rows->Get<uint32_t>("om"), unsigned(35));
     ENSURE_EQUAL( rows->Get<double>("x"), 37., "OM position was booked properly.");
     ENSURE_EQUAL( rows->Get<double>("y"), 42., "OM position was booked properly.");
     ENSURE_EQUAL( rows->Get<double>("z"), 141., "OM position was booked properly.");
@@ -125,8 +125,8 @@ TEST(assignment) {
 
     converter->Convert(dlsm, rows, frame);
 
-    ENSURE_EQUAL( rows->Get<int8_t>("string"), 35);
-    ENSURE_EQUAL( rows->Get<uint8_t>("om"), unsigned(35));
+    ENSURE_EQUAL( rows->Get<int32_t>("string"), 35);
+    ENSURE_EQUAL( rows->Get<uint32_t>("om"), unsigned(35));
 
     ENSURE_EQUAL( rows->Get<double>("start_time"), 42.0);
     ENSURE_EQUAL( rows->Get<I3DOMLaunch::TriggerType>("trigger_type"), I3DOMLaunch::ONBOARD_LED);

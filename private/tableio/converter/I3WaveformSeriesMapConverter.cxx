@@ -65,8 +65,8 @@ I3TableRowDescriptionPtr I3WaveformSeriesMapConverter::CreateDescription(const I
     log_error("Got some zero length waveforms.");
  
   desc->isMultiRow_ = true;
-  desc->AddField<int8_t>("string", "", "String number");
-  desc->AddField<uint8_t>("om", "", "OM number");
+  desc->AddField<int32_t>("string", "", "String number");
+  desc->AddField<uint32_t>("om", "", "OM number");
 
   if (bookGeometry_) {
     desc->AddField<double>("x", "m", "X coordinate of the DOM");
@@ -163,8 +163,8 @@ size_t I3WaveformSeriesMapConverter::FillRows(const I3WaveformSeriesMap& wavefor
       // /!\ only the first atwd waveform is extracted
       const I3Waveform& wf = iter->second.front();
       const std::vector<double>& readout = wf.GetWaveform();
-      rows->Set<int8_t>("string", key.GetString());
-      rows->Set<uint8_t>("om", key.GetOM());
+      rows->Set<int32_t>("string", key.GetString());
+      rows->Set<uint32_t>("om", key.GetOM());
       rows->Set<bool>("ok", ok);
       rows->Set<double>("t0", wf.GetStartTime()/I3Units::ns);
       rows->Set<double>("dt", wf.GetBinWidth()/I3Units::ns);

@@ -48,8 +48,8 @@ I3TableRowDescriptionPtr I3WaveformConverter::CreateDescription(const I3Waveform
     }
     
     desc->isMultiRow_ = true;
-    desc->AddField<int8_t>("string", "", "String number");
-    desc->AddField<uint8_t>("om", "", "OM number");
+    desc->AddField<int32_t>("string", "", "String number");
+    desc->AddField<uint32_t>("om", "", "OM number");
     
     desc->AddField<bool>("atwd_ok", "bool", "status flag that atwd waveform has been convertered");
     desc->AddField<double>("atwd_t0", "ns", "start time of ATWD waveform");

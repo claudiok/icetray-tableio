@@ -10,8 +10,8 @@ class I3FlasherInfoVectConverter(tableio.I3Converter):
     def CreateDescription(self,fivect):
         desc = tableio.I3TableRowDescription()
         desc.IsMultiRow = True
-        desc.add_field("string",tableio.types.Int8, "","string number of the flashing DOM")
-        desc.add_field("om",tableio.types.UInt8, "","OM number of the flashing DOM")
+        desc.add_field("string",tableio.types.Int32, "","string number of the flashing DOM")
+        desc.add_field("om",tableio.types.UInt32, "","OM number of the flashing DOM")
         desc.add_field("flash_time",tableio.types.Float64, "ns","Time (in nsec) in 25 nsec units, of the LED flash time.")
         desc.add_field("mask",tableio.types.UInt32, "bitmask","indicates which LEDs were flashing")
         desc.add_field("width",tableio.types.Int32, "","flasher width") # TODO docs
