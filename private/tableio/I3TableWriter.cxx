@@ -35,11 +35,13 @@ inline I3FrameObjectConstPtr GetFrameObject(I3FramePtr frame, std::string name, 
 
 /******************************************************************************/
 
-I3TableWriter::I3TableWriter(I3TableServicePtr service, std::vector<I3ConverterPtr>& converters,
+I3TableWriter::I3TableWriter(I3TableServicePtr service, std::vector<I3ConverterMillPtr>& converters,
     std::vector<std::string>& streams) : streams_(streams) {
     service_ = service;
-    ticConverter_ = boost::make_shared<I3IndexColumnsGenerator>(streams_);
-    service_->SetIndexConverter(ticConverter_);
+    boost::shared_ptr<I3IndexColumnsGenerator> indexer =
+        boost::make_shared<I3IndexColumnsGenerator>(streams_);
+    ticConverter_ = indexer;
+    service_->SetIndexConverter(boost::make_shared<I3IndexColumnsGenerator>(*indexer));
     
     // pull in the converters registered in Python-land instead
     std::vector<I3ConverterPtr>::const_iterator it_conv;
@@ -63,16 +65,17 @@ std::string name_of(const boost::shared_ptr<T> obj) {
 // raise an error and if more than one answers the call (there can be only one highlander)
 I3ConverterPtr I3TableWriter::FindConverter(I3FrameObjectConstPtr obj) {
     I3ConverterPtr converter_ptr;
-    std::vector<I3ConverterPtr>::const_iterator it_conv;
+    std::vector<I3ConverterMillPtr>::const_iterator it_conv;
     for(it_conv = converterCache_.begin(); it_conv != converterCache_.end(); it_conv++) {
-        log_trace("Asking converter '%s' what it thinks of '%s'",name_of(*it_conv).c_str(),name_of(obj).c_str());
-        bool match = it_conv->get()->CanConvert(obj);
+        I3ConverterPtr conv = (*(*it_conv))();
+	log_trace("Asking converter '%s' what it thinks of '%s'",name_of(conv).c_str(),name_of(obj).c_str());
+        bool match = conv->CanConvert(obj);
         if (match && (converter_ptr != NULL)) {
             log_fatal("Ambiguity in the converter registry. Converters '%s' and '%s' both want to handle '%s'",
-                        name_of(converter_ptr).c_str(),name_of(*it_conv).c_str(),name_of(obj).c_str());
+                        name_of(converter_ptr).c_str(),name_of(conv).c_str(),name_of(obj).c_str());
         } else if (match) {
-            log_trace("Converter '%s' can convert '%s'",name_of(*it_conv).c_str(),name_of(obj).c_str());
-            converter_ptr = *it_conv;
+            log_trace("Converter '%s' can convert '%s'",name_of(conv).c_str(),name_of(obj).c_str());
+            converter_ptr = conv;
         }
     }
     return converter_ptr;

@@ -10,6 +10,7 @@
  */
 
 #include "tableio/I3ConverterFactory.h"
+#include <boost/python/object.hpp>
 
 I3ConverterPtr BuildConverter(std::string name) {
     I3ConverterPtr converter = 
@@ -17,3 +18,4 @@ I3ConverterPtr BuildConverter(std::string name) {
         .Create(name)();
     return converter;
 }
+
