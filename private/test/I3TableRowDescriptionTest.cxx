@@ -26,13 +26,17 @@ TEST(simple_creation) {
     desc.AddField<int>("intval","counts", "an int variable");
 
     ENSURE_EQUAL( desc.GetNumberOfFields() , static_cast<unsigned int>(1), "number of fields should be one");
-    ENSURE_EQUAL( desc.GetTotalByteSize() , 16u, "total byte size should be sizeof(int)+padding");
+    ENSURE_EQUAL( desc.GetTotalByteSize() , I3MEMORYCHUNK_SIZE, "total byte size should be sizeof(int)+padding");
     ENSURE_EQUAL( desc.GetTotalChunkSize() , static_cast<size_t>(1), "total chunk size should 1");
     ENSURE_EQUAL( desc.GetFieldColumn("intval"), static_cast<unsigned int>(0), "index of field should be zero");
     
     desc.AddField<double>("doubleval", "Volt", "a double variable");
     ENSURE_EQUAL( desc.GetNumberOfFields() , static_cast<unsigned int>(2), "number of fields should be one");
-    ENSURE_EQUAL( desc.GetTotalByteSize() , 16u, "total size should be sizeof(int)+padding+sizeof(double)");
+    if (sizeof(int)+sizeof(double) < I3MEMORYCHUNK_SIZE) {
+        ENSURE_EQUAL( desc.GetTotalByteSize() , I3MEMORYCHUNK_SIZE, "total size should be sizeof(int)+padding+sizeof(double)");
+    } else {
+        ENSURE_EQUAL( desc.GetTotalByteSize() , 2*I3MEMORYCHUNK_SIZE, "total size should be sizeof(int)+padding+sizeof(double)");
+    }
     ENSURE_EQUAL( desc.GetFieldColumn("intval"), static_cast<unsigned int>(0), "index lookup");
     ENSURE_EQUAL( desc.GetFieldColumn("doubleval"), static_cast<unsigned int>(1), "index lookup");
     ENSURE_EQUAL( desc.GetFieldNames().at(0), "intval", "fieldnames vector works");
@@ -106,7 +110,6 @@ TEST(array_creation) {
     size_t bytesize = 10*sizeof(int32_t) + 256*sizeof(double) + sizeof(int64_t);
     size_t chunksize = (bytesize + I3MEMORYCHUNK_SIZE - 1) / I3MEMORYCHUNK_SIZE;
     ENSURE_EQUAL( desc.GetTotalChunkSize() , chunksize, "total chunk size");
-    ENSURE_EQUAL( desc.GetTotalByteSize() , bytesize, "total chunk size");
     ENSURE_EQUAL( desc.GetNumberOfFields(), static_cast<unsigned int>(3), "number of fields is three");
 
     // TODO test hdf array types
@@ -164,8 +167,9 @@ TEST(joining_descriptions) {
         // ENSURE_EQUAL( map_omkey_pos_d.GetFieldChunkOffsets().at(i), i, "check byte offsets");
     }
 
-    ENSURE_EQUAL( map_omkey_pos_d.GetTotalChunkSize(), 3u, "check total chunk size");
-    ENSURE_EQUAL( map_omkey_pos_d.GetTotalByteSize(), 48u, "check total chunk size");
+    size_t endpos = offsets[6] + sizeof(double);
+    size_t chunksize = (endpos + I3MEMORYCHUNK_SIZE - 1)/I3MEMORYCHUNK_SIZE;
+    ENSURE_EQUAL( map_omkey_pos_d.GetTotalChunkSize(), chunksize, "check total chunk size");
 }
 
 TEST(joining_alignment) {
