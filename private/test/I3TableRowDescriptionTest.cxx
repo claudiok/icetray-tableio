@@ -110,10 +110,10 @@ TEST(array_creation) {
     ENSURE_EQUAL( desc.GetNumberOfFields(), static_cast<unsigned int>(3), "number of fields is three");
 
     // TODO test hdf array types
-    ENSURE_EQUAL( desc.GetFieldTypes().at(2).size, sizeof(long), "hdfTypes vector works");
-    ENSURE_EQUAL( desc.GetFieldTypeSizes().at(0), sizeof(int), "typeSizes vector works");
+    ENSURE_EQUAL( desc.GetFieldTypes().at(2).size, sizeof(int64_t), "hdfTypes vector works");
+    ENSURE_EQUAL( desc.GetFieldTypeSizes().at(0), sizeof(int32_t), "typeSizes vector works");
     ENSURE_EQUAL( desc.GetFieldTypeSizes().at(1), sizeof(double), "typeSizes vector works");
-    ENSURE_EQUAL( desc.GetFieldTypeSizes().at(2), sizeof(long), "typeSizes vector works");
+    ENSURE_EQUAL( desc.GetFieldTypeSizes().at(2), sizeof(int64_t), "typeSizes vector works");
     ENSURE_EQUAL( desc.GetFieldByteOffsets().at(0), static_cast<size_t>(0), "fieldByteOffsets correct");
     ENSURE_EQUAL( desc.GetFieldByteOffsets().at(1), 10*sizeof(int32_t), "fieldByteOffsets correct");
     ENSURE_EQUAL( desc.GetFieldByteOffsets().at(2), (10*sizeof(int32_t) + 256*sizeof(double)), "fieldByteOffsets correct");
