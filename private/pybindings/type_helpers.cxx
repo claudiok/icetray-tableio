@@ -143,6 +143,7 @@ boost::shared_ptr<I3Datatype> I3Datatype_from_NumpyDtype(boost::python::object n
     char byteorder = PyString_AsString(bp::object(np_dtype.attr("byteorder")).ptr())[0];
     if (!(byteorder == '|') && !(byteorder == '=')) {
         // log_error("Array must be in native byte order (not '%c')",byteorder);
+        log_error("numpy byteorder \"%c\" is not supported.", byteorder);
         return I3DatatypePtr();
     }
     char kind = PyString_AsString(bp::object(np_dtype.attr("kind")).ptr())[0];
@@ -166,6 +167,7 @@ boost::shared_ptr<I3Datatype> I3Datatype_from_NumpyDtype(boost::python::object n
             break;
         default:
             // return NULL for everything else
+            log_error("numpy dtype \"%c\" is not supported.", kind);
             dtype = I3DatatypePtr();
     }
     return dtype;
