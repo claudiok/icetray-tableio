@@ -15,6 +15,8 @@
 
 /******************************************************************************/
 
+I3Converter::~I3Converter() {;}
+
 I3TableRowDescriptionConstPtr I3Converter::GetDescription() {
     if (description_)
         return description_;

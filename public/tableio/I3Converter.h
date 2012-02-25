@@ -37,6 +37,8 @@ I3_FORWARD_DECLARATION(I3TableWriter);
  */
 class I3Converter {
     public:
+        virtual ~I3Converter();
+
         /**
 	 * \brief Determine the number of rows the would be produced when converting
 	 * the given object.
