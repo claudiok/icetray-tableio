@@ -15,6 +15,7 @@
 #include "tableio/converter/I3MapStringConverter.h"
 #include "tableio/converter/I3MapStringVectorDoubleConverter.h"
 #include "tableio/converter/I3ParticleConverter.h"
+#include "tableio/converter/I3PositionConverter.h"
 #include "tableio/converter/I3TreeConverter.h"
 #include "tableio/converter/I3TriggerHierarchyConverter.h"
 #include "tableio/converter/I3WaveformConverter.h"
@@ -83,6 +84,7 @@ void register_dataclasses_converters() {
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringBoolConverter,"Dumps a std::map<string,bool> verbatim");
 
     I3CONVERTER_EXPORT_DEFAULT(I3ParticleConverter,"Dumps an I3Particle verbatim");
+    I3CONVERTER_EXPORT_DEFAULT(I3PositionConverter,"Dumps an I3Position verbatim");
     
     typedef I3TreeConverter<I3Particle> I3MCTreeConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3MCTreeConverter,"Dumps all particles in the MC Tree");
