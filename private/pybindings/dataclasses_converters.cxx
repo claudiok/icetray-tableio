@@ -12,6 +12,7 @@
 #include "tableio/converter/pybindings.h"
 #include "tableio/converter/dataclasses_map_converters.h"
 #include "tableio/converter/dataclasses_vector_converters.h"
+#include "tableio/converter/I3DirectionConverter.h"
 #include "tableio/converter/I3MapStringConverter.h"
 #include "tableio/converter/I3MapStringVectorDoubleConverter.h"
 #include "tableio/converter/I3ParticleConverter.h"
@@ -85,6 +86,7 @@ void register_dataclasses_converters() {
 
     I3CONVERTER_EXPORT_DEFAULT(I3ParticleConverter,"Dumps an I3Particle verbatim");
     I3CONVERTER_EXPORT_DEFAULT(I3PositionConverter,"Dumps an I3Position verbatim");
+    I3CONVERTER_EXPORT_DEFAULT(I3DirectionConverter,"Dumps an I3Direction verbatim");
     
     typedef I3TreeConverter<I3Particle> I3MCTreeConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3MCTreeConverter,"Dumps all particles in the MC Tree");
