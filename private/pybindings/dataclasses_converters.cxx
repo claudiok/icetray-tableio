@@ -85,7 +85,20 @@ void register_dataclasses_converters() {
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringBoolConverter,"Dumps a std::map<string,bool> verbatim");
 
     I3CONVERTER_EXPORT_DEFAULT(I3ParticleConverter,"Dumps an I3Particle verbatim");
-    I3CONVERTER_EXPORT_DEFAULT(I3PositionConverter,"Dumps an I3Position verbatim");
+    typedef bp::class_<I3PositionConverter, boost::shared_ptr<I3PositionConverter>, bp::bases<I3Converter>, boost::noncopyable> class_I3PositionConverter_t;
+    class_I3PositionConverter_t i3postitionconverter = I3CONVERTER_EXPORT_DEFAULT(I3PositionConverter,"Dumps an I3Position verbatim");
+    {
+        bp::scope i3postitionconverter_scope = i3postitionconverter;
+        bp::enum_<I3PositionConverter::BookRefFrame>("BookRefFrame")
+          .value("Car", I3PositionConverter::car)
+          .value("Cyl", I3PositionConverter::cyl)
+          .value("Sph", I3PositionConverter::sph)
+          .value("All", I3PositionConverter::all)
+          .export_values()
+          ;
+    }
+    i3postitionconverter.def(bp::init<I3PositionConverter::BookRefFrame>(bp::args("book_ref_frame")=I3PositionConverter::car));
+    
     I3CONVERTER_EXPORT_DEFAULT(I3DirectionConverter,"Dumps an I3Direction verbatim");
     
     typedef I3TreeConverter<I3Particle> I3MCTreeConverter;
