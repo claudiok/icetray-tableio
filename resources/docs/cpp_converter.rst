@@ -68,6 +68,51 @@ You can declare your subclass in a header, like so::
             bool magic_;
     };
 
+Sometimes it is necessary to give your converter possible options (with
+reasonable default values!). A good example are
+the I3PositionConverter and I3DirectionConverter converters, which have the option
+``BookRefFrame`` to specify in what reference frame the position and direction
+data should be booked.
+
+In C++ the option is defined as argument to the constructor method of the
+converter. The header file of the I3PositionConverter gives a nice example on
+this. It looks so::
+
+    #include "tableio/I3ConverterFactory.h"
+    #include "dataclasses/I3Position.h"
+
+    class I3PositionConverter : public I3ConverterImplementation<I3Position>
+    {
+        public:
+            enum BookRefFrame { car = 0, sph = 1, cyl = 2, all = 3 };
+        
+            I3PositionConverter()
+            : BookRefFrame_(I3PositionConverter::car)
+            {}
+        
+            /** The BookRefFrame argument specifies the reference frame for which
+             *  position data should be booked.
+             */
+            I3PositionConverter(BookRefFrame BookRefFrame)
+            : BookRefFrame_(BookRefFrame)
+            {}
+        
+        private:
+            I3TableRowDescriptionPtr CreateDescription(const I3Position& position);
+            size_t FillRows(const I3Position& position, I3TableRowPtr row);
+
+            BookRefFrame BookRefFrame_;
+    };
+
+The option ``BookRefFrame`` is an enum type in this case, but it can be any
+type you want, e.g. ``int``, ``double``, or ``bool``.
+
+If the user does not specify the option, the default constructor will be called
+and it sets the ``BookRefFrame_`` class member variable to its default value
+``I3PositionConverter::car``. Otherwise the option`ized constructor will be
+called, which sets the ``BookRefFrame_`` class member variable to the enum
+value, that the user has specified in his python script.
+
 private/converter/I3FilterResultMap.cxx
 __________________________________________
 
@@ -96,13 +141,17 @@ The implementation goes in a separate file::
         return 1;
     }
 
+Possible converter options (as class member variables) should be considered in
+here ;) 
 
 pybindings
 __________________________________________
 
 You also need trivial pybindings in order to register your converter for use
 in tableio. There are preprocessor macros that automate most of this. You can
-wrap the whole export block in #ifdefs to avoid hard dependencies::
+wrap the whole export block in #ifdefs to avoid hard dependencies. The content
+of your project's converters pybindings file *private/pybindings/converters.cxx*
+could look like so::
 
     #ifdef USE_TABLEIO
     
@@ -123,3 +172,106 @@ icecube.jebclasses.converters into which pybindings for
 I3FilterResultMapConverter are exported. Each :c:func:`I3CONVERTER_EXPORT` call
 creates pybindings for the specified converter and registers it for use in
 tableio.
+
+pybindings for converters with options
+------------------------------------------
+
+If your converter defines possible options, the pybinding statements for each
+converter become a bit more complicated because the option`ized C++ constructor
+must be added my hand to the python converter class.
+
+The pybindings for the I3PositionConverter shown above gives a nice example of
+doing that.
+The content of the ``register_I3Converters()`` function inside your pybindings
+file *private/pybindings/converters.cxx* could now look like so (in case it
+would be for I3PositionConverter, but which already exists as converter)::
+
+    void register_I3Converters() {
+        I3CONVERTER_NAMESPACE(dataclasses);
+        I3CONVERTER_EXPORT(I3PositionConverter,
+            "A nice (multiline) docstring for your converter \n"
+            "describing all possible options goes in here!   \n"
+        )
+            .def(bp::init<I3PositionConverter::BookRefFrame>(bp::args("BookRefFrame")=I3PositionConverter::car));
+        ;
+    }
+
+The syntax for the ``init`` method definition (the ``.def...`` line in the
+example above) is::
+
+    .def(bp::init<OPTION_1_TYPE, OPTION_2_TYPE, ...>(bp::args("OPTION_1_NAME") = OPTION_1_DEFAULT_VALUE, bp::args("OPTION_2_NAME") = OPTION_2_DEFAULT_VALUE, ...))
+
+where *OPTION_1_TYPE*, *OPTION_2_TYPE*, ... are the C++ types of the option
+values, *OPTION_1_NAME*, *OPTION_2_NAME*, ... are the names of the options
+within Python, and *OPTION_1_DEFAULT_VALUE*, *OPTION_2_DEFAULT_VALUE*, ...
+are the default values of the options, respectively.
+
+**NOTE**:
+
+    The code example above will not work, because the option *BookRefFrame*
+    is of type enum and that enum must get pybindings, too. See the next section
+    how to solve this!
+
+Defining an enum inside the converter and using it as an converter option
+-------------------------------------------------------------------------
+
+It is quite common that an option should be an enum type option, as it is for
+the I3PositionConverter. The enum should be placed inside the converter python
+class in order to have a correct data structure within Python.
+
+To place objects into the converter class, one needs to create the namespace of
+the converter class. Than one can put the object (e.g. the enum) inside the
+python class.
+
+Three special macros exist to support the programmer doing this:
+
+- I3CONVERTER_EXPORT__WITH_CONVERTER_OBJ(converter, docstring)
+- I3CONVERTER_CONVERTER_NAMESPACE(converter)
+- I3CONVERTER_CONVERTER_OBJ(converter)
+
+The ``I3CONVERTER_EXPORT__WITH_CONVERTER_OBJ(converter, docstring)`` macro does
+exactly the same thing as the ``I3CONVERTER_EXPORT(converter, docstring)`` macro
+does, but it stores also the object of the converter class after its
+registration in tableio into a variable. This variable can than be accessed
+through the ``I3CONVERTER_CONVERTER_OBJ(converter)`` macro, e.g. to define an
+additional method to it (in our case the option`ized C++ constructor method).
+
+The ``I3CONVERTER_CONVERTER_NAMESPACE(converter)`` macro can be used to create
+a namespace within the converter class.
+
+To use enum type options, the enum has to get its pybindings BEFORE the
+option`ized C++ constructor method is added to the class (via the .def
+boost::python statement)!
+
+The following code gives an example how to define the pybindings for the enum
+first and than to add the option`ized C++ constructor method to the python
+converter class::
+
+    void register_I3Converters()
+    {
+        I3CONVERTER_NAMESPACE(dataclasses);
+        
+        I3CONVERTER_EXPORT__WITH_CONVERTER_OBJ(I3PositionConverter,
+            "A nice (multiline) docstring for your converter \n"
+            "describing all possible options goes in here!   \n"
+        );
+        {
+            I3CONVERTER_CONVERTER_NAMESPACE(I3PositionConverter);
+            bp::enum_<I3PositionConverter::BookRefFrame>("BookRefFrame")
+                .value("Car", I3PositionConverter::car)
+                .value("Cyl", I3PositionConverter::cyl)
+                .value("Sph", I3PositionConverter::sph)
+                .value("All", I3PositionConverter::all)
+                .export_values()
+            ;
+        }
+        I3CONVERTER_CONVERTER_OBJ(I3PositionConverter)
+            .def(bp::init<I3PositionConverter::BookRefFrame>(bp::args("BookRefFrame")=I3PositionConverter::car))
+        ;
+    }
+
+The curly brackets around the converter namespace macro and the enum pybinding
+are important! Because the namespace must be cleared before other converters can
+be added to the project's converters namespace! Otherwise following defined
+converters will end up in the current converter class!
+

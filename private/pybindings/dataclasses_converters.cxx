@@ -85,10 +85,38 @@ void register_dataclasses_converters() {
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringBoolConverter,"Dumps a std::map<string,bool> verbatim");
 
     I3CONVERTER_EXPORT_DEFAULT(I3ParticleConverter,"Dumps an I3Particle verbatim");
-    typedef bp::class_<I3PositionConverter, boost::shared_ptr<I3PositionConverter>, bp::bases<I3Converter>, boost::noncopyable> class_I3PositionConverter_t;
-    class_I3PositionConverter_t i3postitionconverter = I3CONVERTER_EXPORT_DEFAULT(I3PositionConverter,"Dumps an I3Position verbatim");
+    
+    //--------------------------------------------------------------------------
+    // I3PositionConverter
+    I3CONVERTER_EXPORT_DEFAULT__WITH_CONVERTER_OBJ(I3PositionConverter,
+        "Dumps an I3Position, depending on the, via the option 'BookRefFrame',          \n"
+        "specified reference frame.                                                     \n"
+        "                                                                               \n"
+        "Default Python call signiture:                                                 \n"
+        "    icecube.dataclasses.converters.I3PositionConverter(BookRefFrame = icecube.dataclasses.converters.I3PositionConverter.BookRefFrame.Car)\n"
+        "                                                                               \n"
+        "Options:                                                                       \n"
+        "    BookRefFrame:                                                              \n"
+        "        Books position data only for the specified reference frame.            \n"
+        "                                                                               \n"
+        "        type:                                                                  \n"
+        "            enum `icecube.dataclasses.converters.I3PositionConverter.BookRefFrame`\n"
+        "                                                                               \n"
+        "        enum values:                                                           \n"
+        "            Car: Cartesian reference frame                                     \n"
+        "                 (x, y, z)                                                     \n"
+        "            Cyl: Cylindrical reference frame                                   \n"
+        "                 (rho, z, phi)                                                 \n"
+        "            Sph: Spherical reference frame                                     \n"
+        "                 (r, phi, theta)                                               \n"
+        "            All: Books position data for all reference frames                  \n"
+        "                 (x, y, z, r, rho, phi, theta)                                 \n"
+        "                                                                               \n"
+        "        default value:                                                         \n"
+        "            Car                                                                \n"
+    );
     {
-        bp::scope i3postitionconverter_scope = i3postitionconverter;
+        I3CONVERTER_CONVERTER_NAMESPACE(I3PositionConverter);
         bp::enum_<I3PositionConverter::BookRefFrame>("BookRefFrame")
           .value("Car", I3PositionConverter::car)
           .value("Cyl", I3PositionConverter::cyl)
@@ -97,9 +125,47 @@ void register_dataclasses_converters() {
           .export_values()
           ;
     }
-    i3postitionconverter.def(bp::init<I3PositionConverter::BookRefFrame>(bp::args("book_ref_frame")=I3PositionConverter::car));
+    I3CONVERTER_CONVERTER_OBJ(I3PositionConverter)
+        .def(bp::init<I3PositionConverter::BookRefFrame>(bp::args("BookRefFrame")=I3PositionConverter::car));
     
-    I3CONVERTER_EXPORT_DEFAULT(I3DirectionConverter,"Dumps an I3Direction verbatim");
+    //--------------------------------------------------------------------------
+    // I3DirectionConverter
+    I3CONVERTER_EXPORT_DEFAULT__WITH_CONVERTER_OBJ(I3DirectionConverter,
+        "Dumps an I3Direction, depending on the, via the option 'BookRefFrame',         \n"
+        "specified reference frame.                                                     \n"
+        "                                                                               \n"
+        "Default Python call signiture:                                                 \n"
+        "    icecube.dataclasses.converters.I3DirectionConverter(BookRefFrame = icecube.dataclasses.converters.I3DirectionConverter.BookRefFrame.Car)\n"
+        "                                                                               \n"
+        "Options:                                                                       \n"
+        "    BookRefFrame:                                                            \n"
+        "        Books direction data only for the specified reference frame.           \n"
+        "                                                                               \n"
+        "        type:                                                                  \n"
+        "            enum `icecube.dataclasses.converters.I3DirectionConverter.BookRefFrame`\n"
+        "                                                                               \n"
+        "        enum values:                                                           \n"
+        "            Car: Cartesian reference frame                                     \n"
+        "                 (x, y, z)                                                     \n"
+        "            Sph: Spherical reference frame                                     \n"
+        "                 (azimuth, zenith)                                             \n"
+        "            All: Book direction data for all reference frames,                 \n"
+        "                 (x, y, z, azimuth, zenith)                                    \n"
+        "                                                                               \n"
+        "        default value:                                                         \n"
+        "            Car                                                                \n"
+    );
+    {
+        I3CONVERTER_CONVERTER_NAMESPACE(I3DirectionConverter);
+        bp::enum_<I3DirectionConverter::BookRefFrame>("BookRefFrame")
+          .value("Car", I3DirectionConverter::car)
+          .value("Sph", I3DirectionConverter::sph)
+          .value("All", I3DirectionConverter::all)
+          .export_values()
+          ;
+    }
+    I3CONVERTER_CONVERTER_OBJ(I3DirectionConverter)
+        .def(bp::init<I3DirectionConverter::BookRefFrame>(bp::args("BookRefFrame")=I3DirectionConverter::car));
     
     typedef I3TreeConverter<I3Particle> I3MCTreeConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3MCTreeConverter,"Dumps all particles in the MC Tree");

@@ -31,8 +31,51 @@ ___________
 
 :I3BoolConverter, I3IntConverter, I3DoubleConverter: Dump ``I3Bool``, ``I3Int``, and ``I3Double`` objects.
 
+:I3DirectionConverter: Dumps an ``I3Direction`` object.
+
+  *Options:*
+
+  ``BookRefFrame`` (enum `icecube.dataclasses.converters.I3DirectionConverter.BookRefFrame`)
+
+      Books direction data only for the specified reference frame. The following
+      enum values exist:
+      
+      - ``Car``: Cartesian reference frame
+          *Fields*: ``x``, ``y``, ``z``
+      
+      - ``Sph``: Spherical reference frame
+          *Fields*: ``azimuth``, ``zenith``
+      
+      - ``All``: Books position data for all reference frames
+          *Fields*: ``x``, ``y``, ``z``, ``azimuth``, ``zenith``
+      
+      Default value: ``Car``
+
 :I3ParticleConverter: Dumps an ``I3Particle`` object.
 
+:I3PositionConverter: Dumps an ``I3Position`` object.
+
+  *Options:*
+
+  ``BookRefFrame`` (enum `icecube.dataclasses.converters.I3PositionConverter.BookRefFrame`)
+      
+      Books position data only for the specified reference frame. The following
+      enum values exist:
+      
+      - ``Car``: Cartesian reference frame
+          *Fields*: ``x``, ``y``, ``z``
+
+      - ``Cyl``: Cylindrical reference frame    
+          *Fields*: ``rho``, ``z``, ``phi``
+      
+      - ``Sph``: Spherical reference frame
+          *Fields*: ``r``, ``phi``, ``theta``
+          
+      - ``All``: Books position data for all reference frames
+          *Fields*: ``x``, ``y``, ``z``, ``r``, ``rho``, ``phi``, ``theta``
+      
+      Default value: ``Car``
+ 
 :I3Vector*Converter: Dump ``I3Vector*`` objects.
   
   *Variants:* Bool, Short, UShort, Int, UInt, Int64, UInt64, Float, Double, DoubleDouble (pair of doubles).
@@ -59,7 +102,7 @@ ___________
   
   ``calibrate`` (bool) calibrate in pe/bin.
 
-:I3MapKeyVectorDoubleConverter, I3MapKeyVectorIntConverter: Dump ``I3Map<OMKey, vector<int> >`` and ``I3Map<OMKey, vector<double> >`` objects.
+:I3MapKeyVectorDoubleConverter, I3MapKeyVectorIntConverter: Dump ``I3Map<OMKey, vector<double> >`` and ``I3Map<OMKey, vector<int> >`` objects.
 
   *Options:*
 

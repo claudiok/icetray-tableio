@@ -17,12 +17,29 @@ I3DirectionConverter::
 CreateDescription(const I3Direction& direction)
 {
     I3TableRowDescriptionPtr desc(new I3TableRowDescription());
-
-    desc->AddField<double>("azimuth", "radian", "azimuth angle of the direction in a spherical reference frame");
-    desc->AddField<double>("zenith",  "radian", "zenith angle of the direction in a spherical reference frame");
-    desc->AddField<double>("x",       "m",      "x-component of the direction as an unit vector in a cartesian reference frame");
-    desc->AddField<double>("y",       "m",      "y-component of the direction as an unit vector in a cartesian reference frame");
-    desc->AddField<double>("z",       "m",      "z-component of the direction as an unit vector in a cartesian reference frame");
+    
+    if(book_ref_frame_ == I3DirectionConverter::car)
+    {
+        desc->AddField<double>("x", "", "x-component of the direction as an unit vector in the cartesian reference frame");
+        desc->AddField<double>("y", "", "y-component of the direction as an unit vector in the cartesian reference frame");
+        desc->AddField<double>("z", "", "z-component of the direction as an unit vector in the cartesian reference frame");
+    }
+    else if(book_ref_frame_ == I3DirectionConverter::sph)
+    {
+        desc->AddField<double>("azimuth", "radian", "azimuth angle of the direction in the spherical reference frame");
+        desc->AddField<double>("zenith",  "radian", "zenith angle of the direction in the spherical reference frame");
+    }
+    else if(book_ref_frame_ == I3DirectionConverter::all)
+    {
+        desc->AddField<double>("x",       "",       "x-component of the direction as an unit vector in the cartesian reference frame");
+        desc->AddField<double>("y",       "",       "y-component of the direction as an unit vector in the cartesian reference frame");
+        desc->AddField<double>("z",       "",       "z-component of the direction as an unit vector in the cartesian reference frame");
+        desc->AddField<double>("azimuth", "radian", "azimuth angle of the direction in the spherical reference frame");
+        desc->AddField<double>("zenith",  "radian", "zenith angle of the direction in the spherical reference frame");
+    }
+    else {
+        log_fatal("Got unknown reference frame '%d' to book!", book_ref_frame_);
+    }
     
     return desc;
 };
@@ -32,11 +49,28 @@ size_t
 I3DirectionConverter::
 FillRows(const I3Direction& direction, I3TableRowPtr row)
 {
-    row->Set<double>("azimuth", direction.GetAzimuth());
-    row->Set<double>("zenith",  direction.GetZenith());
-    row->Set<double>("x",       direction.GetX());
-    row->Set<double>("y",       direction.GetY());
-    row->Set<double>("z",       direction.GetZ());
+    if(book_ref_frame_ == I3DirectionConverter::car)
+    {
+        row->Set<double>("x", direction.GetX());
+        row->Set<double>("y", direction.GetY());
+        row->Set<double>("z", direction.GetZ());
+    }
+    else if(book_ref_frame_ == I3DirectionConverter::sph)
+    {
+        row->Set<double>("azimuth", direction.GetAzimuth());
+        row->Set<double>("zenith",  direction.GetZenith());
+    }
+    else if(book_ref_frame_ == I3DirectionConverter::all)
+    {
+        row->Set<double>("x",       direction.GetX());
+        row->Set<double>("y",       direction.GetY());
+        row->Set<double>("z",       direction.GetZ());
+        row->Set<double>("azimuth", direction.GetAzimuth());
+        row->Set<double>("zenith",  direction.GetZenith());
+    }
+    else {
+        log_fatal("Got unknown reference frame '%d' to book!", book_ref_frame_);
+    }
     
     return 1;
 };

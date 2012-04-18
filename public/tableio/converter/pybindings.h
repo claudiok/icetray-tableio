@@ -39,14 +39,47 @@ namespace bp = boost::python;
     
 #define I3CONVERTER_EXPORT_DEFAULT(converter,docstring)             \
     register_converter<converter>(registry,I3CONVERTER_EXPORT_IMPL(converter,docstring),true)
-    
 
 #define I3CONVERTER_EXPORT_IMPL(converter,docstring)               \
     bp::class_<converter,                                          \
                boost::shared_ptr<converter>,                       \
                bp::bases<I3Converter>,                             \
                boost::noncopyable >(BOOST_PP_STRINGIZE(converter),docstring)
-    
+
+// The I3CONVERTER_EXPORT__WITH_CONVERTER_OBJ and
+// I3CONVERTER_EXPORT_DEFAULT__WITH_CONVERTER_OBJ macros exports the specified
+// converter the same way as the I3CONVERTER_EXPORT and
+// I3CONVERTER_EXPORT_DEFAULT macros do, respectively, but they do also store
+// the object of the registered converter in order to be able to add more stuff
+// to the converter python class using the I3CONVERTER_CONVERTER_OBJ and
+// I3CONVERTER_CONVERTER_NAMESPACE macros.
+
+// The I3CONVERTER_CONVERTER_OBJ macro gets the python class C++ object of the
+// converter.
+// NOTE: In order to use this macro, the converter has to be exported
+//       using the I3CONVERTER_EXPORT__WITH_CONVERTER_OBJ or the
+//       I3CONVERTER_EXPORT_DEFAULT__WITH_CONVERTER_OBJ macro!
+#define I3CONVERTER_CONVERTER_OBJ(converter) \
+    converter ## _obj
+
+// Creates a boost::python scope inside the python class of the specified
+// converter. This macro should be surrounded by curly brackets including the
+// stuff that should be added to the namespace of the converter class!
+// NOTE: In order to use this macro, the converter has to be exported
+//       using the I3CONVERTER_EXPORT__WITH_CONVERTER_OBJ or the
+//       I3CONVERTER_EXPORT_DEFAULT__WITH_CONVERTER_OBJ macro!
+#define I3CONVERTER_CONVERTER_NAMESPACE(converter) \
+    bp::scope converter ## _obj_scope = I3CONVERTER_CONVERTER_OBJ(converter);
+
+#define I3CONVERTER_EXPORT__WITH_CONVERTER_OBJ(converter,docstring) \
+    typedef bp::class_<converter, boost::shared_ptr<converter>, bp::bases<I3Converter>, boost::noncopyable> class_ ## converter ## _t; \
+    class_ ## converter ## _t I3CONVERTER_CONVERTER_OBJ(converter) = I3CONVERTER_EXPORT(converter,docstring)
+
+#define I3CONVERTER_EXPORT_DEFAULT__WITH_CONVERTER_OBJ(converter,docstring) \
+    typedef bp::class_<converter, boost::shared_ptr<converter>, bp::bases<I3Converter>, boost::noncopyable> class_ ## converter ## _t; \
+    class_ ## converter ## _t I3CONVERTER_CONVERTER_OBJ(converter) = I3CONVERTER_EXPORT_DEFAULT(converter,docstring)
+
+
 // put the converter in a python-side registry, then return the class
 // scope for more method-adding.
 template<typename Converter,class W,class X1,class X2,class X3> // template args for bp::class_
