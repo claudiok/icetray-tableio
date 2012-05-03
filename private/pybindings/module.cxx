@@ -11,7 +11,6 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
-#include <icetray/load_project.h>
 
 namespace bp = boost::python;
 
@@ -26,7 +25,6 @@ BOOST_PP_SEQ_FOR_EACH(I3_REGISTRATION_FN_DECL, ~, REGISTER_THESE_THINGS)
 
 I3_PYTHON_MODULE(tableio)
 {
-  load_project("libtableio", false);
 
   BOOST_PP_SEQ_FOR_EACH(I3_REGISTER, ~, REGISTER_THESE_THINGS);
 }

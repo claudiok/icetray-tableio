@@ -256,7 +256,7 @@ if have_hdf:
 				from icecube.tableio import I3TableWriter
 				import tempfile
 				from I3Tray import I3Tray, load
-				load("libphys-services")
+				from icecube import phys_services 
 				
 				tray = I3Tray()
 				tray.AddModule("I3InfiniteSource","streams", Stream=icetray.I3Frame.Physics)
