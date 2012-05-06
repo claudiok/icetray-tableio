@@ -84,4 +84,4 @@ converter. Mind the required typedef booked_type.
     
     };
 
-    I3_CONVERTER(I3MapOMKeyVectorConverter< convert_I3RecoPulse >, I3RecoPulseSeriesMap);
+    typedef I3MapOMKeyVectorConverter< convert_I3RecoPulse >  I3RecoPulseSeriesMapConverter
