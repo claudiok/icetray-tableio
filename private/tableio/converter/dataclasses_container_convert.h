@@ -15,6 +15,7 @@
 #include <icetray/I3PointerTypedefs.h>
 #include <icetray/OMKey.h>
 #include <dataclasses/TankKey.h>
+#include <dataclasses/physics/I3Trigger.h>
 #include <dataclasses/physics/I3DOMLaunch.h>
 #include <dataclasses/physics/I3RecoHit.h>
 #include <dataclasses/physics/I3RecoPulse.h>
@@ -26,6 +27,16 @@
 
 #include "pod_converter_type_mapping.h"
 
+#define TABLEIO_CONVERTER_FWD_BODY \
+         void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type()); \
+         void FillSingleRow(const booked_type& hit, I3TableRowPtr row)
+
+#define TABLEIO_CONVERTER_FWD(type)     \
+         struct type                    \
+         {                              \
+           typedef ::type booked_type;  \
+           TABLEIO_CONVERTER_FWD_BODY;  \
+         }
 
 namespace convert {
 
@@ -44,65 +55,21 @@ namespace convert {
     }
   };
 
-  struct I3DOMLaunch
-  { 
-    typedef ::I3DOMLaunch booked_type;
+  TABLEIO_CONVERTER_FWD(I3Trigger);
+  TABLEIO_CONVERTER_FWD(I3DOMLaunch);
+  TABLEIO_CONVERTER_FWD(I3RecoHit);
+  TABLEIO_CONVERTER_FWD(I3MCHit);
+  TABLEIO_CONVERTER_FWD(I3RecoPulse);
+  TABLEIO_CONVERTER_FWD(I3FlasherInfo);
+  TABLEIO_CONVERTER_FWD(OMKey);
+  TABLEIO_CONVERTER_FWD(TankKey);
 
-    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
-    void FillSingleRow(const booked_type& dl, I3TableRowPtr row);
+  struct double_pair
+  {
+    typedef ::std::pair<double, double> booked_type;\
+    TABLEIO_CONVERTER_FWD_BODY;
   };
   
-  struct I3RecoHit
-  {
-    typedef ::I3RecoHit booked_type;
-
-    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
-    void FillSingleRow(const booked_type& hit, I3TableRowPtr row);
-  };
-  
-  struct I3MCHit
-  {
-    typedef ::I3MCHit booked_type;
-
-    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
-    void FillSingleRow(const booked_type& hit, I3TableRowPtr row);
-  };
-  
-  struct I3RecoPulse
-  {
-    typedef ::I3RecoPulse booked_type;
-
-    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
-    void FillSingleRow(const booked_type& pulse, I3TableRowPtr row);
-  };
-
-  struct double_pair {
-    typedef std::pair<double, double> booked_type;
-
-    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
-    void FillSingleRow(const booked_type &item, I3TableRowPtr row);
-  };
-
-  struct I3FlasherInfo {
-    typedef ::I3FlasherInfo booked_type;
-
-    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
-    void FillSingleRow(const booked_type &flasherinfo, I3TableRowPtr row);
-  };
-
-  struct OMKey {
-    typedef ::OMKey booked_type;
-
-    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
-    void FillSingleRow(const booked_type &key, I3TableRowPtr row);
-  };
-
-  struct TankKey {
-    typedef ::TankKey booked_type;
-
-    void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = booked_type());
-    void FillSingleRow(const booked_type &key, I3TableRowPtr row);
-  };
 
 }
 

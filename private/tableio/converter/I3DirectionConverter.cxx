@@ -74,7 +74,3 @@ FillRows(const I3Direction& direction, I3TableRowPtr row)
     
     return 1;
 };
-
-//______________________________________________________________________________
-I3_CONVERTER(I3DirectionConverter, I3Direction);
-

@@ -58,7 +58,7 @@ __________________________________________________
 
 You can declare your subclass in a header, like so::
 
-    #include "tableio/internals/I3ConverterFactory.h"
+    #include "tableio/internals/I3Converter.h"
     #include "jebclasses/I3FilterResult.h"
     
     class I3FilterResultMapConverter : public I3ConverterImplementation<I3FilterResultMap> {
@@ -78,7 +78,7 @@ In C++ the option is defined as argument to the constructor method of the
 converter. The header file of the I3PositionConverter gives a nice example on
 this. It looks so::
 
-    #include "tableio/I3ConverterFactory.h"
+    #include "tableio/I3Converter.h"
     #include "dataclasses/I3Position.h"
 
     class I3PositionConverter : public I3ConverterImplementation<I3Position>

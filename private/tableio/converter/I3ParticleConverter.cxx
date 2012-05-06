@@ -62,6 +62,3 @@ size_t I3ParticleConverter::FillRows(const I3Particle& particle, I3TableRowPtr r
 
     return 1;
 };
-
-I3_CONVERTER(I3ParticleConverter, I3Particle);
-

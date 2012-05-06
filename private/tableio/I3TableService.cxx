@@ -11,13 +11,13 @@
 
 #include "tableio/I3TableService.h"
 #include "tableio/I3TableRow.h"
-#include "tableio/I3ConverterFactory.h"
+#include "tableio/converter/I3IndexColumnsGenerator.h"
 
 /******************************************************************************/
 
 I3TableService::I3TableService()  { 
     // Set up a semi-sensible default
-    SetIndexConverter(BuildConverter("I3IndexColumnsGenerator"));
+    SetIndexConverter(I3ConverterPtr(new I3IndexColumnsGenerator));
 }
 
 /******************************************************************************/

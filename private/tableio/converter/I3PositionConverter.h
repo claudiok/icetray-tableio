@@ -12,7 +12,7 @@
 #ifndef TABLEIO_I3POSITIONCONVERTER_H_INCLUDED
 #define TABLEIO_I3POSITIONCONVERTER_H_INCLUDED
 
-#include "tableio/I3ConverterFactory.h"
+#include "tableio/I3Converter.h"
 #include "dataclasses/I3Position.h"
 
 class I3PositionConverter : public I3ConverterImplementation<I3Position>

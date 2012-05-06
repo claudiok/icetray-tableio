@@ -17,6 +17,7 @@
 #include <dataclasses/geometry/I3Geometry.h>
 #include <dataclasses/status/I3DetectorStatus.h>
 #include <icetray/I3Units.h>
+#include <icetray/I3Frame.h>
 
 #include <boost/foreach.hpp>
 
@@ -208,5 +209,3 @@ size_t I3WaveformSeriesMapConverter::GetNumberOfRows(const I3WaveformSeriesMap& 
 }
 
 /******************************************************************************/
-
-I3_CONVERTER(I3WaveformSeriesMapConverter, I3WaveformSeriesMap);

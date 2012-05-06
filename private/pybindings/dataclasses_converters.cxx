@@ -18,7 +18,6 @@
 #include "tableio/converter/I3ParticleConverter.h"
 #include "tableio/converter/I3PositionConverter.h"
 #include "tableio/converter/I3TreeConverter.h"
-#include "tableio/converter/I3TriggerHierarchyConverter.h"
 #include "tableio/converter/I3WaveformConverter.h"
 #include "tableio/converter/PODConverter.h"
 #include "tableio/converter/I3EventHeaderConverter.h"
@@ -166,10 +165,11 @@ void register_dataclasses_converters() {
     }
     I3CONVERTER_CONVERTER_OBJ(I3DirectionConverter)
         .def(bp::init<I3DirectionConverter::BookRefFrame>(bp::args("BookRefFrame")=I3DirectionConverter::car));
-    
-    typedef I3TreeConverter<I3Particle> I3MCTreeConverter;
+
+    typedef I3TreeConverter<I3ParticleConverter> I3MCTreeConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3MCTreeConverter,"Dumps all particles in the MC Tree");
     
+    typedef I3TreeConverter<convert::I3Trigger> I3TriggerHierarchyConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3TriggerHierarchyConverter,"Dumps all triggers in the I3TriggerHierarchy tree");
     
     I3CONVERTER_EXPORT_DEFAULT(I3DoubleConverter,"Dumps I3Double objects");

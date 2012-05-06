@@ -16,6 +16,7 @@
 
 #include "dataclasses/physics/I3Particle.h"
 #include "dataclasses/I3Constants.h"
+#include "icetray/I3Frame.h"
 
 typedef I3VectorConverter< I3ParticleConverter > I3VectorI3ParticleConverter;
 typedef I3Vector<I3Particle> I3VectorI3Particle;

@@ -1,5 +1,5 @@
 #include "tableio/converter/I3MapStringVectorDoubleConverter.h"
-#include "tableio/I3ConverterFactory.h"
+#include "tableio/I3Converter.h"
 #include "boost/foreach.hpp"
 #include <tableio/converter/container_converter_detail.h>
 
@@ -45,5 +45,3 @@ size_t I3MapStringVectorDoubleConverter::FillRows(const I3MapStringVectorDouble&
 
     return maxindex;
 };
-
-I3_CONVERTER(I3MapStringVectorDoubleConverter, I3MapStringVectorDouble);

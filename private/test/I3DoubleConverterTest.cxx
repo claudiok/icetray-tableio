@@ -17,30 +17,29 @@
 
 #include "tableio/I3TableService.h"
 #include "tableio/I3TableWriter.h"
-#include "tableio/I3ConverterFactory.h"
+#include "tableio/I3Converter.h"
 
+#include <boost/python/class.hpp>
 
 TEST_GROUP(I3DoubleConverterTests);
 
-TEST(factory_creation) {
-    I3ConverterPtr converter = BuildConverter("I3Double");
-    ENSURE(converter != 0, "factory didn't return a null pointer");
-
-    // every converter has the chance to see the frame object
-    // it is responsible for before returning the description.
-    // hence a call to GetDescription() should now fail
-    bool thrown = false;
-    try {
-        converter->GetDescription();
-    }
-    catch(...) {
-        thrown = true;
-    }
-    ENSURE(thrown, "description not set yet");
+// Use the Python-side registry to emulate the old DSO registry
+template <typename T>
+I3ConverterPtr
+BuildConverter()
+{
+	namespace bp = boost::python;
+	bp::object tableio(bp::handle<>(PyImport_Import(bp::str("icecube.tableio").ptr())));
+	bp::object defaults(tableio.attr("I3ConverterRegistry").attr("defaults"));
+	bp::object cls(bp::object(T()).attr("__class__"));
+	if (bp::extract<bool>(defaults.attr("__contains__")(cls)))
+		return bp::extract<I3ConverterPtr>(defaults[cls]());
+	else
+		throw std::runtime_error("No converter registered!");
 }
 
 TEST(type_id) {
-    I3ConverterPtr converter = BuildConverter("I3Double");
+    I3ConverterPtr converter = BuildConverter<I3Double>();
     boost::shared_ptr<const I3Double> pi(new I3Double(3.14));
     boost::shared_ptr<const I3Bool> falsehood(new I3Bool(false));
     
@@ -49,40 +48,8 @@ TEST(type_id) {
     
 }
 
-TEST(vector_factory_creation) {
-    I3ConverterPtr converter = BuildConverter("std::vector<I3Double>");
-    ENSURE(converter != 0, "factory didn't return a null pointer");
-
-    // every converter has the chance to see the frame object
-    // it is responsible for before returning the description.
-    // hence a call to GetDescription() should now fail
-    bool thrown = false;
-    try {
-        converter->GetDescription();
-    }
-    catch(...) {
-        thrown = true;
-    }
-    ENSURE(thrown, "description not set yet");
-}
-
-TEST(vector_conversion) {
-    I3ConverterPtr converter = BuildConverter("std::vector<I3Double>");
-    
-    boost::shared_ptr<std::vector<I3Double> > vec( new std::vector<I3Double>);
-    // std::vector<I3Double> vec;
-    vec->push_back(I3Double(3.14));
-    vec->push_back(I3Double(2.71));
-    vec->push_back(I3Double(1.41));
-    // 
-    // ENSURE_EQUAL( converter->GetNumberOfRows(vec), size_t(3) );
-    // ENSURE( converter->GetDescription(vec), "get description");
-    
-}
-
-
 TEST(convert_one_row) {
-    I3ConverterPtr converter = BuildConverter("I3Double");
+    I3ConverterPtr converter = BuildConverter<I3Double>();
 
     I3DoubleConstPtr x = I3DoubleConstPtr( new I3Double(3.14) );
     I3FrameObjectConstPtr frameobj = x; 
@@ -107,7 +74,7 @@ TEST(convert_one_row) {
 }
 
 TEST(convert_into_many_rows) {
-    I3ConverterPtr converter = BuildConverter("I3Double");
+    I3ConverterPtr converter = BuildConverter<I3Double>();
 
     I3DoublePtr x = I3DoublePtr( new I3Double(3.14) );
     I3FrameObjectConstPtr frameobj = x; 

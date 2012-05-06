@@ -15,6 +15,7 @@
 #include "dataclasses/calibration/I3Calibration.h"
 #include "dataclasses/status/I3DetectorStatus.h"
 #include "icetray/I3Units.h"
+#include "icetray/I3Frame.h"
 
 /******************************************************************************/
 
@@ -200,8 +201,3 @@ size_t I3WaveformConverter::GetNumberOfRows(const I3WaveformSeriesMap& waveforms
 }
 
 /******************************************************************************/
-
-
-
-//I3_CONVERTER(I3TreeConverter<I3Particle>, I3MCTree);
-

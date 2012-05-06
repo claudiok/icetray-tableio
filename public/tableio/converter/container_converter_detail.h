@@ -16,32 +16,22 @@ namespace detail {
   
   template <class Converter_T, class booked_type, class is_i3converter>
   struct add_fields_impl {
-    static void do_add(Converter_T &converter, I3TableRowDescriptionPtr desc, const std::vector<booked_type> &v)
+    static void do_add(Converter_T &converter, I3TableRowDescriptionPtr desc, const booked_type &v)
     {
-      if (v.size()) {
-	converter.AddFields(desc, v[0]);
-      } else {
-	converter.AddFields(desc);
-      }
+      converter.AddFields(desc, v);
     }
   };
 
   template <class Converter_T, class booked_type>
   struct add_fields_impl<Converter_T, booked_type, boost::true_type> {
-    static void do_add(Converter_T &converter, I3TableRowDescriptionPtr desc, const std::vector<booked_type> &v)
+    static void do_add(Converter_T &converter, I3TableRowDescriptionPtr desc, const booked_type &v)
     {
-      I3TableRowDescriptionConstPtr item_desc;
-      if (v.size() > 0) {
-	item_desc = converter.GetDescription(v[0]);
-      } else {
-	item_desc = converter.GetDescription(booked_type());
-      }
-      *desc << *item_desc;
+      *desc << *(converter.GetDescription(v));
     }
   };
 
   template <class Converter_T, class booked_type>
-  inline void add_fields(Converter_T &converter, I3TableRowDescriptionPtr desc, const std::vector<booked_type> &v)
+  inline void add_fields(Converter_T &converter, I3TableRowDescriptionPtr desc, const booked_type &v)
   {
     add_fields_impl< Converter_T, booked_type, typename boost::is_base_of<I3Converter, Converter_T>::type >::do_add(converter, desc, v);
   }
