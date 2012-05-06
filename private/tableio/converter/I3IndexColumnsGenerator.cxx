@@ -96,6 +96,3 @@ I3IndexColumnsGenerator::Resurrect(I3TableRowPtr rows) {
 	
 	return header;
 }
-
-I3_CONVERTER(I3IndexColumnsGenerator, I3IndexColumnsGenerator);
-

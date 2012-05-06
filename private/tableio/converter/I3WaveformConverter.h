@@ -12,7 +12,7 @@
 #ifndef TABLEIO_I3WAVEFORMCONVERTER_H_INCLUDED
 #define TABLEIO_I3WAVEFORMCONVERTER_H_INCLUDED
 
-#include "tableio/I3ConverterFactory.h"
+#include "tableio/I3Converter.h"
 #include "dataclasses/physics/I3Waveform.h"
 
 class I3WaveformConverter : public I3ConverterImplementation<I3WaveformSeriesMap > {

@@ -14,7 +14,6 @@
 
 #include "tableio/I3TableWriter.h"
 #include "tableio/I3TableService.h"
-#include "tableio/I3ConverterFactory.h"
 #include "tableio/converter/I3IndexColumnsGenerator.h"
 #include <I3/name_of.h>
 

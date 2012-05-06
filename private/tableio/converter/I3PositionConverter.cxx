@@ -92,7 +92,3 @@ FillRows(const I3Position& position, I3TableRowPtr row)
     
     return 1;
 };
-
-//______________________________________________________________________________
-I3_CONVERTER(I3PositionConverter, I3Position);
-

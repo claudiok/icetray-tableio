@@ -50,6 +50,3 @@ size_t I3EventHeaderConverter::FillRows(const I3EventHeader& header,
 
     return 1;
 }
-
-I3_CONVERTER(I3EventHeaderConverter, I3EventHeader);
-

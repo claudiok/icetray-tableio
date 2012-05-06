@@ -15,6 +15,44 @@
 
 namespace convert {
 
+	void
+	I3Trigger::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
+	{
+	        desc->AddField<double>("time", "ns", "time at which the trigger was issued");
+	        desc->AddField<double>("length", "ns", "duration of triggered readout window");
+	        desc->AddField<bool>("fired", "bool", "true, if trigger fired (used for simulations)");
+    
+	        // TriggerKey
+	        MAKE_ENUM_VECTOR(sourceID,TriggerKey,TriggerKey::SourceID,TRIGGERKEY_H_TriggerKey_SourceID);
+	        MAKE_ENUM_VECTOR(typeID,TriggerKey,TriggerKey::TypeID,TRIGGERKEY_H_TriggerKey_TypeID);
+	        MAKE_ENUM_VECTOR(subtypeID,TriggerKey,TriggerKey::SubtypeID,TRIGGERKEY_H_TriggerKey_SubtypeID);
+    
+	        desc->AddEnumField<TriggerKey::SourceID>("source_id", sourceID, "",
+	                                                 "Enumeration describing what 'subdetector' issued a trigger");
+	        desc->AddEnumField<TriggerKey::TypeID>("type_id", typeID, "",
+	                                               "Enumeration describing what 'algorithm' issued a trigger");
+	        desc->AddEnumField<TriggerKey::SubtypeID>("subtype_id", subtypeID, "",
+	                                                  "Enumeration describing how a software trigger was orginally 'configured' within the TWR DAQ trigger system");
+	        desc->AddField<int32_t>("config_id", "", "Internal ID of the trigger settings in the DAQ. This can be used to retrieve the threshold, readout window, DOM set, etc from the DetectorStatus.");
+	}
+	
+	void
+	I3Trigger::FillSingleRow(const booked_type& trigger, I3TableRowPtr row)
+	{
+		row->Set<double>("time", trigger.GetTriggerTime());
+		row->Set<double>("length", trigger.GetTriggerLength());
+		row->Set<bool>("fired", trigger.GetTriggerFired());
+
+		const TriggerKey& key = trigger.GetTriggerKey();
+
+		row->Set<TriggerKey::SourceID> ("source_id",   key.GetSource());
+		row->Set<TriggerKey::TypeID> ("type_id",       key.GetType());
+		row->Set<TriggerKey::SubtypeID> ("subtype_id", key.GetSubtype());
+		if (key.CheckConfigID())
+			row->Set<int32_t>("config_id", key.GetConfigID());
+		
+	}
+
   void I3DOMLaunch::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
   {
     desc->AddField<double>("start_time","ns","Time at which the DOM went over threshold");
@@ -129,7 +167,7 @@ namespace convert {
     desc->AddField< double >("first", "", "Vector of double-double pair: first item");
     desc->AddField< double >("second", "", "Vector of double-double pair: second item");
   }
-
+  
   void double_pair::FillSingleRow(const booked_type &item, I3TableRowPtr row)
   {
     row->Set< double >("first", item.first);

@@ -1,7 +1,7 @@
 #ifndef TABLEIO_I3MAPSTRINGVECTORDOUBLECONVERTER_H_INCLUDED
 #define TABLEIO_I3MAPSTRINGVECTORDOUBLECONVERTER_H_INCLUDED
 
-#include "tableio/I3ConverterFactory.h"
+#include "tableio/I3Converter.h"
 #include "dataclasses/I3Map.h"
 
 class I3MapStringVectorDoubleConverter : public I3ConverterImplementation<I3MapStringVectorDouble> {

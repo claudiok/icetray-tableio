@@ -12,7 +12,7 @@
 #ifndef TABLEIO_I3VECTORCONVERTER_H_INCLUDED
 #define TABLEIO_I3VECTORCONVERTER_H_INCLUDED
 
-#include <tableio/I3ConverterFactory.h>
+#include <tableio/I3Converter.h>
 #include <dataclasses/I3Vector.h>
 #include <tableio/converter/container_converter_detail.h>
 
@@ -37,7 +37,10 @@ private:
     desc->isMultiRow_ = true;
     desc->AddField<tableio_size_t>("vector_index", "", "index in vector");
 
-    detail::add_fields(converter_, desc, v);
+    if (v.size())
+      detail::add_fields(converter_, desc, v.front());
+    else
+      detail::add_fields(converter_, desc, value_type());
 
     return desc;
   }

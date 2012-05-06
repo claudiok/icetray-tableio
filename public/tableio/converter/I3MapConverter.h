@@ -22,7 +22,7 @@
 #ifndef TABLEIO_I3MAPCONVERTER_H_INCLUDED
 #define TABLEIO_I3MAPCONVERTER_H_INCLUDED
 
-#include <tableio/I3ConverterFactory.h>
+#include <tableio/I3Converter.h>
 #include <dataclasses/I3Map.h>
 #include <dataclasses/geometry/I3Geometry.h>
 #include <icetray/OMKey.h>
@@ -69,10 +69,10 @@ protected:
     desc->AddField<tableio_size_t>("vector_index", "", "index in vector");
       
     if (m.size() && m.begin()->second.size()) {
-      detail::add_fields(converter_, desc, m.begin()->second);
+      detail::add_fields(converter_, desc, *(m.begin()->second.begin()));
     } else {
-      typedef typename map_type::mapped_type mapped_type;
-      detail::add_fields(converter_, desc, mapped_type());
+      typedef typename map_type::mapped_type::value_type value_type;
+      detail::add_fields(converter_, desc, value_type());
     }
 
     return desc;

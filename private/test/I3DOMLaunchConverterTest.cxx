@@ -12,7 +12,6 @@
 #include <I3Test.h>
 
 #include "tableio/I3Converter.h"
-#include "tableio/I3ConverterFactory.h"
 #include "tableio/converter/dataclasses_map_converters.h"
 
 #include "dataclasses/physics/I3DOMLaunch.h"
@@ -22,25 +21,8 @@ typedef I3MapOMKeyVectorConverter<convert::I3DOMLaunch> I3DOMLaunchSeriesMapConv
 
 TEST_GROUP(I3DOMLaunchConverterTests);
 
-TEST(factory_creation) {
-    I3ConverterPtr converter = BuildConverter("I3DOMLaunchSeriesMap");
-    ENSURE(converter != 0, "factory didn't return a null pointer");
-
-    // every converter has the chance to see the frame object
-    // it is responsible for before returning the description.
-    // hence a call to GetDescription() should now fail
-    bool thrown = false;
-    try {
-        converter->GetDescription();
-    }
-    catch(...) {
-        thrown = true;
-    }
-    ENSURE(thrown, "description not set yet");
-}
-
 TEST(description) {
-    I3ConverterPtr converter = BuildConverter("I3DOMLaunchSeriesMap");
+    I3ConverterPtr converter(new I3DOMLaunchSeriesMapConverter);
     
     I3DOMLaunchSeriesMapPtr dlsm(new I3DOMLaunchSeriesMap());
     ENSURE_EQUAL( converter->GetNumberOfRows(dlsm), size_t(0), "Nothing in the map");
@@ -59,7 +41,7 @@ TEST(description) {
 }
 
 TEST(type_id) {
-    I3ConverterPtr converter = BuildConverter("I3DOMLaunchSeriesMap");
+        I3ConverterPtr converter(new I3DOMLaunchSeriesMapConverter);
     I3DOMLaunchSeriesMapPtr dlsm(new I3DOMLaunchSeriesMap());
     ENSURE( converter->CanConvert(dlsm), "Converter recognizes its own.");
 }
@@ -120,7 +102,7 @@ TEST(assignment) {
     ENSURE_EQUAL( nrows, 0, "Converter fails if no geometry is present");
 
     /* Make sure it still works without geometry, but with geobooking off */
-    converter = BuildConverter("I3DOMLaunchSeriesMap");
+    converter = I3ConverterPtr(new I3DOMLaunchSeriesMapConverter);
     rows = I3TableRowPtr(new I3TableRow(desc,converter->GetNumberOfRows(dlsm)));
 
     converter->Convert(dlsm, rows, frame);
