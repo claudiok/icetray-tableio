@@ -213,7 +213,7 @@ protected:
         if (bookGeometry_) {
             if (!this->currentFrame_)  // obsolete check?
                 log_fatal("Trying to book geometry, but the current frame is not set.");
-            moduleGeo = this->currentFrame_->template Get<I3ModuleGeoMapConstPtr>("ModuleGeoMap");
+            moduleGeo = this->currentFrame_->template Get<I3ModuleGeoMapConstPtr>("I3ModuleGeoMap");
             if (!moduleGeo) {
                 log_error("%s: No ModuleGeoMap in frame", __PRETTY_FUNCTION__);
                 return 0;
