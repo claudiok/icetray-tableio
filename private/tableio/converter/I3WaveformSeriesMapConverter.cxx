@@ -126,9 +126,11 @@ size_t I3WaveformSeriesMapConverter::FillRows(const I3WaveformSeriesMap& wavefor
 
   size_t currentRow;
   for (iter = waveforms.begin(), currentRow = rows->GetCurrentRow(); 
-       iter != waveforms.end(); ++iter, ++currentRow)
+       iter != waveforms.end(); ++iter)
     {
-      rows->SetCurrentRow(currentRow);
+      if (iter->second.size() == 0)
+         continue;
+      rows->SetCurrentRow(currentRow++);
 
       OMKey key = iter->first;
 
@@ -205,7 +207,11 @@ size_t I3WaveformSeriesMapConverter::FillRows(const I3WaveformSeriesMap& wavefor
 /******************************************************************************/
 
 size_t I3WaveformSeriesMapConverter::GetNumberOfRows(const I3WaveformSeriesMap& waveforms) {
-  return waveforms.size();
+	size_t size = 0;
+	BOOST_FOREACH(const I3WaveformSeriesMap::value_type &pair, waveforms)
+		if (pair.second.size() > 0)
+			size++;
+	return size;
 }
 
 /******************************************************************************/
