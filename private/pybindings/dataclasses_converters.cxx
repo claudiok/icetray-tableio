@@ -8,6 +8,7 @@
  * @date $LastChangedDate$
  * @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
  */
+#include <string>
 
 #include "tableio/converter/pybindings.h"
 #include "tableio/converter/dataclasses_map_converters.h"
@@ -60,10 +61,10 @@ public:
 
 void register_dataclasses_converters() {
     I3CONVERTER_NAMESPACE(dataclasses);
-    
+
     // typdef the template into a legal Python identifier
     I3CONVERTER_EXPORT_DEFAULT(I3EventHeaderConverter,"Dumps I3EventHeader objects");
-    
+
     typedef I3MapOMKeyVectorConverter< convert::I3DOMLaunch > I3DOMLaunchSeriesMapConverter;
     I3_MAP_CONVERTER_EXPORT_DEFAULT(I3DOMLaunchSeriesMapConverter,"Dumps all DOMLaunches verbatim.");
     typedef I3MapOMKeyVectorConverter< convert::I3RecoPulse > I3RecoPulseSeriesMapConverter;
@@ -77,14 +78,14 @@ void register_dataclasses_converters() {
     I3_MAP_CONVERTER_EXPORT_DEFAULT(I3MapKeyVectorDoubleConverter, "Dumps all numbers verbatim");
     typedef I3MapOMKeyVectorConverter< convert::pod<int> > I3MapKeyVectorIntConverter;
     I3_MAP_CONVERTER_EXPORT_DEFAULT(I3MapKeyVectorIntConverter, "Dumps all numbers verbatim");
-    
+
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringDoubleConverter,"Dumps a std::map<string,double> verbatim");
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringVectorDoubleConverter,"Dumps a std::map<string,vector<double> > verbatim");
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringIntConverter,"Dumps a std::map<string,int> verbatim");
     I3CONVERTER_EXPORT_DEFAULT(I3MapStringBoolConverter,"Dumps a std::map<string,bool> verbatim");
 
     I3CONVERTER_EXPORT_DEFAULT(I3ParticleConverter,"Dumps an I3Particle verbatim");
-    
+
     //--------------------------------------------------------------------------
     // I3PositionConverter
     I3CONVERTER_EXPORT_DEFAULT__WITH_CONVERTER_OBJ(I3PositionConverter,
@@ -113,6 +114,11 @@ void register_dataclasses_converters() {
         "                                                                               \n"
         "        default value:                                                         \n"
         "            Car                                                                \n"
+        "                                                                               \n"
+        "    TableColumnNamePrefix:                                                     \n"
+        "        The prefix string that should be prefixed to all table column names.   \n"
+        "        This is useful when the converter is used internally by an other       \n"
+        "        converter to book an I3Position inside its own table.                  \n"
     );
     {
         I3CONVERTER_CONVERTER_NAMESPACE(I3PositionConverter);
@@ -125,8 +131,22 @@ void register_dataclasses_converters() {
           ;
     }
     I3CONVERTER_CONVERTER_OBJ(I3PositionConverter)
-        .def(bp::init<I3PositionConverter::BookRefFrame>(bp::args("BookRefFrame")=I3PositionConverter::car));
-    
+        .def(bp::init<I3PositionConverter::BookRefFrame, std::string>(
+            (bp::arg("BookRefFrame")          = I3PositionConverter::car,
+             bp::arg("TableColumnNamePrefix") = ""
+            )
+        ))
+        // NOTE: We need to expose the CreateDescription and the FillRows
+        //       methods, so they can be also used by other converters written
+        //       in Python.
+        .def("CreateDescription", &I3PositionConverter::CreateDescription,
+            (bp::arg("i3position"))
+        )
+        .def("FillRows", &I3PositionConverter::FillRows,
+            (bp::arg("i3position"), bp::arg("i3tablerow"))
+        )
+        ;
+
     //--------------------------------------------------------------------------
     // I3DirectionConverter
     I3CONVERTER_EXPORT_DEFAULT__WITH_CONVERTER_OBJ(I3DirectionConverter,
@@ -137,7 +157,7 @@ void register_dataclasses_converters() {
         "    icecube.dataclasses.converters.I3DirectionConverter(BookRefFrame = icecube.dataclasses.converters.I3DirectionConverter.BookRefFrame.Car)\n"
         "                                                                               \n"
         "Options:                                                                       \n"
-        "    BookRefFrame:                                                            \n"
+        "    BookRefFrame:                                                              \n"
         "        Books direction data only for the specified reference frame.           \n"
         "                                                                               \n"
         "        type:                                                                  \n"
@@ -153,6 +173,11 @@ void register_dataclasses_converters() {
         "                                                                               \n"
         "        default value:                                                         \n"
         "            Car                                                                \n"
+        "                                                                               \n"
+        "    TableColumnNamePrefix:                                                     \n"
+        "        The prefix string that should be prefixed to all table column names.   \n"
+        "        This is useful when the converter is used internally by an other       \n"
+        "        converter to book an I3Position inside its own table.                  \n"
     );
     {
         I3CONVERTER_CONVERTER_NAMESPACE(I3DirectionConverter);
@@ -164,14 +189,28 @@ void register_dataclasses_converters() {
           ;
     }
     I3CONVERTER_CONVERTER_OBJ(I3DirectionConverter)
-        .def(bp::init<I3DirectionConverter::BookRefFrame>(bp::args("BookRefFrame")=I3DirectionConverter::car));
+        .def(bp::init<I3DirectionConverter::BookRefFrame, std::string>(
+            (bp::arg("BookRefFrame")          = I3DirectionConverter::car,
+             bp::arg("TableColumnNamePrefix") = ""
+            )
+        ))
+        // NOTE: We need to expose the CreateDescription and the FillRows
+        //       methods, so they can be also used by other converters written
+        //       in Python.
+        .def("CreateDescription", &I3DirectionConverter::CreateDescription,
+            (bp::arg("i3direction"))
+        )
+        .def("FillRows", &I3DirectionConverter::FillRows,
+            (bp::arg("i3direction"), bp::arg("i3tablerow"))
+        )
+        ;
 
     typedef I3TreeConverter<I3ParticleConverter> I3MCTreeConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3MCTreeConverter,"Dumps all particles in the MC Tree");
-    
+
     typedef I3TreeConverter<convert::I3Trigger> I3TriggerHierarchyConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3TriggerHierarchyConverter,"Dumps all triggers in the I3TriggerHierarchy tree");
-    
+
     I3CONVERTER_EXPORT_DEFAULT(I3DoubleConverter,"Dumps I3Double objects");
     I3CONVERTER_EXPORT_DEFAULT(I3IntConverter,"Dumps I3Int objects");
     I3CONVERTER_EXPORT_DEFAULT(I3BoolConverter,"Dumps I3Bool objects");
@@ -204,7 +243,7 @@ void register_dataclasses_converters() {
 
     typedef I3VectorConverter< convert::TankKey > I3VectorTankKeyConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorTankKeyConverter, "Dumps an I3Vector of TankKeys");
-  
+
     typedef I3VectorConverter< convert::double_pair > I3VectorDoubleDoubleConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorDoubleDoubleConverter, "Dumps an I3Vector of double-double pairs");
 
@@ -213,9 +252,9 @@ void register_dataclasses_converters() {
 
     // waveform converter has a non-default constructor
     // don't register this converter, since registered converters need default constructors
-    bp::class_<I3WaveformConverter,                                      
-    boost::shared_ptr<I3WaveformConverter>,                 
-    bp::bases<I3Converter>,                      
+    bp::class_<I3WaveformConverter,
+    boost::shared_ptr<I3WaveformConverter>,
+    bp::bases<I3Converter>,
     boost::noncopyable >("I3WaveformConverter", 
                          "Dumps ATWD and FADC waveforms together", 
                          bp::init<std::string, std::string, bool>())
@@ -238,7 +277,7 @@ void register_dataclasses_converters() {
     typedef I3Map<OMKey, std::vector<I3Particle> > I3MapKeyVectorI3Particle;
     typedef I3MapOMKeyVectorConverter< I3ParticleConverter > I3MapKeyVectorI3ParticleConverter;
     I3_MAP_CONVERTER_EXPORT_DEFAULT(I3MapKeyVectorI3ParticleConverter, "Dumps all particles ... just a compilation test");
-*/    
+*/
     typedef I3VectorConverter< I3ParticleConverter > I3VectorI3ParticleConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorI3ParticleConverter, "Dumps an I3Vector<I3Particle>");
 

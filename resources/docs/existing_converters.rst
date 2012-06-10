@@ -39,17 +39,25 @@ ___________
 
       Books direction data only for the specified reference frame. The following
       enum values exist:
-      
+
       - ``Car``: Cartesian reference frame
           *Fields*: ``x``, ``y``, ``z``
-      
+
       - ``Sph``: Spherical reference frame
           *Fields*: ``azimuth``, ``zenith``
-      
+
       - ``All``: Books position data for all reference frames
           *Fields*: ``x``, ``y``, ``z``, ``azimuth``, ``zenith``
-      
+
       Default value: ``Car``
+
+  ``TableColumnNamePrefix`` (str)
+
+      The prefix string that should be prefixed to all table column names.
+      This is useful when the converter is used internally by an other
+      converter to book an I3Direction inside its own table.
+
+      Default value: ``""``
 
 :I3ParticleConverter: Dumps an ``I3Particle`` object.
 
@@ -58,24 +66,32 @@ ___________
   *Options:*
 
   ``BookRefFrame`` (enum `icecube.dataclasses.converters.I3PositionConverter.BookRefFrame`)
-      
+
       Books position data only for the specified reference frame. The following
       enum values exist:
-      
+
       - ``Car``: Cartesian reference frame
           *Fields*: ``x``, ``y``, ``z``
 
       - ``Cyl``: Cylindrical reference frame    
           *Fields*: ``rho``, ``z``, ``phi``
-      
+
       - ``Sph``: Spherical reference frame
           *Fields*: ``r``, ``phi``, ``theta``
-          
+
       - ``All``: Books position data for all reference frames
           *Fields*: ``x``, ``y``, ``z``, ``r``, ``rho``, ``phi``, ``theta``
-      
+
       Default value: ``Car``
- 
+
+  ``TableColumnNamePrefix`` (str)
+
+      The prefix string that should be prefixed to all table column names.
+      This is useful when the converter is used internally by an other
+      converter to book an I3Position inside its own table.
+
+      Default value: ``""``
+
 :I3Vector*Converter: Dump ``I3Vector*`` objects.
   
   *Variants:* Bool, Short, UShort, Int, UInt, Int64, UInt64, Float, Double, DoubleDouble (pair of doubles).
