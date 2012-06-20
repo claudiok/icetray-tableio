@@ -23,6 +23,7 @@
 #include "tableio/converter/PODConverter.h"
 #include "tableio/converter/I3EventHeaderConverter.h"
 #include "tableio/converter/I3WaveformSeriesMapConverter.h"
+#include "tableio/converter/I3FilterResultMapConverter.h"
 
 #include "dataclasses/I3MapOMKeyMask.h"
 
@@ -281,4 +282,8 @@ void register_dataclasses_converters() {
     typedef I3VectorConverter< I3ParticleConverter > I3VectorI3ParticleConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorI3ParticleConverter, "Dumps an I3Vector<I3Particle>");
 
-};
+    I3CONVERTER_EXPORT(I3FilterResultMapConverter,
+		       "Dumps the results of each Pole filter to a table column.");
+
+
+}
