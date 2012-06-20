@@ -282,7 +282,7 @@ void register_dataclasses_converters() {
     typedef I3VectorConverter< I3ParticleConverter > I3VectorI3ParticleConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3VectorI3ParticleConverter, "Dumps an I3Vector<I3Particle>");
 
-    I3CONVERTER_EXPORT(I3FilterResultMapConverter,
+    I3CONVERTER_EXPORT_DEFAULT(I3FilterResultMapConverter,
 		       "Dumps the results of each Pole filter to a table column.");
 
 
