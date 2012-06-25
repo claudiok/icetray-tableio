@@ -276,7 +276,7 @@ if have_hdf:
 				self.tray.AddModule('TrashCan','tc')
 				self.assertRaises(TypeError,self.tray.Execute)
 				# self.tray.Execute()
-				self.tray.Finish()
+				# self.tray.Finish()
 			def testNotATable(self):
 				"""Things that are not TableServices are rejected"""
 				self.tray.AddModule(self.target,'scribe',
@@ -286,7 +286,7 @@ if have_hdf:
 				self.tray.AddModule('TrashCan','tc')
 				self.assertRaises(TypeError,self.tray.Execute)
 				# self.tray.Execute()
-				self.tray.Finish()
+				# self.tray.Finish()
 			def testKeyList(self):
 				"""A simple list of keys, no error"""
 				self.tray.AddModule(self.target,'scribe',
