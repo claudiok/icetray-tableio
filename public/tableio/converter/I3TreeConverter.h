@@ -36,10 +36,10 @@ protected:
 		desc->isMultiRow_ = true;
 		desc->AddField<tableio_size_t>("depth", "", "depth in tree");
 		
-		// if (c.size())
-		// 	detail::add_fields(converter_, desc, *c.begin());
-		// else
-		// 	detail::add_fields(converter_, desc, Element());
+		if (c.size())
+			detail::add_fields(converter_, desc, *c.begin());
+		else
+			detail::add_fields(converter_, desc, Element());
 		
 		return desc;	
 	}
