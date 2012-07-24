@@ -53,14 +53,17 @@ I3MapOMKeyVectorConverter.
 
 
 
-Example: I3RecoPulseSeriesMapConverter
-_________________________________________
+Example using I3MapOMKeyVectorConverter: I3RecoPulseSeriesMapConverter
+_______________________________________________________________________
 
 .. highlight:: c++
 
 The following example shows the conversion struct for the I3RecoPulseSeriesMap
-converter. Mind the required typedef booked_type.
+converter using the implemented I3MapOMKeyVectorConverter<T>. Mind the required typedef booked_type.
 ::
+
+    #include <dataclasses/physics/I3RecoPulse.h>
+    #include <tableio/converter/I3MapConverter.h>
 
     struct convert_I3RecoPulse {
 
@@ -69,19 +72,61 @@ converter. Mind the required typedef booked_type.
       void AddFields(I3TableRowDescriptionPtr desc, const I3RecoPulse& = I3RecoPulse())
       {
         desc->AddField<double>("time", "ns", "Leading-edge time of the pulse");
-    	desc->AddField<double>("width", "ns", "Duration of the pulse");
-    	desc->AddField<double>("charge", "PE", "Integrated pulse charge");
-    	desc->AddField<int32_t>("id", "generic", "hit id");
+        desc->AddField<double>("width", "ns", "Duration of the pulse");
+        desc->AddField<double>("charge", "PE", "Integrated pulse charge");
+        desc->AddField<int32_t>("id", "generic", "hit id");
       }
 
-      void I3RecoPulse::FillSingleRow(const booked_type& pulse, I3TableRowPtr row)
+      void FillSingleRow(const booked_type& pulse, I3TableRowPtr row)
       {
         row->Set<double>("time", pulse.GetTime());
-    	row->Set<double>("width", pulse.GetWidth());
-    	row->Set<double>("charge", pulse.GetCharge());
-    	row->Set<int32_t>("id", pulse.GetID());
+        row->Set<double>("width", pulse.GetWidth());
+        row->Set<double>("charge", pulse.GetCharge());
+        row->Set<int32_t>("id", pulse.GetID());
       }
     
     };
 
-    typedef I3MapOMKeyVectorConverter< convert_I3RecoPulse >  I3RecoPulseSeriesMapConverter
+    typedef I3MapOMKeyVectorConverter< convert_I3RecoPulse >  I3RecoPulseSeriesMapConverter;
+
+
+
+Example using I3VectorConverter: I3MMCTrackListConverter
+__________________________________________________________
+
+.. highlight:: c++
+
+The I3MMCTrack does not inherit from I3FrameObject, so a converter for the I3MMCTrackList (an I3Vector<I3MMCTrack>) 
+also needs a struct representing the I3MMCTrack. The following example shows the conversion struct for the I3MMCTrackList
+converter using the implemented I3VectorConverter<T>. Mind the required typedef booked_type.
+::
+
+    #include <simclasses/I3MMCTrack.h>
+    #include <tableio/converter/I3VectorConverter.h>
+    
+    struct convert_I3MMCTrack {
+    
+        typedef I3MMCTrack booked_type;
+    
+        void AddFields(I3TableRowDescriptionPtr desc, const booked_type& = I3MMCTrack())
+        {
+            desc->AddField<double>("Ec", "GeV", "Muon Energy at closest point to detector center");
+            desc->AddField<double>("Ef", "GeV", "Muon Energy at leaving detector");
+            desc->AddField<double>("Ei", "GeV", "Muon Energy at entering detector");
+            desc->AddField<double>("Elost", "GeV", "Muon energy loss in detector");
+            ...
+        }
+    
+        void FillSingleRow(const booked_type& track, I3TableRowPtr row)
+        {
+            row->Set<double>("Ec", track.GetEc());
+            row->Set<double>("Ef", track.GetEf());
+            row->Set<double>("Ei", track.GetEi());
+            row->Set<double>("Elost", track.GetElost());
+            ...
+        }
+    
+    };
+    
+    typedef I3VectorConverter< convert_I3MMCTrack > I3MMCTrackListConverter;
+
