@@ -16,6 +16,7 @@
 
 #include "tableio/I3Converter.h"
 #include <boost/python/class.hpp>
+#include <boost/make_shared.hpp>
 
 namespace bp = boost::python;
 
@@ -91,6 +92,22 @@ bp::class_<W,X1,X2,X3> register_converter(bp::object& registry, bp::class_<W,X1,
     return classy;
 };
 
+namespace I3ConverterRegistry {
 
+template <typename T>
+I3ConverterPtr
+GetDefaultConverter()
+{
+	bp::object tableio(bp::handle<>(PyImport_Import(bp::str("icecube.tableio").ptr())));
+	bp::dict registry(tableio.attr("I3ConverterRegistry").attr("defaults"));
+	bp::object pytype(bp::object(boost::make_shared<T>()).attr("__class__"));
+	
+	if (!registry.has_key(pytype))
+		return I3ConverterPtr();
+	else
+		return bp::extract<I3ConverterPtr>(registry[pytype]());
+}
+
+};
 
 #endif  
