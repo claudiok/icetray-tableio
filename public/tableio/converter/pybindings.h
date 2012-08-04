@@ -16,6 +16,9 @@
 
 #include "tableio/I3Converter.h"
 #include <boost/python/class.hpp>
+#include <boost/python/scope.hpp>
+#include <boost/python/str.hpp>
+#include <boost/python/dict.hpp>
 #include <boost/make_shared.hpp>
 
 namespace bp = boost::python;
