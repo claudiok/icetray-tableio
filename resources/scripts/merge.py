@@ -64,7 +64,11 @@ else:
 for ctor,args in inservices:
     print 'Merging %s'%args[0]
     inservice = ctor(*args)
-    scribe = I3TableTranscriber(inservice,outservice)
+    try:
+        scribe = I3TableTranscriber(inservice,outservice)
+    except RuntimeError, e:
+        print e
+        continue
     if options.nframes is not None:
         scribe.Execute(options.nframes)
     else:
