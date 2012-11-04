@@ -7,7 +7,7 @@
 # 
 # @version $Revision$
 # @date $LastChangedDate$
-# @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy: jvansanten $
+# @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
 # 
 
 # concatenate tables, keeping track of indexes and such automatically

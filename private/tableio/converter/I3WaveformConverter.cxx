@@ -4,8 +4,8 @@
  *
  * $Id$
  *
- * @version $Revision: 62280 $
- * @date $LastChangedDate: 2010-03-10 05:37:10 +0100 (Mi, 10. Mär 2010) $
+ * @version $Revision$
+ * @date $LastChangedDate$
  * @author Eike Middell <eike.middell@desy.de> $LastChangedBy$
  */
 

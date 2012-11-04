@@ -7,7 +7,7 @@
 # 
 # @version $Revision$
 # @date $LastChangedDate$
-# @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy: jvansanten $
+# @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
 # 
 
 from optparse import OptionParser
