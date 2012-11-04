@@ -2,11 +2,11 @@
  * copyright  (C) 2010
  * The Icecube Collaboration
  *
- * $Id: dataclasses_map_converters.h 67236 2010-10-05 12:08:13Z kislat $
+ * $Id$
  *
- * @version $Revision: 67236 $
- * @date $LastChangedDate: 2010-10-05 14:08:13 +0200 (Tue, 05 Oct 2010) $
- * @author Fabian Kislat <fabian.kislat@desy.de> $LastChangedBy: kislat $
+ * @version $Revision$
+ * @date $LastChangedDate$
+ * @author Fabian Kislat <fabian.kislat@desy.de> $LastChangedBy$
  */
 
 #ifndef TABLEIO_POD_CONVERTER_TYPE_MAPPING_H_INCLUDED

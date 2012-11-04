@@ -2,11 +2,11 @@
  * copyright  (C) 2010
  * The Icecube Collaboration
  *
- * $Id: I3TableWriter.h 61608 2010-02-11 19:23:20Z jvansanten $
+ * $Id$
  *
  * @version $Revision$
  * @date $LastChangedDate$
- * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy: jvansanten $
+ * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
 #include <tableio/utils/I3TableTranscriber.h>

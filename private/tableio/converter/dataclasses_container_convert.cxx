@@ -2,11 +2,11 @@
  * copyright  (C) 2010
  * The Icecube Collaboration
  *
- * $Id: dataclasses_map_converters.cxx 67231 2010-10-05 08:36:34Z kislat $
+ * $Id$
  *
- * @version $Revision: 67231 $
- * @date $LastChangedDate: 2010-10-05 10:36:34 +0200 (Tue, 05 Oct 2010) $
- * @author Eike Middell <eike.middell@desy.de> $LastChangedBy: kislat $
+ * @version $Revision$
+ * @date $LastChangedDate$
+ * @author Eike Middell <eike.middell@desy.de> $LastChangedBy$
  */
 
 #include <vector>
