@@ -121,13 +121,9 @@ size_t I3WaveformConverter::FillRows(const I3WaveformSeriesMap& atwdWaveformMap,
         const I3DOMStatus &domstatus   = domstatusmap.find(key)->second;
         const double GI(SPEMean(domstatus,domcal)*domcal.GetFrontEndImpedance());
     
-        bool atwd_ok = true;
-        bool fadc_ok = true;
-        
         if( isnan(GI) ){
             log_info("OM (%d,%d) has an invalid gain. Skipping the OM.", 
                      key.GetString(), key.GetOM());
-            atwd_ok = false;
         }
         
         // /!\ only the first atwd waveform is extracted
@@ -185,9 +181,6 @@ size_t I3WaveformConverter::FillRows(const I3WaveformSeriesMap& atwdWaveformMap,
                     buffer[i] = *wfiter/I3Units::mV;
                 }
             }
-        }
-        else {
-            fadc_ok = false;
         }
     }
     return currentRow - startRow;

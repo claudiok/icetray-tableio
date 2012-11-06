@@ -146,10 +146,8 @@ void I3TableRowDescription::AddField(const std::string& name, I3Datatype type,
                                      const std::string& unit, const std::string& doc,
                                      size_t arrayLength) {
 
-    size_t chunkOffset=0;
     size_t byteOffset=0;
     if (fieldByteOffsets_.size() > 0) {
-        chunkOffset = GetTotalChunkSize();
         byteOffset = AlignOffset(GetNextOffset(), type.size);
     }    
     size_t nfields = fieldNameToIndex_.size();
