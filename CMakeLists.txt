@@ -14,7 +14,7 @@ i3_add_library(tableio
   private/tableio/textwriter/*.cxx
   private/tableio/utils/*.cxx
   private/tableio/detail/*.cxx
-  USE_TOOLS log4cplus boost
+  USE_TOOLS boost
   USE_PROJECTS icetray dataclasses
 )
 

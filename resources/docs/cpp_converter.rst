@@ -33,7 +33,7 @@ avoid a hard dependency on the tableio project::
     # define the lists used to build the basic library
     SET(LIB_${PROJECT_NAME}_SOURCEFILES private/jebclasses/*.cxx private/jebclasses/*/*.cxx)
     SET(LIB_${PROJECT_NAME}_PROJECTS icetray dataclasses)
-    SET(LIB_${PROJECT_NAME}_TOOLS log4cplus boost python)
+    SET(LIB_${PROJECT_NAME}_TOOLS boost python)
 
     # add some things if hdf-writer is installed
     if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/tableio)
