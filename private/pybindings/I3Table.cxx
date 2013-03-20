@@ -13,6 +13,7 @@
 
 #include <tableio/I3Table.h>
 #include <tableio/I3TableService.h>
+#include <icetray/python/gil_holder.hpp>
 
 namespace bp = boost::python;
 
@@ -21,6 +22,7 @@ struct I3TableWrapper : public I3Table, public bp::wrapper<I3Table> {
                          std::string name,
                          I3TableRowDescriptionConstPtr description) : I3Table(service, name, description) {};
         virtual void WriteRows(I3TableRowConstPtr row) {
+            bp::detail::gil_holder lock;
             this->get_override("WriteRows")(row);
         };
 };
