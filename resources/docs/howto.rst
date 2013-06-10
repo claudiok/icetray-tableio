@@ -113,7 +113,7 @@ to be listed there in order to be used by I3TableWriter.
 Booking everything in the file
 *********************************
 
-.. note::
+.. warning::
     You should really avoid doing this whenever possible, as it's likely to create very, very large files.
 
 If you really want dump *absolutely everything* in an I3 file using the
