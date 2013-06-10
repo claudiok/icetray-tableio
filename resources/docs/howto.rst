@@ -18,18 +18,15 @@ the service. A simple script could look something like this::
 
     from icecube import icetray, dataio
     from I3Tray import I3Tray
-    from icecube.tableio import I3TableWriter
-    from icecube.hdfwriter import I3HDFTableService
+    from icecube.hdfwriter import I3HDFWriter
     
     tray = I3Tray()
     tray.AddModule('I3Reader','reader',
                    filename = 'foo.i3.gz')
     
-    table_service = I3HDFTableService('foo.hd5')
-    
-    tray.AddModule(I3TableWriter,'writer',
-                   tableservice = table_service,
-                   keys         = ['LineFit','InIceRawData']
+    tray.AddSegment(I3HDFWriter,'writer',
+                   keys         = ['LineFit','InIceRawData'],
+                   SubEventStreams = ['in_ice'],
                   )
     
     tray.AddModule('TrashCan','yeswecan')
@@ -133,8 +130,8 @@ contains all the converters tableio knows about.
 Booking to multiple files at once
 ************************************
 
-You can also route output to multiple files in parallel by passing a list of
-I3TableServices rather than a single instance::
+You can also route output to multiple files in parallel by instantiating many
+I3TableServices and passing them as a list to tableio.I3TableWriter::
 
     from icecube import icetray
     from I3Tray import I3Tray
@@ -165,15 +162,12 @@ Using files that contain Q-frames, you have to know that there may be different
 SubEventStreams and that you have to tell I3TableWriter which one you want to book.
 Otherwise, it will just produce empty files. If this happens, you should get a WARN 
 message telling you that there were SubEventStreams present that were not booked.
-Book the ones you want to write out using parameter *Streams*. E.g. you can do::
+Book the ones you want to write out using parameter *SubEventStreams*. E.g. you can do::
 
     tray.AddModule("I3NullSplitter", "fullevent")
-     
-    tableservice = hdfwriter.I3HDFTableService("foo.hdf5")  
-     
-    tray.AddModule(tableio.I3TableWriter, "scribe",
-       tableservice=tableservice,
+    
+    tray.AddSegment(HDFWriter, "scribe",
        keys=["LineFit", "MPEFit"],
-       streams=["fullevent"],
+       SubEventStreams=["fullevent"],
        )
 
