@@ -21,15 +21,14 @@ the service. A simple script could look something like this::
     from icecube.hdfwriter import I3HDFWriter
     
     tray = I3Tray()
-    tray.AddModule('I3Reader','reader',
+    tray.AddModule('I3Reader',
                    filename = 'foo.i3.gz')
     
-    tray.AddSegment(I3HDFWriter,'writer',
+    tray.AddSegment(I3HDFWriter,
                    keys         = ['LineFit','InIceRawData'],
                    SubEventStreams = ['in_ice'],
                   )
     
-    tray.AddModule('TrashCan','yeswecan')
     tray.Execute()
     tray.Finish()
 
@@ -140,18 +139,17 @@ I3TableServices and passing them as a list to tableio.I3TableWriter::
     from icecube.rootwriter import I3ROOTTableService
     
     tray = I3Tray()
-    tray.AddModule('I3Reader','reader',filename = 'foo.i3.gz')
+    tray.AddModule('I3Reader',filename = 'foo.i3.gz')
     
     hdf = I3HDFTableService('foo.hd5')
     root = I3ROOTTableService('foo.root','master_tree')
     csv = I3CSVTableService('foo_csv')
     
-    tray.AddModule(I3TableWriter,'writer',
+    tray.AddModule(I3TableWriter,
                    tableservice = [hdf, root, csv],
                    keys         = ['LineFit','InIceRawData']
                   )
                   
-    tray.AddModule('TrashCan','yeswecan')
     tray.Execute()
     tray.Finish()
 
@@ -166,7 +164,7 @@ Book the ones you want to write out using parameter *SubEventStreams*. E.g. you 
 
     tray.AddModule("I3NullSplitter", "fullevent")
     
-    tray.AddSegment(HDFWriter, "scribe",
+    tray.AddSegment(HDFWriter,
        keys=["LineFit", "MPEFit"],
        SubEventStreams=["fullevent"],
        )
