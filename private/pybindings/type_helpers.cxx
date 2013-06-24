@@ -140,16 +140,16 @@ boost::shared_ptr<I3Datatype> I3Datatype_from_PyArrayTypecode(char code) {
 boost::shared_ptr<I3Datatype> I3Datatype_from_NumpyDtype(boost::python::object np_dtype) {
     I3DatatypePtr dtype(new I3Datatype());
     // sanity check on byte order
-    char byteorder = PyString_AsString(bp::object(np_dtype.attr("byteorder")).ptr())[0];
-    if (!(byteorder == '|') && !(byteorder == '=')) {
-        // log_error("Array must be in native byte order (not '%c')",byteorder);
-        log_error("numpy byteorder \"%c\" is not supported.", byteorder);
+    std::string byteorder = bp::extract<std::string>(np_dtype.attr("byteorder"));
+    if (!(byteorder[0] == '|') && !(byteorder[0] == '=')) {
+        // log_error("Array must be in native byte order (not '%c')",byteorder[0]);
+        log_error("numpy byteorder \"%c\" is not supported.", byteorder[0]);
         return I3DatatypePtr();
     }
-    char kind = PyString_AsString(bp::object(np_dtype.attr("kind")).ptr())[0];
+    std::string kind = bp::extract<std::string>(np_dtype.attr("kind"));
     size_t size = bp::extract<size_t>(np_dtype.attr("itemsize"));
     dtype->size = size;
-    switch (kind) {
+    switch (kind[0]) {
         case 'i':
             dtype->kind = I3Datatype::Int;
             dtype->is_signed = true;
@@ -167,7 +167,7 @@ boost::shared_ptr<I3Datatype> I3Datatype_from_NumpyDtype(boost::python::object n
             break;
         default:
             // return NULL for everything else
-            log_error("numpy dtype \"%c\" is not supported.", kind);
+            log_error("numpy dtype \"%c\" is not supported.", kind[0]);
             dtype = I3DatatypePtr();
     }
     return dtype;

@@ -125,7 +125,8 @@ void throw_unless_fits(size_t array_size, size_t field_size) {
      // ==============================================================
      if (is_array || is_ndarray) {
         if (is_array) {
-           char arr_typecode = PyString_AsString(bp::object(value.attr("typecode")).ptr())[0];
+           std::string typecode = bp::extract<std::string>(value.attr("typecode"));
+           char arr_typecode = typecode[0];
            arr_dtype = I3Datatype_from_PyArrayTypecode(arr_typecode);
         } else {
            arr_dtype = I3Datatype_from_NumpyDtype(value.attr("dtype"));
