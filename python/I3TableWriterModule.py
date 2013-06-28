@@ -194,18 +194,18 @@ $I3_BUILD/doc/projects/tableio/howto.html .
         
         for item in keys:
             key = item.pop('key')
-	    # if the user passed 'default', remove it and let the writer figure
-	    # out what the default is
-	    if 'converter' in item and item['converter'] == default:
-		    del item['converter']
-	    t = tablespec(**item)
+            # if the user passed 'default', remove it and let the writer figure
+            # out what the default is
+            if 'converter' in item and item['converter'] == default:
+                del item['converter']
+            t = tablespec(**item)
             self.writer.add_object(key,t)
 
         for item in types:
             typus = item.pop('type')
-	    if 'converter' in item and item['converter'] == default:
-		    del item['converter']
-	    t = tablespec(**item)
+            if 'converter' in item and item['converter'] == default:
+                del item['converter']
+            t = tablespec(**item)
             self.writer.add_type(typespec(typus),t)
 
     def handle_frame(self,frame):
