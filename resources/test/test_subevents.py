@@ -46,10 +46,10 @@ class SubeventTest(unittest.TestCase):
 		tray.AddModule("I3NullSplitter", "s1")
 		tray.AddModule("I3NullSplitter", "s2")
 		
-		for i in xrange(10):
+		for i in range(10):
 			tray.AddModule(emitter, 's1e%d' % i, label='s1e%d' % i, prob=0.1, If=streampick("s1"))
 			
-		for i in xrange(10):
+		for i in range(10):
 			tray.AddModule(emitter, 's2e%d' % i, label='s2e%d' % i, prob=0.1, If=streampick("s2"))
 
 		tabler = hdfwriter.I3HDFTableService(fname)
@@ -69,8 +69,8 @@ class SubeventTest(unittest.TestCase):
 	def testRowAlignment(self):
 		hdf = tables.openFile(self.fname)
 		tabs = []
-		for i in xrange(10):
-			for j in xrange(2):
+		for i in range(10):
+			for j in range(2):
 				try:
 					tabs.append(hdf.getNode('/s%de%d' % (j,i)))
 				except:
@@ -78,7 +78,7 @@ class SubeventTest(unittest.TestCase):
 		nrows = tabs[0].nrows
 		for tab in tabs[1:]:
 			self.assertEquals(nrows, tab.nrows)
-		for i in xrange(nrows):
+		for i in range(nrows):
 			canonical = tabs[0][i]
 			for tab in tabs[1:]:
 				row = tab[i]
@@ -106,16 +106,16 @@ class SubeventMergingTest(unittest.TestCase):
 		hdfmerge = tables.openFile(self.fname_merged)
 
 		tabs = []
-		for i in xrange(10):
-			for j in xrange(2):
+		for i in range(10):
+			for j in range(2):
 				try:
 					tabs.append(hdf1.getNode('/s%de%d' % (j,i)))
 				except:
 					pass
 		nrows1 = tabs[0].nrows
 		tabs = []
-		for i in xrange(10):
-			for j in xrange(2):
+		for i in range(10):
+			for j in range(2):
 				try:
 					tabs.append(hdf2.getNode('/s%de%d' % (j,i)))
 				except:
@@ -126,7 +126,7 @@ class SubeventMergingTest(unittest.TestCase):
 			imtab = hdfmerge.getNode('/__I3Index__/%s' % tab.name)
 			mtab = hdfmerge.getNode('/%s' % tab.name)
 			self.assertEquals(mtab.nrows, nrows1+nrows2)
-			for i in xrange(nrows2):
+			for i in range(nrows2):
 				row = tab[i]
 				mrow = mtab[i+nrows1]
 				for field in ['Run', 'Event', 'SubEvent', 'SubEventStream', 'exists']:

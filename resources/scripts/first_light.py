@@ -39,7 +39,7 @@ elif options.format == 'csv':
 		raise "Couldn't find the text writer service"
 	tabler = textwriter.I3CSVTableService(outfile[:-4] + '_csv')
 else:
-	raise ValueError, "I don't have a writer service for format '%s'"%options.format
+	raise ValueError("I don't have a writer service for format '%s'"%options.format)
 
 tray = I3Tray()
 
@@ -49,7 +49,7 @@ count = 0
 def counter(frame):
     global count
     if (count%100==0):
-        print "%d frames"%count
+        print("%d frames"%count)
     count +=1
 
 tray.AddModule(tableio.I3TableWriter,'writer', tableservice = tabler, bookeverything=True)

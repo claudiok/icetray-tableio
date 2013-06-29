@@ -49,7 +49,7 @@ and is almost certainly not what you actually want to do.', False)
         if isinstance(table_service, list):
             table_service = I3BroadcastTableService(tuple(table_service))
         elif not isinstance(table_service, I3TableService):
-            raise TypeError, "TableService must be an instance of I3TableService (got %s instead)" % table_service
+            raise TypeError("TableService must be an instance of I3TableService (got %s instead)" % table_service)
         self.table_service = table_service
     
     def _transform_keyitem(self,item):
@@ -61,17 +61,17 @@ and is almost certainly not what you actually want to do.', False)
             elif len(item) == 3:
                 return dict(key=item[0],converter=item[1],name=item[2])
             else:
-                raise ValueError, "Keys must be 2- or 3-tuples (got %s instead)" % item
+                raise ValueError("Keys must be 2- or 3-tuples (got %s instead)" % item)
         elif isinstance(item,str):
             return dict(key=item)
         elif isinstance(item,dict):
             #sanitize your inputs
             dictus = dict()
             for k in ['key','converter','name']:
-                if item.has_key(k): dictus[k] = item[k]
+                if k in item: dictus[k] = item[k]
             return dictus
         else:
-            raise TypeError, "Keys must be dicts, tuples, or strings."
+            raise TypeError("Keys must be dicts, tuples, or strings.")
     
     # FIXME (HACK): there has to be a better way to get at <type 'Boost.Python.class'>
     bp_class = type(I3TableService)
@@ -85,28 +85,28 @@ and is almost certainly not what you actually want to do.', False)
             elif len(item) == 2:
                 dictus = dict(type=item[0],converter=item[1])
             else:
-                raise ValueError, "Types must be 1- or 2-tuples (got %s instead)" % item
+                raise ValueError("Types must be 1- or 2-tuples (got %s instead)" % item)
         elif isinstance(item,dict):
             #sanitize your inputs
             dictus = dict()
             for k in ['type','converter']:
-                if item.has_key(k): dictus[k] = item[k]
+                if k in item: dictus[k] = item[k]
         else:
             dictus = dict(type=item)
         typus = dictus['type']
         if type(typus) != self.bp_class:
-            raise TypeError, "Type must be an instance of Boost.Python.class (got %s instead)" % typus
+            raise TypeError("Type must be an instance of Boost.Python.class (got %s instead)" % typus)
         return dictus
                 
     def _parse_args(self,arg,transformer):
         if arg is None:
             return []
         if isinstance(arg,dict):
-            arg = arg.items()
+            arg = list(arg.items())
         if isinstance(arg,list):
             arg = [transformer(item) for item in arg]
         else:
-            raise TypeError, "Arguments must be passed as something list-like."
+            raise TypeError("Arguments must be passed as something list-like.")
         valid_name = re.compile("^[a-zA-Z_][a-zA-Z0-9_]*$") 
         for item in arg:
             converter = item.get('converter',None)
@@ -116,11 +116,11 @@ and is almost certainly not what you actually want to do.', False)
                     converter = I3ConverterBundle(converter)
                     item['converter'] = converter
                 elif not isinstance(converter,I3Converter):
-                    raise TypeError, "In '%s': converter must be an instance of I3Converter"
+                    raise TypeError("In '%s': converter must be an instance of I3Converter")
             name = item.get('name',None)
             if not name is None:
                 if not valid_name.match(name):
-                    raise ValueError, "'%s' is not a valid table name. Table names must contain only letters, numbers, and underscores and may not start with a number" % name    
+                    raise ValueError("'%s' is not a valid table name. Table names must contain only letters, numbers, and underscores and may not start with a number" % name)    
         return arg
                 
     def Configure(self):
@@ -141,10 +141,9 @@ and is almost certainly not what you actually want to do.', False)
         empty = lambda t: (t is None) or (len(t) == 0)
         
         if (not data_flood) and empty(keys) and empty(types):
-            raise ValueError,\
-"""You must specify which frame objects should be booked by setting Keys \
+            raise ValueError("""You must specify which frame objects should be booked by setting Keys \
 and/or Types. If you really want to dump every object from every frame, \
-set BookEverything = True."""
+set BookEverything = True.""")
         
         # convert whatever was passed as 'Keys' to a list of dicts
         keys = self._parse_args(keys,self._transform_keyitem)
@@ -180,11 +179,11 @@ $I3_BUILD/doc/projects/tableio/howto.html .
 
         # if no default was registered for a type, pick the first one registered
         # in the normal converter registry.
-        for typus, converters in I3ConverterRegistry.registry.iteritems():
+        for typus, converters in I3ConverterRegistry.registry.items():
             if typus not in defaults:
                 defaults[typus] = converters[0]
 
-        for converter in defaults.itervalues():
+        for converter in defaults.values():
             # only instantiate the converter registered as default
             converter_list.append(I3ConverterMill(converter))
         

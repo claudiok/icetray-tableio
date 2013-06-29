@@ -19,18 +19,18 @@ class I3ConverterRegistry(object):
     def register(cls,converter,object_type=None,is_default=False):
         if object_type is None:
             object_type = converter.booked
-        if not cls.registry.has_key(object_type):
+        if object_type not in cls.registry:
             cls.registry[object_type] = []
         converters = cls.registry[object_type]
         converters.append(converter)
         if is_default:
             if object_type in cls.defaults:
-                 raise TypeError, "Attempted to register '%s' as the default converter for '%s', but '%s' has already been registered as default!" % (converter, object_type, cls.defaults[object_type])
+                 raise TypeError("Attempted to register '%s' as the default converter for '%s', but '%s' has already been registered as default!" % (converter, object_type, cls.defaults[object_type]))
             cls.defaults[object_type] = converter
     register = classmethod(register)
     def update(cls,registry_dict):
         for conv,targets in registry_dict.items():
-            if cls.registry.has_key(conv):
+            if conv in cls.registry:
                 cls.registry[conv] += targets
             else:
                 cls.registry[conv] = targets
