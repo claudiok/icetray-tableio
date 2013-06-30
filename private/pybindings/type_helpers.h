@@ -90,7 +90,7 @@ struct I3VectorDispatcher
   I3VectorDispatcher() { }
 
 #define EXTRACTOR(type) boost::python::extract<I3Vector<type> > type##_e(obj)
-#define CHECK_CALL(type) else if (type##_e.check()) visitor.template call<type>()
+#define CHECK_CALL(type) else if (dtype == I3DatatypeFromNativeType<type>() && type##_e.check()) visitor.template call<type>()
 
   void route(I3Datatype& dtype, T& visitor)
   {
