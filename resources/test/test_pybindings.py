@@ -3,14 +3,13 @@
 from icecube import icetray,dataclasses,tableio,dataio
 import array
 import unittest
-import exceptions
 import sys
 
 try:
 	import numpy
 	have_numpy = True
 except ImportError:
-	print "Numpy isn't installed, skipping numpy-specific tests"
+	print("Numpy isn't installed, skipping numpy-specific tests")
 	have_numpy = False
 	
 class I3PythonConverterTest(unittest.TestCase):
@@ -30,7 +29,7 @@ class I3PythonConverterTest(unittest.TestCase):
 		              'double':        tableio.types.Float64,
 		              'bool':          tableio.types.Bool}
 		# HACK: dial back longs on 32 bit systems for testing purposes
-		if sys.maxint == 2**31-1:
+		if sys.maxsize == 2**31-1:
 				self.types['signed_long'] = tableio.types.Int32
 				self.types['unsigned_long'] = tableio.types.UInt32
 		self.codes = {
@@ -46,12 +45,12 @@ class I3PythonConverterTest(unittest.TestCase):
 		              'double':        'd',
 		              'bool':          'o'}
 		self.conversions = {int:   ['c','b','B','h','H','i'],
-		                    long:  ['I','h','H'],
+		                    int:  ['I','h','H'],
 		                    float: ['f','d'],
 		                    bool:  ['o']}
 		
 		
-		for t,code in self.types.iteritems():
+		for t,code in self.types.items():
 			desc.add_field(t,code,'','')
 			desc.add_field('%s_vec'%t,code,'','',128)
 		
@@ -62,7 +61,7 @@ class I3PythonConverterTest(unittest.TestCase):
 		
 	def testKeys(self):
 		fields = list(self.desc.field_names);
-		self.assertEquals( fields, self.rows.keys() )
+		self.assertEquals( fields, list(self.rows.keys()) )
 	def testEnum(self):
 		field = 'trigger_type'
 		val = dataclasses.I3DOMLaunch.TriggerType.SPE_DISCRIMINATOR_TRIGGER
@@ -71,7 +70,7 @@ class I3PythonConverterTest(unittest.TestCase):
 		self.assertEquals( int(val), got )
 	def testIntegerScalars(self):
 		types = self.conversions[int]
-		reverse_types = dict([(b,a) for a,b in self.codes.iteritems()])
+		reverse_types = dict([(b,a) for a,b in self.codes.items()])
 		for i,t in enumerate(types):
 			if t == 'c': continue # no from_python converter for char...ah well
 			val = i+7
@@ -81,12 +80,12 @@ class I3PythonConverterTest(unittest.TestCase):
 			self.assertEquals( val, got_val, "Set field '%s' to %d, got %d back."%(field,val,got_val))
 	def testLongScalars(self):
 		import sys
-		field,val = 'signed_long',sys.maxint
+		field,val = 'signed_long',sys.maxsize
 		self.rows[field] = val;
 		got_val = self.rows[field]
 		self.assertEquals( val, got_val, "Set field '%s' to %d, got %d back."%(field,val,got_val))
-		bad_news = lambda: self.rows.set(field,sys.maxint+1)
-		self.assertRaises(exceptions.OverflowError, bad_news)
+		bad_news = lambda: self.rows.set(field,sys.maxsize+1)
+		self.assertRaises(OverflowError, bad_news)
 	def testArray(self):
 		field = 'signed_int_vec'
 		arr = array.array(self.codes[field[:-4]],range(128))
@@ -108,17 +107,17 @@ class I3PythonConverterTest(unittest.TestCase):
 				swapped = '<'
 			arr = numpy.array(range(128), (swapped + self.codes[field[:-4]]) )
 			bad_news = lambda: self.rows.set(field,arr)
-			self.assertRaises(exceptions.RuntimeError,bad_news)
+			self.assertRaises(RuntimeError,bad_news)
 	def testVectorInt(self):
 		vec = dataclasses.I3VectorInt()
-		for r in xrange(128): vec.append(r)
+		for r in range(128): vec.append(r)
 		field = 'signed_int_vec'
 		self.rows[field] = vec
 		got = self.rows[field]
-		self.assertEquals( range(128), got )
+		self.assertEquals( list(range(128)), got )
 	def testVectorDouble(self):
 		vec = dataclasses.I3VectorDouble()
-		for r in xrange(128): vec.append(r+3)
+		for r in range(128): vec.append(r+3)
 		field = 'double_vec'
 		self.rows[field] = vec
 		got = self.rows[field]
@@ -146,25 +145,25 @@ class DOMLaunchBookie(tableio.I3Converter):
         desc.add_field('trigger_type',tableio.I3Datatype(self.dl.TriggerType),'','')
         desc.add_field('trigger_mode',tableio.I3Datatype(self.dl.TriggerMode),'','')
         desc.add_field('raw_charge_stamp',tableio.types.Int32,'','',len(dl.GetRawChargeStamp()))
-        for i in xrange(3):
+        for i in range(3):
             desc.add_field('raw_atwd_%d'%i,tableio.types.Int32,'counts','Uncalibrated ATWD digitizer counts',128)
         desc.add_field('raw_fadc',tableio.types.UInt16,'counts','Uncalibrated fADC digitizer counts',256)
         return desc
     def _get_nonempty(self,dlsm):
         dl = None
-        for vec in dlsm.itervalues():
+        for vec in dlsm.values():
             if len(vec) == 0: continue
             dl = vec[0]
             if dl != None: break
         return dl
     def GetNumberOfRows(self,frameobj):
         nrows = 0
-        for vec in frameobj.itervalues():
+        for vec in frameobj.values():
             nrows += len(vec)
         return nrows
     def Convert(self,dlsm,rows,frame):
         rowno = 0
-        for omkey,dl_series in dlsm.iteritems():
+        for omkey,dl_series in dlsm.items():
             string = omkey.GetString()
             om = omkey.GetOM()
             for i,domlaunch in enumerate(dl_series):
@@ -213,19 +212,19 @@ class WaveformBookie(tableio.I3Converter):
         return desc
     def _get_nonempty(self,dlsm):
         dl = None
-        for vec in dlsm.itervalues():
+        for vec in dlsm.values():
             if len(vec) == 0: continue
             dl = vec[0]
             if dl != None: break
         return dl
     def GetNumberOfRows(self,frameobj):
         nrows = 0
-        for vec in frameobj.itervalues():
+        for vec in frameobj.values():
             nrows += len(vec)
         return nrows
     def Convert(self,wfsm,rows,frame):
         rowno = 0
-        for omkey,wf_series in wfsm.iteritems():
+        for omkey,wf_series in wfsm.items():
             string = omkey.GetString()
             om = omkey.GetOM()
             for i,wf in enumerate(wf_series):
@@ -246,7 +245,7 @@ try:
 	from icecube import hdfwriter
 	have_hdf = True
 except ImportError:
-	print 'hdfwriter is not available, skipping hdf-specific tests'
+	print('hdfwriter is not available, skipping hdf-specific tests')
 	have_hdf = False
 if have_hdf:
 	class I3TableWriterPythonModuleTest(unittest.TestCase):
