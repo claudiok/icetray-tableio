@@ -43,4 +43,9 @@ I3Datatype.__repr__ = pretty_dtype
 
 del I3Datatype,dt,make_dtype,pretty_dtype
 
-from enum import enum as Enum
+import sys
+if sys.version_info[0] >= 3:
+	from icecube.tableio.enum3 import enum as Enum
+else:
+	from icecube.tableio.enum2 import enum as Enum
+
