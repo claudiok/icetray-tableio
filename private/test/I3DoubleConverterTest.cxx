@@ -56,7 +56,7 @@ TEST(convert_one_row) {
 
     // create empty row
     // use the I3Double in x to initialize the description
-    ENSURE( converter->GetDescription(x), "get description");
+    ENSURE( (bool)converter->GetDescription(x), "get description");
     I3TableRowPtr rows = I3TableRowPtr(new I3TableRow(converter->GetDescription()));
 
     // inspect empty row
@@ -81,7 +81,7 @@ TEST(convert_into_many_rows) {
 
     // create 10 empty rows
     // use the I3Double in x to initialize the description
-    ENSURE( converter->GetDescription(x), "get description");
+    ENSURE( (bool)converter->GetDescription(x), "get description");
     I3TableRowPtr rows = I3TableRowPtr(new I3TableRow(converter->GetDescription(), 10));
 
     // inspect empty row
