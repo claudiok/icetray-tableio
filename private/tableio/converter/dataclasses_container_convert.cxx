@@ -203,7 +203,7 @@ namespace convert {
     row->Set<double>("atwd_bin_size", flasherinfo.GetATWDBinSize());
     
     const std::vector<int> &waveform(flasherinfo.GetRawATWD3());
-    size_t bins = std::max(waveform.size(), size_t(128));   // maybe paranoid, but safer
+    size_t bins = std::min(waveform.size(), size_t(128));   // maybe paranoid, but safer
     int32_t *buffer = row->GetPointer<int32_t>("raw_atwd3");
     for (size_t i = 0; i < bins; ++i) {
       buffer[i] = waveform[i];
