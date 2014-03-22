@@ -39,17 +39,16 @@ namespace {
 }
 
 // Make the RecoPulseSeriesMapConverter work on pulse masks.
-class I3RecoPulseSeriesMapMaskConverter : public I3MapOMKeyVectorConverter<
-    convert::I3RecoPulse, I3RecoPulseSeriesMap, I3RecoPulseSeriesMapMask > {
+class I3RecoPulseSeriesMapMaskConverter : public I3ConverterImplementation<I3RecoPulseSeriesMapMask>
+{
 public:
-	typedef I3MapOMKeyVectorConverter< convert::I3RecoPulse,
-	    I3RecoPulseSeriesMap, I3RecoPulseSeriesMapMask > Base;
-	I3RecoPulseSeriesMapMaskConverter() : Base() {};
-	I3RecoPulseSeriesMapMaskConverter(bool b) : Base(b) {};
+	I3RecoPulseSeriesMapMaskConverter() : base_() {};
+	I3RecoPulseSeriesMapMaskConverter(bool b) : base_(b) {};
 	I3TableRowDescriptionPtr CreateDescription(const I3RecoPulseSeriesMapMask& m) 
 	{
 		I3RecoPulseSeriesMap mappy;
-		return Base::CreateDescription(mappy);
+		return boost::const_pointer_cast<I3TableRowDescription>(
+		    base_.GetDescription(mappy));
 	}
 	size_t GetNumberOfRows(const I3RecoPulseSeriesMapMask &mask)
 	{
@@ -58,8 +57,12 @@ public:
 	size_t FillRows(const I3RecoPulseSeriesMapMask &mask, I3TableRowPtr rows)
 	{
 		I3RecoPulseSeriesMapConstPtr pulses = mask.Apply(*currentFrame_);
-		return Base::FillRows(*pulses, rows);
+		return base_.Convert(*pulses, rows, currentFrame_);
 	}
+private:
+	typedef I3MapOMKeyVectorConverter<convert::I3RecoPulse,
+	    I3RecoPulseSeriesMap> Base;
+	Base base_;
 };
 
 void register_dataclasses_converters() {
