@@ -24,8 +24,6 @@
 #include "tableio/converter/I3EventHeaderConverter.h"
 #include "tableio/converter/I3WaveformSeriesMapConverter.h"
 #include "tableio/converter/I3FilterResultMapConverter.h"
-#include "tableio/converter/I3TopRecoPlaneFitParamsConverter.h"
-#include "tableio/converter/I3TopLateralFitParamsConverter.h"
 
 #include "dataclasses/I3MapOMKeyMask.h"
 
@@ -290,8 +288,5 @@ void register_dataclasses_converters() {
     I3CONVERTER_EXPORT_DEFAULT(I3FilterResultMapConverter,
 		       "Dumps the results of each Pole filter to a table column.");
 
-
-    I3CONVERTER_EXPORT_DEFAULT(I3TopRecoPlaneFitParamsConverter, "Dumps I3TopRecoPlaneFitParams parameter objects");
-    I3CONVERTER_EXPORT_DEFAULT(I3TopLateralFitParamsConverter, "Dumps I3TopLateralFitParams parameter objects");
 
 }
