@@ -18,7 +18,24 @@ i3_add_library(tableio
   USE_PROJECTS icetray dataclasses
 )
 
-add_subdirectory(private/pybindings)
+i3_add_pybindings(tableio
+  private/pybindings/I3TableRowDescription.cxx
+  private/pybindings/I3TableRow.cxx
+  private/pybindings/I3Converter.cxx
+  private/pybindings/I3ConverterBundle.cxx
+  private/pybindings/I3TableService.cxx
+  private/pybindings/I3Table.cxx
+  private/pybindings/I3TableWriter.cxx
+  private/pybindings/I3TableTranscriber.cxx
+  private/pybindings/I3BroadcastTableService.cxx
+  private/pybindings/I3CSVTableService.cxx
+  private/pybindings/I3Datatype.cxx
+  private/pybindings/type_helpers.cxx
+  private/pybindings/dataclasses_converters.cxx
+  private/pybindings/module.cxx
+  USE_TOOLS boost python
+  USE_PROJECTS icetray tableio
+  )
 
 i3_test_executable(test 
     private/test/*.cxx
