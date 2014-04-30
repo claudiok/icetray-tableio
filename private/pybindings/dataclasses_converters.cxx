@@ -209,8 +209,8 @@ void register_dataclasses_converters() {
         )
         ;
 
-    typedef I3TreeConverter<I3ParticleConverter> I3MCTreeConverter;
-    I3CONVERTER_EXPORT_DEFAULT(I3MCTreeConverter,"Dumps all particles in the MC Tree");
+    //typedef I3TreeConverter<I3ParticleConverter> I3MCTreeConverter;
+    //I3CONVERTER_EXPORT_DEFAULT(I3MCTreeConverter,"Dumps all particles in the MC Tree");
 
     typedef I3TreeConverter<convert::I3Trigger> I3TriggerHierarchyConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3TriggerHierarchyConverter,"Dumps all triggers in the I3TriggerHierarchy tree");
