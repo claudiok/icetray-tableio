@@ -16,7 +16,16 @@
 
 #include <tableio/converter/container_converter_detail.h>
 #include <dataclasses/I3Tree.h>
-	 
+
+namespace {
+
+template <typename T>
+struct traits {
+	typedef typename T::const_iterator const_iterator;
+};
+
+}
+
 template <class Converter, typename Container = I3Tree<typename Converter::booked_type> >
 class I3TreeConverter : public I3ConverterImplementation<Container> {
 private:
@@ -53,7 +62,8 @@ protected:
 
                 size_t i_row = currentRow;
                 size_t start_row = currentRow;
-		for (typename Container::iterator it = c.begin(); it != c.end(); it++, i_row++) {
+		typedef typename traits<Container>::const_iterator const_iterator;
+		for (const_iterator it = c.begin(); it != c.end(); it++, i_row++) {
 			rows->SetCurrentRow(i_row);
 			rows->Set<tableio_size_t>("depth", c.depth(it));
 			detail::fill_single_row(converter_, *it, rows, this->currentFrame_);

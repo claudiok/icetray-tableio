@@ -26,6 +26,7 @@
 #include "tableio/converter/I3FilterResultMapConverter.h"
 
 #include "dataclasses/I3MapOMKeyMask.h"
+#include "dataclasses/physics/I3MCTree.h"
 
 namespace {
 
@@ -62,6 +63,13 @@ private:
 	    I3RecoPulseSeriesMap> Base;
 	Base base_;
 };
+
+namespace {
+template <>
+struct traits<I3Tree<I3Trigger> > {
+	typedef I3Tree<I3Trigger>::iterator const_iterator;
+};
+}
 
 void register_dataclasses_converters() {
     I3CONVERTER_NAMESPACE(dataclasses);
@@ -209,8 +217,8 @@ void register_dataclasses_converters() {
         )
         ;
 
-    //typedef I3TreeConverter<I3ParticleConverter> I3MCTreeConverter;
-    //I3CONVERTER_EXPORT_DEFAULT(I3MCTreeConverter,"Dumps all particles in the MC Tree");
+    typedef I3TreeConverter<I3ParticleConverter, I3MCTree> I3MCTreeConverter;
+    I3CONVERTER_EXPORT_DEFAULT(I3MCTreeConverter,"Dumps all particles in the MC Tree");
 
     typedef I3TreeConverter<convert::I3Trigger> I3TriggerHierarchyConverter;
     I3CONVERTER_EXPORT_DEFAULT(I3TriggerHierarchyConverter,"Dumps all triggers in the I3TriggerHierarchy tree");
