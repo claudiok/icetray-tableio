@@ -45,7 +45,8 @@ I3TableTranscriber::I3TableTranscriber(I3TableServicePtr input, I3TableServicePt
         }
         
         if (nEvents == 0) {
-            log_fatal("Input file contains no events.");
+            log_warn("Input file contains no events, skipping file...");
+            return;
         }
 
         outputService_->SetIndexConverter(indexer_);
