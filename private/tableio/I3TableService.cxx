@@ -206,6 +206,7 @@ void I3TableService::Finish() {
         } else {
             table_it->second->Flush();
         }
+        table_it->second->Align();
     }
 
     /* Only close the file if all the tables are disconnected. */
