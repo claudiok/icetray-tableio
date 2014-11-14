@@ -25,8 +25,9 @@ the service. A simple script could look something like this::
                    filename = 'foo.i3.gz')
     
     tray.AddSegment(I3HDFWriter,
-                   keys         = ['LineFit','InIceRawData'],
-                   SubEventStreams = ['in_ice'],
+                   output="foo.hdf5",
+                   keys=['LineFit','InIceRawData'],
+                   SubEventStreams=['in_ice'],
                   )
     
     tray.Execute()
@@ -165,6 +166,7 @@ Book the ones you want to write out using parameter *SubEventStreams*. E.g. you 
     tray.AddModule("I3NullSplitter", "fullevent")
     
     tray.AddSegment(HDFWriter,
+       output="foo.hdf5",
        keys=["LineFit", "MPEFit"],
        SubEventStreams=["fullevent"],
        )
