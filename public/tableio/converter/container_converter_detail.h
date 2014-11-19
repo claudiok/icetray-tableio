@@ -12,6 +12,7 @@
 #ifndef TABLEIO_CONTAINER_CONVERTER_DETAIL_H_INCLUDED
 #define TABLEIO_CONTAINER_CONVERTER_DETAIL_H_INCLUDED
 
+/// @cond
 namespace detail {
   
   template <class Converter_T, class booked_type, class is_i3converter>
@@ -60,5 +61,6 @@ namespace detail {
   }
 
 }
+/// @endcond
 
 #endif // TABLEIO_CONTAINER_CONVERTER_DETAIL_H_INCLUDED

@@ -9,9 +9,13 @@
  * @author Jakob van Santen <vansanten@wisc.edu> Last changed by: $LastChangedBy$
  */
 
+#ifndef TABLEIO_DETAIL_I3CONVERTERMILL_H_INCLUDED
+#define TABLEIO_DETAIL_I3CONVERTERMILL_H_INCLUDED
+
 #include "tableio/I3Converter.h"
 #include <boost/python/object.hpp>
-	 
+
+/// @cond 
 class I3ConverterMill {
 public:
 	I3ConverterMill(boost::python::object);
@@ -24,3 +28,6 @@ private:
 
 I3_POINTER_TYPEDEFS(I3ConverterMill);
 
+/// @endcond
+
+#endif // TABLEIO_DETAIL_I3CONVERTERMILL_H_INCLUDED

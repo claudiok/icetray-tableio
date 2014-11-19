@@ -12,6 +12,7 @@
 #include "tableio/detail/I3ConverterMill.h"
 #include <boost/python/extract.hpp>
 
+/// @cond
 I3ConverterMill::I3ConverterMill(boost::python::object callable)
     : callable_(callable)
 {
@@ -31,3 +32,4 @@ I3ConverterMill::operator()()
 {
 	return boost::python::extract<I3ConverterPtr>(callable_());
 }
+/// @endcond
