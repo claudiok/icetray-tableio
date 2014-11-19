@@ -13,6 +13,7 @@
 #include "dataclasses_container_convert.h"
 #include <icetray/I3Logging.h>
 
+/// @cond
 namespace convert {
 
 	void
@@ -246,3 +247,4 @@ namespace convert {
   }
 
 }
+/// @endcond

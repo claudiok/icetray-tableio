@@ -12,6 +12,7 @@
 #ifndef TABLEIO_POD_CONVERTER_TYPE_MAPPING_H_INCLUDED
 #define TABLEIO_POD_CONVERTER_TYPE_MAPPING_H_INCLUDED
 
+/// @cond
 namespace detail {
 
   template <typename T>
@@ -60,5 +61,6 @@ namespace detail {
   };
     
 }
+/// @endcond
 
 #endif // TABLEIO_POD_CONVERTER_TYPE_MAPPING_H_INCLUDED

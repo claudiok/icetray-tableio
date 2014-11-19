@@ -38,6 +38,7 @@
            TABLEIO_CONVERTER_FWD_BODY;  \
          }
 
+/// @cond
 namespace convert {
 
   template <typename T>
@@ -72,5 +73,6 @@ namespace convert {
   
 
 }
+/// @endcond
 
 #endif // TABLEIO_DATACLASSES_CONTAINER_CONVERT_H_INCLUDED
