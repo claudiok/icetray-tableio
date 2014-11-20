@@ -3,6 +3,14 @@
 # $Date$
 #
 
+November 20, 2014, Alex Olivas  (olivas@icecube.umd.edu)
+--------------------------------------------------------------------
+Release V14-11-00 - Bugfix release.
+  o Align all tables before closing
+  o Changed I3TableTranscriber to skip files containing no events 
+    and throwing a warning instead of a fatal error.
+
+
 August 11, 2011, Alex Olivas  (olivas@icecube.umd.edu)
 --------------------------------------------------------------------
 Release V11-08-00
