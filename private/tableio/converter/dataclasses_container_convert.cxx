@@ -130,7 +130,7 @@ namespace convert {
   void I3MCHit::AddFields(I3TableRowDescriptionPtr desc, const booked_type&)
   {
     desc->AddField<double>("time", "ns", "time");
-    desc->AddField<double>("weight", "PE", "The number of photoelectrons the hit represents.");
+    desc->AddField<uint64_t>("weight", "PE", "The number of photoelectrons the hit represents.");
     desc->AddField<double>("cherenkov_distance", "m", "FIXME: document");
     MAKE_ENUM_VECTOR(hit_source, ::I3MCHit, HitSource, I3MCHIT_H_I3MCHit_HitSource);
     desc->AddEnumField< ::I3MCHit::HitSource>("source",hit_source,"","");
@@ -142,7 +142,7 @@ namespace convert {
   void I3MCHit::FillSingleRow(const booked_type& hit, I3TableRowPtr row)
   {
     row->Set<double>("time", hit.GetTime());
-    row->Set<double>("weight", hit.GetWeight());
+    row->Set<uint64_t>("weight", hit.GetNPE());
     row->Set<double>("cherenkov_distance", hit.GetCherenkovDistance());
     row->Set< ::I3MCHit::HitSource>("source", hit.GetHitSource());
   }
