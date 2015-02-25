@@ -19,7 +19,6 @@ namespace bp = boost::python;
 I3DatatypePtr I3Datatype_from_Enum(bp::object enum_type);
 
 // spit out an array.array-style type code
-// FIXME: can we just make pybindings for I3Datatype?
 char PyArrayTypecode_from_I3Datatype(const I3Datatype& dtype) {
     char code = '\0';
     switch (dtype.kind) {
@@ -36,8 +35,7 @@ char PyArrayTypecode_from_I3Datatype(const I3Datatype& dtype) {
         case I3Datatype::Enum:
             // fall through
         case I3Datatype::Int:
-            // FIXME: what to do about degenerate case 'c'?
-            if (dtype.size == sizeof(char)) {
+	if (dtype.size == sizeof(char)) {
                 code = 'b';
             } else if (dtype.size == sizeof(short)) {
                 code = 'h';
@@ -58,7 +56,7 @@ boost::shared_ptr<I3Datatype> I3Datatype_from_PyObject(bp::object obj) {
         return I3Datatype_from_PyArrayTypecode(char_extractor());
     }
     
-    // FIXME: find a better way of recognizing a wrapped enum
+    // assume that anything that inherits from something called "enum" is an enum
     bp::object base = obj.attr("__base__").attr("__name__");
     std::string basename = bp::extract<std::string>(base);
     if (basename == std::string("enum")) {

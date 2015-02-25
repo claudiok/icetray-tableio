@@ -28,7 +28,7 @@ class I3TableRow {
         I3TableRow(const I3TableRow& rhs, size_t start, size_t stop);
         I3TableRow& operator=(const I3TableRow& rhs);
 
-        virtual ~I3TableRow(); // TODO measure gain by making the destructor not virtual
+        ~I3TableRow();
         
         // set the current row one which following Set and Get calls operate
         void SetCurrentRow(size_t row);

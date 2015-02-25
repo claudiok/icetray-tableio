@@ -34,7 +34,6 @@ size_t I3ConverterBundle::GetNumberOfRows(I3FrameObjectConstPtr object) {
     for (it = converters_.begin(); it != converters_.end(); it++) {
         numrows = (*it)->GetNumberOfRows(object);
         if (it != converters_.begin() && (numrows != global_numrows)) {
-            // TODO: more helpful error message
             log_fatal("Two converters returned a different number of rows for the same frame object.");
         }
         global_numrows = numrows;
@@ -49,25 +48,11 @@ size_t I3ConverterBundle::GetNumberOfRows(I3FrameObjectConstPtr object) {
 //***************************************************************************//
 
 I3TableRowDescriptionConstPtr I3ConverterBundle::GetDescription(I3FrameObjectConstPtr object) {
-    std::vector<I3ConverterPtr>::iterator it;
-    
-    // start with a blank description
-    I3TableRowDescriptionPtr combinedDescription(new I3TableRowDescription); 
-    I3TableRowDescriptionConstPtr description;
-    
-    for (it = converters_.begin(); it != converters_.end(); it++) {
-        description = (*it)->GetDescription(object);
-        // concatenate the descriptions
-        // FIXME: check if any field names collide and raise an error
-        *combinedDescription << *description;
-    }
-    
-    return combinedDescription;
+    return GetDescription(*object);
 };
 
 //***************************************************************************//
 
-// FIXME: this is just a copy of the pointer-taking method
 I3TableRowDescriptionConstPtr I3ConverterBundle::GetDescription(const I3FrameObject& object) {
     std::vector<I3ConverterPtr>::iterator it;
 
@@ -78,7 +63,6 @@ I3TableRowDescriptionConstPtr I3ConverterBundle::GetDescription(const I3FrameObj
     for (it = converters_.begin(); it != converters_.end(); it++) {
         description = (*it)->GetDescription(object);
         // concatenate the descriptions
-        // FIXME: check if any field names collide and raise an error
         *combinedDescription << *description;
     }
 
@@ -90,22 +74,11 @@ I3TableRowDescriptionConstPtr I3ConverterBundle::GetDescription(const I3FrameObj
 size_t I3ConverterBundle::Convert(I3FrameObjectConstPtr object, 
                                           I3TableRowPtr rows, 
                                           I3FramePtr frame) {
-    std::vector<I3ConverterPtr>::iterator it;
-    size_t global_numrows = 0;
-    size_t numrows = 0;
-    
-    for (it = converters_.begin(); it != converters_.end(); it++) {
-       numrows = (*it)->Convert(object,rows,frame);
-       // TODO: raise an error if converters fill different numbers of rows?
-       if (numrows > global_numrows) global_numrows = numrows;
-    }
-    
-    return global_numrows;
+    return Convert(*object, rows, frame);
 }
 
 //***************************************************************************//
 
-// FIXME: this is just a copy of the pointer-taking method
 size_t I3ConverterBundle::Convert(const I3FrameObject& object, 
                                           I3TableRowPtr rows, 
                                           I3FramePtr frame) {
@@ -115,7 +88,6 @@ size_t I3ConverterBundle::Convert(const I3FrameObject& object,
     
     for (it = converters_.begin(); it != converters_.end(); it++) {
        numrows = (*it)->Convert(object,rows,frame);
-       // TODO: raise an error if converters fill different numbers of rows?
        if (numrows > global_numrows) global_numrows = numrows;
     }
     

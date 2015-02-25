@@ -11,6 +11,7 @@
 
 #include "tableio/I3Converter.h"
 #include "dataclasses/physics/I3EventHeader.h"
+#include <I3/hash_map.h>
 
 class I3IndexColumnsGenerator : public I3ConverterImplementation<I3EventHeader> {
     public:
@@ -21,8 +22,7 @@ class I3IndexColumnsGenerator : public I3ConverterImplementation<I3EventHeader> 
 	I3TableRowDescriptionPtr CreateDescription(const I3EventHeader& object);
 	size_t FillRows(const I3EventHeader& header, I3TableRowPtr rows);
 	
-	/* TODO: some sort of hashing to make this less horrible */
-	typedef std::map<std::string,int> stream_map_t;
+	typedef hash_map<std::string,int> stream_map_t;
 	typedef std::vector<stream_map_t::key_type> istream_t;
 	stream_map_t streams_;
 	istream_t istreams_;

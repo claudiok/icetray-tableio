@@ -112,7 +112,6 @@ TEST(array_creation) {
     ENSURE_EQUAL( desc.GetTotalChunkSize() , chunksize, "total chunk size");
     ENSURE_EQUAL( desc.GetNumberOfFields(), static_cast<unsigned int>(3), "number of fields is three");
 
-    // TODO test hdf array types
     ENSURE_EQUAL( desc.GetFieldTypes().at(2).size, sizeof(int64_t), "hdfTypes vector works");
     ENSURE_EQUAL( desc.GetFieldTypeSizes().at(0), sizeof(int32_t), "typeSizes vector works");
     ENSURE_EQUAL( desc.GetFieldTypeSizes().at(1), sizeof(double), "typeSizes vector works");
@@ -206,8 +205,6 @@ TEST(enum_description) {
     MAKE_ENUM_VECTOR(ptype_vector,I3Particle,ParticleType,ptype_fields);
     desc->AddEnumField<I3Particle::ParticleType>("Type", ptype_vector, "", "doc");
     desc->AddField<double>("Value", "unit","doc");
-
-    // TODO move this to row tests?
 
     I3TableRow row = I3TableRow(desc);
     row.Set<unsigned int>("Run", 1);

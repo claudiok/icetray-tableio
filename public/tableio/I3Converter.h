@@ -139,7 +139,6 @@ I3_POINTER_TYPEDEFS( I3Converter );
  * So the majority of the converters can follow the scheme of converting
  * only a single object and more complex converters can be build that
  * access <code>currentFrame_</code> to get what they need. 
- * \todo Do converters need access to the context (e.g. services)?
  */
 template<class FrmObj>
 class I3ConverterImplementation : public I3Converter {
@@ -219,22 +218,9 @@ class I3ConverterImplementation : public I3Converter {
 	 * \brief Return an I3TableRowDescription specifying the columns this converter
 	 * will fill.
 	 *
-	 * \todo FIXME: this caching logic breaks if the description depends on the
-	 * object (e.g. I3MapStringDoubleConverter)! maybe introduce a flag in the
-	 * description to catch this case. For the moment the description will always
-	 * be newly constructed!
+	 * The description will be re-created every time this method is called.
 	 */
         I3TableRowDescriptionConstPtr GetDescription(const I3FrameObject& object) {
-            /* FIXME: this caching logic breaks if the description depends on the object! (e.g. I3MapStringDoubleConverter)
-             * maybe introduce a flag in the description to catch this case.
-             * for the moment the description will always be newly constructed!
-            if (description_)
-                return description_;
-            else {
-                description_ = CreateDescription(dynamic_cast<const FrmObj&>(object)); 
-                return description_;
-            }
-            */
             description_ = CreateDescription(dynamic_cast<const FrmObj&>(object)); 
             return description_;
         }

@@ -131,7 +131,7 @@ namespace convert {
   {
     desc->AddField<double>("time", "ns", "time");
     desc->AddField<uint64_t>("weight", "PE", "The number of photoelectrons the hit represents.");
-    desc->AddField<double>("cherenkov_distance", "m", "FIXME: document");
+    desc->AddField<double>("cherenkov_distance", "m", "The distance to the nominal Cherenkov emission point");
     MAKE_ENUM_VECTOR(hit_source, ::I3MCHit, HitSource, I3MCHIT_H_I3MCHit_HitSource);
     desc->AddEnumField< ::I3MCHit::HitSource>("source",hit_source,"","");
     
@@ -182,7 +182,6 @@ namespace convert {
     desc->AddField<uint32_t>("om", "", "OM number of the flashing DOM");
     desc->AddField<double>("flash_time", "ns", "Time (in nsec) in 25 nsec units, of the LED flash time.");
     desc->AddField<uint32_t>("mask", "bitmask", "Indicates which LEDs were flashing");
-    // #warning TODO: improve doc strings
     desc->AddField<int32_t>("width", "", "Flasher width");
     desc->AddField<int32_t>("rate", "", "Flasher rate");
     desc->AddField<int32_t>("brightness", "", "Brightness level (1..127)");

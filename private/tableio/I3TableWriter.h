@@ -58,12 +58,13 @@ class I3TableWriter {
            
            bool check(I3FrameObjectPtr p) const {
               boost::python::object frameobj(p);
-              // FIXME: remove debugging output
+#ifndef I3_COMPILE_OUT_VERBOSE_LOGGING
               std::string cls   = boost::python::extract<const std::string>(frameobj.attr("__class__").attr("__name__"));
               std::string cname = boost::python::extract<const std::string>(held_type_.attr("__name__"));
               log_trace("Checking object of type '%s' against '%s'",
                        cls.c_str(),
                        cname.c_str());
+#endif
               int rv = PyObject_IsInstance(frameobj.ptr(),held_type_.ptr());
               return (rv > 0);
            }
@@ -93,7 +94,6 @@ class I3TableWriter {
         
         // group components that belong together
         struct TableBundle {
-            std::string objectType;
             I3ConverterPtr converter;
             I3TablePtr table;
         };

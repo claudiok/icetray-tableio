@@ -71,7 +71,8 @@ and is almost certainly not what you actually want to do.', False)
         else:
             raise TypeError("Keys must be dicts, tuples, or strings.")
     
-    # FIXME (HACK): there has to be a better way to get at <type 'Boost.Python.class'>
+    # get the base class of all boost::python wrapped objects 
+    # (<type 'Boost.Python.class'>)
     bp_class = type(I3TableService)
         
     def _transform_typeitem(self,item):

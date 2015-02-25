@@ -155,7 +155,6 @@ bool I3TableWriter::AddObject(std::string name, std::string tableName,
 
        // store all this in tables_ 
        TableBundle bundle;
-       bundle.objectType = name_of(obj); // FIXME: this field can be dropped
        bundle.converter = converter;
        bundle.table = table;
    
@@ -170,7 +169,6 @@ bool I3TableWriter::AddObject(std::string name, std::string tableName,
 /******************************************************************************/
         
 void I3TableWriter::AddObject(std::string objName, TableSpec spec) {
-    // FIXME: error/duplicate checking
 	tablespec_map::iterator n_it = wantedNames_.find(objName);
 	if (n_it == wantedNames_.end()) {
 		wantedNames_[objName] = std::vector<TableSpec>(1,spec);
@@ -182,7 +180,6 @@ void I3TableWriter::AddObject(std::string objName, TableSpec spec) {
 /******************************************************************************/
 
 void I3TableWriter::AddType(TypeSpec type, TableSpec spec) {
-    // FIXME: error/duplicate checking
 	typespec_map::iterator t_it = wantedTypes_.find(type);
 	if (t_it == wantedTypes_.end()) {
 		wantedTypes_[type] = std::vector<TableSpec>(1,spec);
@@ -194,8 +191,7 @@ void I3TableWriter::AddType(TypeSpec type, TableSpec spec) {
 /******************************************************************************/
         
 void I3TableWriter::AddConverter(std::string typeName, I3ConverterPtr converter) {
-    // TODO add some error checking
-    converters_[typeName] = converter;
+	converters_[typeName] = converter;
 }
 
 /******************************************************************************/
@@ -213,13 +209,10 @@ const std::string I3TableWriter::GetTypeName(I3FramePtr frame, const std::string
 	} catch (...) {
 		typeName = "";
 	}
-	// TODO: put key on a ban list
 	return typeName;
 }
 
 void I3TableWriter::Convert(I3FramePtr frame) {
-    // implemenation pending
-    
     /*
     1. if types configured get list of object names and types from the frame
     2. for all configured names:
@@ -230,8 +223,6 @@ void I3TableWriter::Convert(I3FramePtr frame) {
         add to configured objects
         convert
     */
-    // TODO rethink requirement of event header? -> what about gcd frames?
-
 
     I3EventHeaderConstPtr header = frame->Get<I3EventHeaderConstPtr>(); // the name is _not_ canonical
     if (!header) {
@@ -311,7 +302,6 @@ void I3TableWriter::Convert(I3FramePtr frame) {
 
     // now, cycle through the typelist and look for objects in the frames that 
     // have the type and are not in tables_
-    // TODO rather expensive loop -> restructure to optimize?
     const std::vector<std::string>& objectsInFrame = frame->keys();
 
    // if the user specified types to be booked, loop through the frame's keys
@@ -353,8 +343,7 @@ void I3TableWriter::Convert(I3FramePtr frame) {
              if ( typeSpec.check(object) ) {
                 selected = true;
                 for (v_it = typelist_it->second.begin(); v_it != typelist_it->second.end(); v_it++) {
-                   // FIXME: any action necessary if AddObject fails?
-                   AddObject(objName, v_it->tableName, v_it->converter, object);
+			AddObject(objName, v_it->tableName, v_it->converter, object);
                 }
              } // if (typeName == objTypeName)
          } // for (typelist_it
@@ -403,7 +392,6 @@ void I3TableWriter::Convert(I3FramePtr frame) {
                 // the converter can then fill them
                 size_t rowsWritten = bundle.converter->Convert(obj, rows, frame);
             
-                // TODO add an error reporting mechanism to Convert
                 // e.g. rowWritten == 0 -> exist = 0
                 assert(rowsWritten == nrows);
             
@@ -426,8 +414,6 @@ void I3TableWriter::Convert(I3FramePtr frame) {
 /******************************************************************************/
 
 void I3TableWriter::Finish() {
-    // TODO: create any pending (empty) tables... this would be all names remaining in wantedNames. but what type?
-
     // disconnect from all tables
     std::map<std::string, std::vector<TableBundle> >::iterator list_it;
     std::vector<TableBundle>::iterator it;

@@ -18,10 +18,8 @@ static boost::shared_ptr<I3ConverterBundle> list_init( bp::list converters ) {
     bp::ssize_t n = bp::len(converters);
     std::vector<I3ConverterPtr> converter_vec;
     for (bp::ssize_t i = 0; i < n; i++) {
-        // TODO: allow PyNone for "figure it out yourself?"
         bp::extract<I3ConverterPtr> extractor(converters[i]);
         if (!extractor.check()) {
-            // TODO: more helpful error message
             log_fatal("List element could not be interpreted as an I3Converter.");
             continue;
         }

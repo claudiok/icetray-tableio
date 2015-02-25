@@ -20,7 +20,7 @@ void I3TableRow::init() {
     const size_t totalChunkSize = capacity_ * description_->GetTotalChunkSize();
     data_ = new I3MemoryChunk[totalChunkSize];
 
-    // initialize memory block with zeros - TODO useful?
+    // initialize memory block with zeros
     memset(data_, 0, I3MEMORYCHUNK_SIZE*totalChunkSize);
 }
 
@@ -93,12 +93,6 @@ void I3TableRow::erase(size_t nrows) {
 /******************************************************************************/
 
 void I3TableRow::append(const I3TableRow& rhs) {
-    // FIXME: This call is __really__ expensive
-    /*
-    if (! (*(description_) == rhs.GetDescription()) ) {
-        log_fatal("Attempted to append rows with an incompatible description.");
-    }
-    */
     const size_t required_rows = nrows_ + rhs.GetNumberOfRows();
     const size_t bytes_to_write = rhs.GetNumberOfRows()*description_->GetTotalByteSize();
     const size_t index = nrows_ * description_->GetTotalChunkSize();
@@ -167,11 +161,11 @@ I3TableRow& I3TableRow::operator=(const I3TableRow& rhs) {
 /******************************************************************************/
 
 void const* I3TableRow::GetPointer() const {
-    return static_cast<void*>(data_); // TODO const?
+    return static_cast<void*>(data_);
 }
 
 void const* I3TableRow::GetPointerToRow(size_t row) const {
-    return static_cast<void*>( &data_[description_->GetTotalChunkSize()*row] ); // TODO const?
+    return static_cast<void*>( &data_[description_->GetTotalChunkSize()*row] );
 }
 
 
@@ -204,7 +198,7 @@ size_t I3TableRow::GetNumberOfRows() const {
 /******************************************************************************/
 
 void I3TableRow::SetNumberOfRows(size_t nrows) {
-    assert(description_); // FIXME change to log_fatal?
+    i3_assert(description_);
     
     if (nrows_ == nrows)
         return;

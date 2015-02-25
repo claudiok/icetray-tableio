@@ -199,8 +199,6 @@ struct get_scalar {
 // ===========================================================
 // = Visitor that fills contents of memory chunk into a list =
 // ===========================================================
-// FIXME: we should return an array of some sort instead
-// how do you construct an array.array from Python/C or boost::python?
 struct get_list {
     I3TableRow& self;
     size_t index;

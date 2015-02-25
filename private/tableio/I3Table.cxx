@@ -66,15 +66,6 @@ I3TableRowDescriptionConstPtr I3Table::GetDescription() {
 /******************************************************************************/
 
 void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
-    /* TODO add error checking;
-       in principle this can break if the padding rows are too large
-       (e.g. creation of a huge table at the end of a processing chain)
-       maybe replace this with a while(padding = ...) loop
-       and hand out rows in chunks 
-    */
-    // this call is __really__ expensive
-    // assert(*row->GetDescription() == description_);
-    
     // sanity check: padding behavior is different for ragged tables
     size_t nrows = row->GetNumberOfRows(); 
     // only pad the data table itself if this is a non-ragged dataset
@@ -103,7 +94,6 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
         if (padding) indexTable_->WriteRows(padding);
     }
 
-    // FIXME: catch errors from the table
     WriteRows(row);
     
     if (indexTable_) {
@@ -129,9 +119,7 @@ void I3Table::AddRow(I3EventHeaderConstPtr header, I3TableRowConstPtr row) {
 /******************************************************************************/
 
 // force the table to write out padding rows
-// FIXME: this is triggered by passing a NULL header pointer
-// is there a better way to do this?
-// FIXME 2: this should only be called at the end, otherwise rows could be duplicated
+// NB: this is triggered by passing a NULL header pointer
 void I3Table::Align() {
     I3TableRowConstPtr padding;    
     // only pad the data table itself if this is a non-ragged dataset

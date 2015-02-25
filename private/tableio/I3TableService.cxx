@@ -40,10 +40,7 @@ I3TablePtr I3TableService::GetTable(std::string name,
     it = tables_.find(name);
 
     if (it != tables_.end()) {
-        // test description 
-        // TODO useful here? rethink task definitions
-        // if (description->CanBeFilledInto( it->second->GetDescription() ) )
-            table = it->second;
+       table = it->second;
     } else if (description) {
        // create table if description is not NULL
        table = CreateTable(name,description);
@@ -180,8 +177,7 @@ I3TableRowConstPtr I3TableService::GetPaddingRows(I3EventHeaderConstPtr lastHead
    log_trace("nrows = %zu",nrows);
    if (nrows == 0) return I3TableRowPtr();
    I3TableRowPtr rows = I3TableRowPtr(new I3TableRow(description, nrows));
-   // FIXME: special case for fieldless master table needed by ROOTWriter
-   // how to handle index-less tables in general?
+   // NB: special case for fieldless master table needed by ROOTWriter
    if (description->GetNumberOfFields() > 0) {
        I3FramePtr frame; // assume ticConv doesn't need the frame
        for (size_t i=0; i< nrows; ++i) {
