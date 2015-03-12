@@ -140,14 +140,14 @@ size_t I3WaveformConverter::FillRows(const I3WaveformSeriesMap& atwdWaveformMap,
         if (calibrate_) {
             for(wfiter = atwd_readout.begin(); 
                 i < 128 && wfiter != atwd_readout.end(); 
-                ++i, ++wfiter++) {
+                ++i, ++wfiter) {
                 buffer[i] = (*wfiter)*VoltToNPE;
             }
         }
         else {
             for(wfiter = atwd_readout.begin(); 
                 i < 128 && wfiter != atwd_readout.end(); 
-                ++i, ++wfiter++) {
+                ++i, ++wfiter) {
                 buffer[i] = *wfiter/I3Units::mV;
             }
         }
