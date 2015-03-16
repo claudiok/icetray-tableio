@@ -3,6 +3,13 @@
 # $Date$
 #
 
+March15, 2015, Alex Olivas  (olivas@icecube.umd.edu)
+--------------------------------------------------------------------
+Release V15-03-00 
+  o "weight" is now NPE and type uint64_t.
+  o No more converter for I3MCTree.  We'll start providing individual
+    converters like "the primary"
+
 November 20, 2014, Alex Olivas  (olivas@icecube.umd.edu)
 --------------------------------------------------------------------
 Release V14-11-00 - Bugfix release.
