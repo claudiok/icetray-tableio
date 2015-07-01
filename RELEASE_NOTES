@@ -3,6 +3,10 @@
 # $Date$
 #
 
+dev
+---
+  o Added I3Particle::AirShowerComponent to I3ParticleConverter
+
 March15, 2015, Alex Olivas  (olivas@icecube.umd.edu)
 --------------------------------------------------------------------
 Release V15-03-00 
