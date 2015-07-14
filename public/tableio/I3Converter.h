@@ -275,7 +275,8 @@ size_t I3ConverterImplementation<FrmObj>::GetNumberOfRows(const FrmObj& object) 
 // a default implementation of CanConvert. simply compares the template type to the pointer
 template <class FrmObj>
 bool I3ConverterImplementation<FrmObj>::CanConvert(I3FrameObjectConstPtr object) {
-      return (typeid(FrmObj) == typeid(*object.get()));
+    const I3FrameObject& obj=*object.get();
+    return (typeid(FrmObj) == typeid(obj));
 }
 
 /******************************************************************************/
