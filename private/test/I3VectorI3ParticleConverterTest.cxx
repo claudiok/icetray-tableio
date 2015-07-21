@@ -68,7 +68,6 @@ TEST(assignment) {
   particle.SetShape(I3Particle::TopShower);   // this is nonsense ... on purpose
   particle.SetFitStatus(I3Particle::GeneralFailure);
   particle.SetLocationType(I3Particle::Anywhere);
-  particle.SetAirShowerComponent(I3Particle::Background);
   particle.SetPos(42, 42, 42);
   particle.SetDir(1, 0);
   particle.SetTime(2012);
@@ -100,7 +99,6 @@ TEST(assignment) {
   ENSURE_EQUAL( rows->Get<I3Particle::ParticleShape>("shape"), I3Particle::TopShower);
   ENSURE_EQUAL( rows->Get<I3Particle::LocationType>("location"), I3Particle::Anywhere);
   ENSURE_EQUAL( rows->Get<I3Particle::FitStatus>("fit_status"), I3Particle::GeneralFailure);
-  ENSURE_EQUAL( rows->Get<I3Particle::AirShowerComponent>("air_shower_component"), I3Particle::Background);
     
 }
 
