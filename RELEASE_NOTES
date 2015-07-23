@@ -1,59 +1,76 @@
-# $Id$
-# $Author$
-# $Date$
-#
+.. $Id$
+.. $Author$
+.. $Date$
+
+Release Notes
+=============
 
 March15, 2015, Alex Olivas  (olivas@icecube.umd.edu)
 --------------------------------------------------------------------
+
 Release V15-03-00 
-  o "weight" is now NPE and type uint64_t.
-  o No more converter for I3MCTree.  We'll start providing individual
-    converters like "the primary"
+
+* "weight" is now NPE and type uint64_t.
+
+* No more converter for I3MCTree.  We'll start providing individual
+  converters like "the primary"
 
 November 20, 2014, Alex Olivas  (olivas@icecube.umd.edu)
 --------------------------------------------------------------------
+
 Release V14-11-00 - Bugfix release.
-  o Align all tables before closing
-  o Changed I3TableTranscriber to skip files containing no events 
-    and throwing a warning instead of a fatal error.
+
+* Align all tables before closing
+
+* Changed I3TableTranscriber to skip files containing no events 
+  and throwing a warning instead of a fatal error.
 
 
 August 11, 2011, Alex Olivas  (olivas@icecube.umd.edu)
 --------------------------------------------------------------------
+
 Release V11-08-00
 
 This is a minor bugfix release.
 
 Feature:
-- A converter for I3VectorTankKey
+
+* A converter for I3VectorTankKey
   -- Fabian Kislat
 
 Bugfix:
-- Fix a bug (introduced in the previous release) that prevented
+
+* Fix a bug (introduced in the previous release) that prevented
   I3TableWriter from writing to multiple I3TableServices at once.
   -- Jakob van Santen
 
 August 2, 2011, Erik Blaufuss  (blaufuss@icecube.umd.edu)
 --------------------------------------------------------------------
+
 Release V11-07-00
 
 This is a major release, adding support for Q frames and
 I3RecoPulse masks.
 
 Features added:
-- A converter for I3RecoPulseSeriesMapMask.
+
+* A converter for I3RecoPulseSeriesMapMask.
   -- Jakob van Santen
-- Support for booking multiple P frames that inherit from the same
+
+* Support for booking multiple P frames that inherit from the same
   Q frame.
   -- Jakob van Santen
-- Enable booking of geometry and waveform length in
+
+* Enable booking of geometry and waveform length in
   I3WaveformSeriesMapConverter.
   -- Fabian Kislat
 
 Documentation:
-- Add a list of common converters and their projects.
+
+* Add a list of common converters and their projects.
   -- Fabian Kislat
 
 Bugfix:
-- Make I3WaveformSeriesMapConverter work for FADC waveforms.
+
+* Make I3WaveformSeriesMapConverter work for FADC waveforms.
   -- Jakob van Santen

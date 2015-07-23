@@ -18,6 +18,11 @@ tableio
 A generic framework for producing tabular data for analysis from IceCube data
 files.
 
+.. toctree::
+   :maxdepth: 1
+   
+   release_notes
+
 Rationale
 ^^^^^^^^^
 
