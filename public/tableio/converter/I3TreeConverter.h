@@ -16,6 +16,22 @@
 
 #include <tableio/converter/container_converter_detail.h>
 #include <dataclasses/I3Tree.h>
+
+namespace detail {
+
+template <typename T, typename U=T>
+struct iterator_traits
+{
+	typedef typename U::const_iterator iterator_type;
+};
+
+template <typename T>
+struct iterator_traits<I3Tree<T> >
+{
+	typedef typename I3Tree<T>::iterator iterator_type;
+};
+
+}
 	 
 template <class Converter, typename Container = I3Tree<typename Converter::booked_type> >
 class I3TreeConverter : public I3ConverterImplementation<Container> {
@@ -53,7 +69,8 @@ protected:
 
                 size_t i_row = currentRow;
                 size_t start_row = currentRow;
-		for (typename Container::iterator it = c.begin(); it != c.end(); it++, i_row++) {
+		typedef typename detail::iterator_traits<Container>::iterator_type iterator_type;
+		for (iterator_type it = c.begin(); it != c.end(); it++, i_row++) {
 			rows->SetCurrentRow(i_row);
 			rows->Set<tableio_size_t>("depth", c.depth(it));
 			detail::fill_single_row(converter_, *it, rows, this->currentFrame_);
@@ -65,5 +82,14 @@ protected:
 		return (i_row - start_row);
 	}
 };
+
+// namespace TreeBase {
+//
+// template <class Converter, typename Container = Tree<typename Converter::booked_type> >
+// class TreeConverter : public I3ConverterImplementation<Container> {
+//
+// };
+// 
+// }
 
 #endif /* TABLEIO_I3TREECONVERTER_H_INCLUDED */
