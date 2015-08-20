@@ -17,6 +17,9 @@
  * see: http://language-binding.net/pyplusplus/troubleshooting_guide/shared_ptr/shared_ptr.html
  */
 
+#ifndef TABLEIO_CONSTPTRHELPERS_H_INCLUDED
+#define TABLEIO_CONSTPTRHELPERS_H_INCLUDED
+
 namespace boost{
 
     template<class T>
@@ -49,3 +52,4 @@ namespace utils{
 
 }
 
+#endif // TABLEIO_CONSTPTRHELPERS_H_INCLUDED

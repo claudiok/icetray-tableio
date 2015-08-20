@@ -9,6 +9,9 @@
  * @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
  */
 
+#ifndef TABLEIO_I3TABLEROWDETAIL_H_INCLUDED
+#define TABLEIO_I3TABLEROWDETAIL_H_INCLUDED
+
 #include <tableio/I3TableRow.h>
 #include <dataclasses/I3Vector.h>
 #include "type_helpers.h"
@@ -229,3 +232,5 @@ bp::object get_object(I3TableRow& self,I3Datatype& dtype,size_t index) {
     dispatcher.route(dtype,visitor);
     return visitor.result;
 }
+
+#endif // TABLEIO_I3TABLEROWDETAIL_H_INCLUDED

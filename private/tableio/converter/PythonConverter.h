@@ -1,3 +1,6 @@
+#ifndef TABLEIO_PYTHONCONVERTER_H_INCLUDED
+#define TABLEIO_PYTHONCONVERTER_H_INCLUDED
+
 #include <tableio/I3Converter.h>
 #include <boost/python.hpp>
 #include <icetray/I3FrameObject.h>
@@ -39,3 +42,4 @@ struct PythonConverter : I3Converter, boost::python::wrapper<I3Converter>
     SET_LOGGER("PythonConverter");
 };
 
+#endif // TABLEIO_PYTHONCONVERTER_H_INCLUDED

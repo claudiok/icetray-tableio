@@ -9,6 +9,9 @@
  * @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
  */
 
+#ifndef TABLEIO_UTILS_I3CONVERTERBUNDLE_H_INCLUDED
+#define TABLEIO_UTILS_I3CONVERTERBUNDLE_H_INCLUDED
+
 #include <tableio/I3Converter.h>
 
 // I3ConverterBundlerepresents a bundle of converters all acting on the same frame object
@@ -35,3 +38,5 @@ class I3ConverterBundle : public I3Converter {
         I3ConverterBundle();
         std::vector<I3ConverterPtr> converters_;
 };
+
+#endif // TABLEIO_UTILS_I3CONVERTERBUNDLE_H_INCLUDED

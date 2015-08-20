@@ -9,6 +9,9 @@
  * @author Eike Middell <eike.middell@desy.de> Last changed by: $LastChangedBy$
  */
 
+#ifndef TABLEIO_I3INDEXCOLUMNSGENERATOR_H_INCLUDED
+#define TABLEIO_I3INDEXCOLUMNSGENERATOR_H_INCLUDED
+
 #include "tableio/I3Converter.h"
 #include "dataclasses/physics/I3EventHeader.h"
 #include <I3/hash_map.h>
@@ -29,3 +32,5 @@ class I3IndexColumnsGenerator : public I3ConverterImplementation<I3EventHeader> 
     public:
 	I3EventHeaderPtr Resurrect(I3TableRowPtr rows);
 };
+
+#endif // TABLEIO_I3INDEXCOLUMNSGENERATOR_H_INCLUDED
