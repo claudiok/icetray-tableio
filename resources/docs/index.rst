@@ -16,7 +16,7 @@ tableio
 =================
 
 A generic framework for producing tabular data for analysis from IceCube data
-files.
+files. This project is maintained by Jakob van Santen <jvansanten@gmail.com>.
 
 .. toctree::
    :maxdepth: 1
