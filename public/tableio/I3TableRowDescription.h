@@ -75,7 +75,7 @@ public:
     AddField(name, enum_typus, unit, doc, arrayLength);
     }
 
-    bool CanBeFilledInto(shared_ptr<const I3TableRowDescription> other) const;
+    bool CanBeFilledInto(boost::shared_ptr<const I3TableRowDescription> other) const;
         
     // getter and setter - remove them? no real encapsulation anyway
     const std::vector<std::string>& GetFieldNames() const;
@@ -98,7 +98,7 @@ public:
     void SetIsMultiRow(bool f) { isMultiRow_ = f; };
     
 
-    bool operator==(shared_ptr<const I3TableRowDescription> other) const;
+    bool operator==(boost::shared_ptr<const I3TableRowDescription> other) const;
 private:
     size_t GetNextOffset() const;
 	
