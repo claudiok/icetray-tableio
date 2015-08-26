@@ -14,22 +14,20 @@ except ImportError:
 	
 def headerfaker(frame):
 	header = dataclasses.I3EventHeader()
-	header.RunID = 0
-	header.EventID = headerfaker.event
+	header.run_id = 0
+	header.event_id = headerfaker.event
 	headerfaker.event += 1
 	frame['I3EventHeader'] = header
 headerfaker.event = 0
 
-def emitter(frame, label, If, prob=0.5):
-	if not If(frame):
-		return None
+def emitter(frame, label, prob=0.5):
 	if (random.random() < prob):
 		particle = dataclasses.I3Particle()
 		frame[label] = particle
 
 def streampick(stream):
 	def pick(frame):
-		return frame.Stop != icetray.I3Frame.Physics or frame['I3EventHeader'].SubEventStream == stream
+		return frame.Stop != icetray.I3Frame.Physics or frame['I3EventHeader'].sub_event_stream == stream
 	return pick
 
 
@@ -56,7 +54,7 @@ class SubeventTest(unittest.TestCase):
 		tray.AddModule(tableio.I3TableWriter, 'scribe',
 			tableservice=tabler,
 			types=[dataclasses.I3Particle],
-			streams=['s1','s2'],
+			SubEventStreams=['s1','s2'],
 			)
 		
 		tray.AddModule('TrashCan', 'YesWeCan')

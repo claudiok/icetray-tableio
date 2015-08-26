@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+Ensure that I3MCTree and I3LinearizedMCTree can both be written
+"""
+
 try:
     from icecube.hdfwriter import I3HDFWriter
     from icecube import sim_services
