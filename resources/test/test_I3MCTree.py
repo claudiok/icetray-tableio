@@ -6,7 +6,6 @@ Ensure that I3MCTree and I3LinearizedMCTree can both be written
 
 try:
     from icecube.hdfwriter import I3HDFWriter
-    from icecube import sim_services
 except ImportError:
     import sys
     sys.exit(0)
@@ -28,7 +27,6 @@ def try_to_write(linearized=False):
     tray = I3Tray()
     
     tray.Add('I3InfiniteSource')
-    tray.Add('I3MCEventHeaderGenerator', IncrementEventId=True)
     tray.Add('I3NullSplitter', 'nullsplit')
     tray.Add(make_mctree, linearized=linearized)
         
