@@ -4,12 +4,20 @@
 Ensure that I3MCTree and I3LinearizedMCTree can both be written
 """
 
-import unittest
 import os
 import re
-import sys
 from icecube import icetray, dataclasses, tableio, phys_services
 from I3Tray import I3Tray
+
+import sys
+if sys.version_info[:2] < (2,7):
+    try:
+        import unittest2 as unittest
+    except ImportError:
+        icetray.logging.log_error("unittest for Python %d.%d.%d is too old. install unittest2." % (sys.version_info[:3]))
+        sys.exit(0)
+else:
+    import unittest
 
 def add_eventheader(frame):
     eh = dataclasses.I3EventHeader()
