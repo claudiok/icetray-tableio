@@ -4,14 +4,20 @@
 Ensure that I3MCTree and I3LinearizedMCTree can both be written
 """
 
-try:
-    from icecube.hdfwriter import I3HDFWriter
-except ImportError:
-    import sys
-    sys.exit(0)
-
+import unittest
+import os
+import re
+import sys
 from icecube import icetray, dataclasses, tableio, phys_services
 from I3Tray import I3Tray
+
+def add_eventheader(frame):
+    eh = dataclasses.I3EventHeader()
+    eh.run_id = 1
+    eh.event_id = add_eventheader.event_id
+    add_eventheader.event_id += 1
+    frame['I3EventHeader'] = eh
+add_eventheader.event_id = 1
 
 def make_mctree(frame, linearized=True):
     tree = dataclasses.I3MCTree()
@@ -24,11 +30,19 @@ def make_mctree(frame, linearized=True):
     frame['I3MCTree'] = tree
 
 def try_to_write(linearized=False):
+    
+    try:
+        from icecube.hdfwriter import I3HDFWriter
+    except ImportError:
+        raise unittest.SkipTest("hdfwriter project missing")
+    
     tray = I3Tray()
     
     tray.Add('I3InfiniteSource')
+    tray.Add(add_eventheader, Streams=[icetray.I3Frame.DAQ])
+    tray.Add("I3NullSplitter", "nullsplit")
+    
     tray.Add(make_mctree, linearized=linearized)
-        
     tray.Add(I3HDFWriter,
         Output='foo.hdf5',
         Keys=['I3MCTree'],
@@ -39,5 +53,23 @@ def try_to_write(linearized=False):
     tray.Execute(1)
     tray.Finish()
 
-try_to_write()
-try_to_write(linearized=True)
+class MCTreeTest(unittest.TestCase):
+    def setUp(self):
+        try_to_write()
+    def tearDown(self):
+        os.unlink("foo.hdf5")
+    def testNumberOfRows(self):
+        try:
+            import tables
+        except ImportError:
+            raise unittest.SkipTest("pytables missing")
+        hdf = tables.openFile('foo.hdf5')
+        self.assertIsNotNone(hdf.getNode('/I3MCTree'), "I3MCTree table exists")
+        self.assertEquals(hdf.getNode('/I3MCTree').nrows, 2, "I3MCTree table has 2 rows")
+
+class LinearizedMCTreeTest(MCTreeTest):
+    def setUp(self):
+        try_to_write(linearized=True)
+
+if __name__ == "__main__":
+    unittest.main()
