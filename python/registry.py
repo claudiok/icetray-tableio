@@ -3,11 +3,11 @@
 # copyright  (C) 2010
 # The Icecube Collaboration
 # 
-# $Id$
+# $Id: registry.py 107665 2013-06-29 14:39:18Z nwhitehorn $
 # 
-# @version $Revision$
-# @date $LastChangedDate$
-# @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
+# @version $Revision: 107665 $
+# @date $LastChangedDate: 2013-06-29 10:39:18 -0400 (Sat, 29 Jun 2013) $
+# @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy: nwhitehorn $
 # 
 
 class I3ConverterRegistry(object):

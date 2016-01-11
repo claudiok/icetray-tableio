@@ -3,11 +3,11 @@
 # copyright  (C) 2010
 # The Icecube Collaboration
 # 
-# $Id$
+# $Id: I3TableWriterModule.py 129552 2015-02-25 13:45:04Z jvansanten $
 # 
-# @version $Revision$
-# @date $LastChangedDate$
-# @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
+# @version $Revision: 129552 $
+# @date $LastChangedDate: 2015-02-25 08:45:04 -0500 (Wed, 25 Feb 2015) $
+# @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy: jvansanten $
 # 
 
 from icecube.icetray import I3ConditionalModule, vector_string

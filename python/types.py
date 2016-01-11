@@ -3,11 +3,11 @@
 # copyright  (C) 2010
 # The Icecube Collaboration
 # 
-# $Id$
+# $Id: types.py 107762 2013-07-01 22:55:31Z nwhitehorn $
 # 
-# @version $Revision$
-# @date $LastChangedDate$
-# @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
+# @version $Revision: 107762 $
+# @date $LastChangedDate: 2013-07-01 18:55:31 -0400 (Mon, 01 Jul 2013) $
+# @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy: nwhitehorn $
 # 
 
 from icecube.tableio import I3Datatype
