@@ -142,7 +142,7 @@ size_t I3WaveformSeriesMapConverter::FillRows(const I3WaveformSeriesMap& wavefor
 	const I3DOMStatus &domstatus   = detectorstatus->domStatus.find(key)->second;
 	GI = SPEMean(domstatus,domcal)*domcal.GetFrontEndImpedance();
         
-	if ( isnan(GI) ) {
+	if ( std::isnan(GI) ) {
 	  log_info("OM (%d,%d) has an invalid gain. Skipping the OM.", 
 		   key.GetString(), key.GetOM());
 	  ok = false;
