@@ -8,9 +8,8 @@
 .. @date $LastChangedDate$
 .. @author Jakob van Santen <vansanten@wisc.edu> $LastChangedBy$
 
-
 Writing and extending converters
-========================================
+================================
 
 tableio makes it particularly easy to write converters for FrameObjects defined in your own project. These can be written either in Python or C++.
 
@@ -25,27 +24,27 @@ be passed to the table writer service, which interprets it according to the
 description and writes it out to disk. The data may come directly from the frame object or be the result of a calculation (e.g. the number of entries in a DOMLaunchSeriesMap, which can be useful for identifying high-energy events).
 
 Best practices
-*****************
+**************
 
 First, there are a few conventions you should follow to make the output of your converter useful.
 
 Field names
-_______________
+___________
 
 Your field names should be all lower-case, separated by underscores, like 'raw_atwd_0', 'fit_status', or 'zenith'. 
 
 Units
-_______________
+_____
 
 *Always* include unambiguous units in your table descriptions. Even if you're using the standard I3Units (e.g. gigameters per second for velocity), you should document it.
 
 Docstrings
-_________________
+__________
 
 Include a useful documentation string whenever applicable. This is especially important if there is *any* possible ambiguity about how the field's value was calculated or should be interpreted. 
 
 Data types
-________________
+__________
 
 In Python, you use the predefined types (e.g. tableio.types.Float32 or
 tableio.types.UInt8) to specify the type of the field. For enumerated types,
@@ -75,14 +74,20 @@ which will create a 32-bit field on 32-bit systems and a 64-bit field on
 	the most efficient memory layout.
 
 Writing new converters
-*****************************
+**********************
 
 You can write converters the easy way, :doc:`python_converter`, or the hard way, :doc:`cpp_converter`.
 
 Extending an existing converter
-***********************************
+*******************************
 
-It is particularly simple to add additional fields to an existing converter. Suppose that for a particular analysis, we wish to extend the I3Particle converter to book celestial coordinates in addition to detector coordinates. We would define a new converter for I3Particle that looks something like this::
+It is particularly simple to add additional fields to an existing
+converter. Suppose that for a particular analysis, we wish to extend
+the I3Particle converter to book celestial coordinates in addition to
+detector coordinates. We would define a new converter for I3Particle
+that looks something like this:
+
+.. code-block:: python
 
     class SkyBooker(tableio.I3Converter):
         """Demo of a booker extension, e.g. to book celestial coordinates"""
