@@ -45,15 +45,15 @@ void register_I3TableRowDescription() {
                                                                               \n\
 Parameters                                                                    \n\
 ----------                                                                    \n\
-name : string                                                                 \n\
+name : str                                                                    \n\
    The name of the field. This should be a valid Python identifier.           \n\
 dtype : I3Datatype                                                            \n\
    The datatype to be stored in the field. I3Datatypes can be constructed     \n\
    from wrapped enumerated types (Boost.Python.enum), which case the names    \n\
    of the enum members will be extracted and stored in the final table.       \n\
-units : string                                                                \n\
+units : str                                                                   \n\
    The units of the values stored in the field (e.g. 'mV', 'm', 'Gm/s')       \n\
-docstring : string                                                            \n\
+docstring : str                                                               \n\
    A description of quantity stored in the field (e.g. where it comes from and\n\
    how it was calculated).                                                    \n\
 array_size : int                                                              \n\

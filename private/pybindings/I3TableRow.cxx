@@ -127,10 +127,11 @@ void register_I3TableRow() {
 An I3TableRow is a container for generic tabular data, i.e. columns and      \n\
 rows. The associated I3TableRowDescriptionObject describes the format of the \n\
 columns. Each column has a name and a datatype. The following basic data     \n\
-types are supported:                                                         \n\
-      ________________________________________________                       \n\
+types are supported::                                                        \n\
+                                                                             \n\
+     +------+----------------+------------------------+                      \n\
      | Code | Native type    | Equivalent Python type |                      \n\
-     |------|----------------|------------------------|                      \n\
+     +======+================+========================+                      \n\
      |  'c' | char           |                        |                      \n\
      |  'b' | signed char    |                        |                      \n\
      |  'B' | unsigned char  |                        |                      \n\
@@ -143,7 +144,7 @@ types are supported:                                                         \n\
      |  'f' | float          |                        |                      \n\
      |  'd' | double         | float                  |                      \n\
      |  'o' | bool           | bool                   |                      \n\
-      ------------------------------------------------                       \n\
+     +------+----------------+------------------------+                      \n\
                                                                              \n\
 Data can be filled into or extracted from the rows of the object using the   \n\
 standard dictionary notation:                                                \n\
