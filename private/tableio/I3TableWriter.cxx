@@ -365,7 +365,7 @@ void I3TableWriter::Convert(I3FramePtr frame) {
             size_t nrows = 0;
             
             log_debug("converting object %s with converter %s to table %s", objName.c_str(), 
-                      typeid(*bundle.converter).name(), bundle.table->GetName().c_str());
+                      name_of(bundle.converter).c_str(), bundle.table->GetName().c_str());
             log_debug("(%zu fields %s .. %s)",  
                       bundle.table->GetDescription()->GetNumberOfFields(),
                       bundle.table->GetDescription()->GetFieldNames().at(0).c_str(),
