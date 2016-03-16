@@ -102,9 +102,9 @@ and is almost certainly not what you actually want to do.', False)
             return []
         if isinstance(arg,dict):
             arg = list(arg.items())
-        if isinstance(arg,list):
+        try:
             arg = [transformer(item) for item in arg]
-        else:
+        except TypeError:
             raise TypeError("Arguments must be passed as something list-like.")
         valid_name = re.compile("^[a-zA-Z_][a-zA-Z0-9_]*$") 
         for item in arg:
