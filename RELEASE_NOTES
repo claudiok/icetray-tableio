@@ -5,6 +5,13 @@
 Release Notes
 =============
 
+trunk
+-----
+
+* accept keys in any iterable container
+* use ``std::is(nan|inf)``
+* documentation updates
+
 December 14, 2015, don la dieu  (nega@icecube.umd.edu)
 ------------------------------------------------------
 Release V15-12-00
