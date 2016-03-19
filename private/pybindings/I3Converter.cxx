@@ -18,6 +18,12 @@
 namespace bp = boost::python;
 
 void register_I3Converter() {
+	bp::enum_<I3Converter::ConvertState>("ConvertState")
+	.value("NoConversion", I3Converter::NoConversion)
+	.value("ExactConversion", I3Converter::ExactConversion)
+	.value("InexactConversion", I3Converter::InexactConversion)
+	;
+	
 	bp::class_<PythonConverter, boost::shared_ptr<PythonConverter>, boost::noncopyable>
 		("I3Converter")
 	
@@ -31,7 +37,7 @@ void register_I3Converter() {
 	                                                  I3TableRowPtr, 
 	                                                  I3FramePtr))
 	               &PythonConverter::Convert)
-	.def("CanConvert", (bool (PythonConverter::*)(I3FrameObjectPtr)) &PythonConverter::CanConvert)
+	.def("CanConvert", (I3Converter::ConvertState (PythonConverter::*)(I3FrameObjectPtr)) &PythonConverter::CanConvert)
 	.def("FillRows",&PythonConverter::FillRows)
 	//.def("GetNumberOfRows",&PythonConverter::GetNumberOfRows)
 	.def("GetNumberOfRows",(size_t (PythonConverter::*)(I3FrameObjectConstPtr))

@@ -105,12 +105,25 @@ class I3Converter {
                                      I3TableRowPtr rows, 
                                      I3FramePtr frame=I3FramePtr()) = 0;
 
+        enum ConvertState{
+            /// Used to indicate that a converter cannot convert a given object
+            NoConversion,
+            /// Used to indicate that a given object is exactly the type
+            /// converted by a converter
+            ExactConversion,
+            /// Used to indicate that a given object is a type derived from the
+            /// one a converter is designed to convert
+            InexactConversion
+        };
+    
         /**
-	 * \brief Check if the converter can handle the given object.
-	 *
-         * \returns true if this converter can handle the object.
+         * \brief Check if the converter can handle the given object.
+         *
+         * \returns A value indicating whether the converter can handle the 
+         *          object, and if so whether it can do so specifically or 
+         *          more generically.
          */
-        virtual bool CanConvert(I3FrameObjectConstPtr object) = 0;
+        virtual ConvertState CanConvert(I3FrameObjectConstPtr object) = 0;
 
         
     protected:
@@ -236,7 +249,7 @@ class I3ConverterImplementation : public I3Converter {
         }
 
         /// Check if the converter is able to treat the given frame object.
-        virtual bool CanConvert(I3FrameObjectConstPtr object);
+        virtual ConvertState CanConvert(I3FrameObjectConstPtr object);
 
 
     protected:
@@ -272,10 +285,17 @@ size_t I3ConverterImplementation<FrmObj>::GetNumberOfRows(const FrmObj& object) 
 
 /******************************************************************************/
 
-// a default implementation of CanConvert. simply attempts to cast to target type
+/// A default implementation of CanConvert. Tests whether the pointer matches the
+/// template type, and if that fails tests casting.
 template <class FrmObj>
-bool I3ConverterImplementation<FrmObj>::CanConvert(I3FrameObjectConstPtr object) {
-    return dynamic_cast<const FrmObj*>(object.get()) != NULL;
+I3Converter::ConvertState
+I3ConverterImplementation<FrmObj>::CanConvert(I3FrameObjectConstPtr object) {
+    const I3FrameObject& obj=*object.get();
+    if(typeid(FrmObj) == typeid(obj))
+        return(ExactConversion);
+    if(dynamic_cast<const FrmObj*>(&obj) != NULL)
+        return(InexactConversion);
+    return(NoConversion);
 }
 
 /******************************************************************************/

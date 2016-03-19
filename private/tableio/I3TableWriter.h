@@ -127,6 +127,8 @@ class I3TableWriter {
 
         I3ConverterPtr FindConverter(I3FrameObjectConstPtr obj);
 
+        friend struct I3TableWriterTestAccess;
+
     SET_LOGGER("I3TableWriter");
 };
 

@@ -65,15 +65,34 @@ std::string name_of(const boost::shared_ptr<T> obj) {
 I3ConverterPtr I3TableWriter::FindConverter(I3FrameObjectConstPtr obj) {
     I3ConverterPtr converter_ptr;
     std::vector<I3ConverterMillPtr>::const_iterator it_conv;
+    // Look for an exact match
+    log_trace("Searching for an exact conversion");
     for(it_conv = converterCache_.begin(); it_conv != converterCache_.end(); it_conv++) {
         I3ConverterPtr conv = (*(*it_conv))();
-	log_trace("Asking converter '%s' what it thinks of '%s'",name_of(conv).c_str(),name_of(obj).c_str());
-        bool match = conv->CanConvert(obj);
+        log_trace("Asking converter '%s' what it thinks of '%s'",name_of(conv).c_str(),name_of(obj).c_str());
+        bool match = conv->CanConvert(obj)==I3Converter::ExactConversion;
         if (match && (converter_ptr != NULL)) {
             log_fatal("Ambiguity in the converter registry. Converters '%s' and '%s' both want to handle '%s'",
                         name_of(converter_ptr).c_str(),name_of(conv).c_str(),name_of(obj).c_str());
         } else if (match) {
-            log_trace("Converter '%s' can convert '%s'",name_of(conv).c_str(),name_of(obj).c_str());
+            log_trace("Converter '%s' can exactly convert '%s'",name_of(conv).c_str(),name_of(obj).c_str());
+            converter_ptr = conv;
+        }
+    }
+    // If we found a direct match, return it.
+    if(converter_ptr)
+        return converter_ptr;
+    // Otherwise, look for an inexact match
+    log_trace("Searching for an inexact conversion");
+    for(it_conv = converterCache_.begin(); it_conv != converterCache_.end(); it_conv++) {
+        I3ConverterPtr conv = (*(*it_conv))();
+        log_trace("Asking converter '%s' what it thinks of '%s'",name_of(conv).c_str(),name_of(obj).c_str());
+        bool match = conv->CanConvert(obj)==I3Converter::InexactConversion;
+        if (match && (converter_ptr != NULL)) {
+            log_fatal("Ambiguity in the converter registry. Converters '%s' and '%s' both want to handle '%s'",
+                      name_of(converter_ptr).c_str(),name_of(conv).c_str(),name_of(obj).c_str());
+        } else if (match) {
+            log_trace("Converter '%s' can inexactly convert '%s'",name_of(conv).c_str(),name_of(obj).c_str());
             converter_ptr = conv;
         }
     }

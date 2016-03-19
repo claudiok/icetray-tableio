@@ -34,8 +34,8 @@ struct PythonConverter : I3Converter, boost::python::wrapper<I3Converter>
 
     size_t FillRows(const I3FrameObjectConstPtr object, I3TableRowPtr rows);
 
-    bool CanConvert(I3FrameObjectConstPtr object);
-    bool CanConvert(I3FrameObjectPtr object);
+    ConvertState CanConvert(I3FrameObjectConstPtr object);
+    ConvertState CanConvert(I3FrameObjectPtr object);
 
     I3FramePtr GetCurrentFrame();
 

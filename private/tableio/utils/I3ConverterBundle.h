@@ -33,7 +33,7 @@ class I3ConverterBundle : public I3Converter {
                                      I3TableRowPtr rows, 
                                      I3FramePtr frame=I3FramePtr());
 
-        virtual bool CanConvert(I3FrameObjectConstPtr object);
+        virtual ConvertState CanConvert(I3FrameObjectConstPtr object);
     private:
         I3ConverterBundle();
         std::vector<I3ConverterPtr> converters_;

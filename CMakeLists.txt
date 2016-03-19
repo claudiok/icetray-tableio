@@ -38,7 +38,14 @@ i3_add_pybindings(tableio
   )
 
 i3_test_executable(test 
-    private/test/*.cxx
+    private/test/main.cxx
+    private/test/I3DOMLaunchConverterTest.cxx
+    private/test/I3DatatypeTest.cxx
+    private/test/I3DoubleConverterTest.cxx
+    private/test/I3TableRowDescriptionTest.cxx
+    private/test/I3TableRowTest.cxx
+    private/test/I3VectorI3ParticleConverterTest.cxx
+    private/test/InheritanceConversionTest.cxx
     USE_PROJECTS dataclasses icetray phys-services tableio)
 
 i3_test_scripts(
@@ -46,4 +53,5 @@ i3_test_scripts(
     resources/test/test_recopulsemask.py
     resources/test/test_subevents.py
     resources/test/test_I3MCTree.py
+    resources/test/test_inheritance_conversion.py
 )

@@ -97,7 +97,8 @@ size_t I3ConverterBundle::Convert(const I3FrameObject& object,
 //***************************************************************************//
 
 // By convention, only asks the _first_ converter
-bool I3ConverterBundle::CanConvert(I3FrameObjectConstPtr object) {
+I3Converter::ConvertState
+I3ConverterBundle::CanConvert(I3FrameObjectConstPtr object) {
     return converters_.front()->CanConvert(object);
 };
 

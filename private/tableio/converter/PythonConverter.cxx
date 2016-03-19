@@ -111,11 +111,12 @@ size_t PythonConverter::Convert(const I3FrameObject& object,
 	}
 }
 
-bool PythonConverter::CanConvert(I3FrameObjectConstPtr object) {
+I3Converter::ConvertState
+PythonConverter::CanConvert(I3FrameObjectConstPtr object) {
 	return CanConvert(boost::const_pointer_cast<I3FrameObject>(object));
 }
 
-bool PythonConverter::CanConvert(I3FrameObjectPtr obj) {
+I3Converter::ConvertState PythonConverter::CanConvert(I3FrameObjectPtr obj) {
 	if (bp::override can_convert = this->get_override("CanConvert")) {
 		return can_convert(obj);
 	} else {
@@ -124,10 +125,20 @@ bool PythonConverter::CanConvert(I3FrameObjectPtr obj) {
 		bp::object object(obj);
 		if (!PyObject_HasAttrString(sptr,"booked")) {
 			log_fatal("Python module must define attribute 'booked' holding the type to be converted.");
-			return false;
-		} else {
-			return PyObject_IsInstance(object.ptr(),PyObject_GetAttrString(sptr, "booked"));
 		}
+        PyObject* oType=PyObject_Type(object.ptr());
+        PyObject* bType=PyObject_GetAttrString(sptr, "booked");
+        bool exactMatch=oType==bType;
+        bool inexactMatch=PyObject_IsInstance(object.ptr(),bType);
+        Py_DECREF(oType);
+        Py_DECREF(bType);
+        if (exactMatch) {
+            return ExactConversion;
+        }
+        if (inexactMatch) {
+            return InexactConversion;
+        }
+        return NoConversion;
 	}
 }
 
