@@ -8,6 +8,11 @@ Release Notes
 trunk
 -----
 
+March 21, 2016, don la dieu  (nega@icecube.umd.edu)
+---------------------------------------------------
+Release V16-03-00
+
+* (r143491/IceCube) correct conversion of derived types
 * accept keys in any iterable container
 * use ``std::is(nan|inf)``
 * documentation updates
@@ -20,7 +25,7 @@ Release V15-12-00
 * remove dead code
 
 August 31, 2015, Alex Olivas  (olivas@icecube.umd.edu)
---------------------------------------------------------------------
+------------------------------------------------------
 
 Release V15-08-00 
 
@@ -31,7 +36,7 @@ Release V15-08-00
   reason.
 
 March 15, 2015, Alex Olivas  (olivas@icecube.umd.edu)
---------------------------------------------------------------------
+-----------------------------------------------------
 
 Release V15-03-00 
 
@@ -41,7 +46,7 @@ Release V15-03-00
   converters like "the primary"
 
 November 20, 2014, Alex Olivas  (olivas@icecube.umd.edu)
---------------------------------------------------------------------
+--------------------------------------------------------
 
 Release V14-11-00 - Bugfix release.
 
@@ -52,7 +57,7 @@ Release V14-11-00 - Bugfix release.
 
 
 August 11, 2011, Alex Olivas  (olivas@icecube.umd.edu)
---------------------------------------------------------------------
+------------------------------------------------------
 
 Release V11-08-00
 
@@ -70,7 +75,7 @@ Bugfix:
   -- Jakob van Santen
 
 August 2, 2011, Erik Blaufuss  (blaufuss@icecube.umd.edu)
---------------------------------------------------------------------
+---------------------------------------------------------
 
 Release V11-07-00
 
