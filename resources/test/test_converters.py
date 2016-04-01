@@ -62,12 +62,12 @@ def fill_frame(frame):
 		converter = converters[0]()
 		try:
 			obj = potemkin_object(typus)
-			frame[name] = obj
-			fill_frame.objects[name] = obj
 		except Exception as e:
-			print e
 			# doesn't have a default constructor
 			pass
+		frame[name] = obj
+		fill_frame.objects[name] = obj
+		
 fill_frame.objects = dict()
 tray = I3Tray()
 
