@@ -8,11 +8,10 @@ from icecube import icetray, dataclasses, tableio, phys_services, dataio
 from I3Tray import I3Tray
 
 # hobo "from icecube import *"
-from importlib import import_module
 import icecube, os
 for path in os.listdir(os.path.dirname(icecube.__file__)):
 	try:
-		import_module("icecube."+os.path.splitext(path)[0])
+		__import__("icecube."+os.path.splitext(path)[0])
 	except ImportError:
 		pass
 	except RuntimeError:
