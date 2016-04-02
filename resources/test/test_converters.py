@@ -63,7 +63,7 @@ def fill_frame(frame):
 			obj = potemkin_object(typus)
 		except Exception as e:
 			# doesn't have a default constructor
-			pass
+			continue
 		frame[name] = obj
 		fill_frame.objects[name] = obj
 		
