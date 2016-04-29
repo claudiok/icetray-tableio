@@ -8,6 +8,11 @@ Release Notes
 trunk
 -----
 
+April 29, 2016, Alex Olivas  (olivas@icecube.umd.edu)
+---------------------------------------------------
+Release V16-04-00
+* Add a test that runs all the converters
+
 March 21, 2016, don la dieu  (nega@icecube.umd.edu)
 ---------------------------------------------------
 Release V16-03-00
