@@ -15,7 +15,7 @@ i3_add_library(tableio
   private/tableio/utils/*.cxx
   private/tableio/detail/*.cxx
   USE_TOOLS boost
-  USE_PROJECTS icetray dataclasses
+  USE_PROJECTS serialization icetray dataclasses
 )
 
 i3_add_pybindings(tableio
