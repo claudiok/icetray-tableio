@@ -27,7 +27,8 @@ def fakeit(frame):
 	
 tray.AddModule(fakeit, 'fakeit')
 
-tabler = tableio.I3CSVTableService(os.environ['I3_BUILD'] + '/tableio/pulsemask_test')
+dirname = os.environ['I3_BUILD'] + '/tableio/pulsemask_test'
+tabler = tableio.I3CSVTableService(dirname)
 
 tray.AddModule(tableio.I3TableWriter, 'scribe',
 	tableservice=tabler,
@@ -38,4 +39,6 @@ tray.AddModule('TrashCan', 'YesWeCan')
 tray.Execute(1)
 tray.Finish()
 
+import shutil
+shutil.rmtree(dirname)
 

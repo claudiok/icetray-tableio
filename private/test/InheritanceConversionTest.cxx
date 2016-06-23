@@ -2,6 +2,7 @@
 
 #include <boost/make_shared.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/filesystem.hpp>
 
 #include <tableio/I3Converter.h>
 #include <tableio/I3TableWriter.h>
@@ -149,4 +150,7 @@ TEST(MostSpecificConverterIsSelected){
 	ENSURE(I3TableWriterTestAccess::FindConverter(tw,f)==fconverter);
 	ENSURE(I3TableWriterTestAccess::FindConverter(tw,f2)==fconverter);
 	ENSURE(I3TableWriterTestAccess::FindConverter(tw,b)==bconverter);
+
+	namespace fs = boost::filesystem;
+	fs::remove_all("dummy_directory");
 }

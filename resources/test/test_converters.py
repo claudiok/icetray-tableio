@@ -78,14 +78,17 @@ tray.Add(fill_frame)
 from icecube.tableio import I3BroadcastTableService
 
 tablers = [tableio.I3CSVTableService('test_converters')]
+outfiles = ['test_converters']
 try:
 	from icecube.hdfwriter import I3HDFTableService
 	tablers.append(I3HDFTableService("test_converters.hdf5", 6, 'w'))
+	outfiles.append('test_converters.hdf5')
 except ImportError:
 	pass
 try:
 	from icecube.rootwriter import I3ROOTTableService
 	tablers.append(I3ROOTTableService("test_converters.root"))
+	outfiles.append('test_converters.root')
 except ImportError:
 	pass
 if len(tablers) == 1:
@@ -114,3 +117,9 @@ try:
 					assert getattr(obj, name) == row[name]
 except ImportError:
 	pass
+
+import shutil, os
+shutil.rmtree(outfiles[0])
+for outfile in outfiles[1:]:
+	os.unlink(outfile)
+
