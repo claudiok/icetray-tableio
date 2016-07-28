@@ -214,7 +214,7 @@ I3TableService::~I3TableService() {
     
     for ( ; table_it != tables_.end(); ++table_it) {
         if (table_it->second->IsConnectedToWriter()) {
-            log_fatal("Table '%s' is still connected, which means that the "
+            log_error("Table '%s' is still connected, which means that the "
                 "output file was never properly closed. This is a BUG!\n",
                 table_it->first.c_str());
             break;
