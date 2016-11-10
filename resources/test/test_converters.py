@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 
+import platform
+
+hosts = ['kipple']
+for h in hosts:
+    if h in platform.node():
+        print "This test is disabled on this host: " + platform.node()
+        quit()
+    
+
 """
 Run all registered converters through both HDFWriter and ROOTWriter
 """
