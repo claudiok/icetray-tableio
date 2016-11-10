@@ -2,7 +2,7 @@
 
 import platform
 
-hosts = ['kipple']
+hosts = ['kipple', 'morax']
 for h in hosts:
     if h in platform.node():
         print "This test is disabled on this host: " + platform.node()
