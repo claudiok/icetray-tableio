@@ -5,7 +5,7 @@ import platform
 hosts = ['kipple', 'morax']
 for h in hosts:
     if h in platform.node():
-        print "This test is disabled on this host: " + platform.node()
+        print("This test is disabled on this host: " + platform.node())
         quit()
     
 
