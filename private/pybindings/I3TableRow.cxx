@@ -153,7 +153,7 @@ standard dictionary notation:                                                \n\
    desc.add_field('foo','i','radians','The cut of foo\'s jib.')              \n\
    rows = I3TableRow(desc,5)                                                 \n\
                                                                              \n\
-   for i in xrange(rows.number_of_rows)                                      \n\
+   for i in range(rows.number_of_rows)                                       \n\
       rows.current_row = i                                                   \n\
       rows['foo'] = i*5                                                      \n\
                                                                              \n\
@@ -168,7 +168,7 @@ then the column 'raw_waveform' can be filled with a wrapped instance of      \n\
 I3Vector                                                                     \n\
                                                                              \n\
    vec = dataclasses.I3VectorInt()                                           \n\
-   for i in xrange(128): vec.append(i)                                       \n\
+   for i in range(128): vec.append(i)                                        \n\
    rows['raw_waveform'] = vec                                                \n\
                                                                              \n\
 or an array from the standard library array module                           \n\
