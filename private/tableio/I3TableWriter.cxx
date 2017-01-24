@@ -23,11 +23,11 @@
 // Some things can pretend to be I3RecoPulseSeriesMaps, and we want them
 // to do that, so wrap frame->Get(). Any similar future hacks should also
 // go here.
-inline I3FrameObjectConstPtr GetFrameObject(I3FramePtr frame, std::string name, bool quietly = false)
+inline I3FrameObjectConstPtr GetFrameObject(I3FramePtr frame, std::string name)
 {
-    I3FrameObjectConstPtr object = frame->Get<I3RecoPulseSeriesMapConstPtr>(name, quietly);
+    I3FrameObjectConstPtr object = frame->Get<I3RecoPulseSeriesMapConstPtr>(name);
     if (!object)
-        object = frame->Get<I3FrameObjectConstPtr>(name, quietly);
+        object = frame->Get<I3FrameObjectConstPtr>(name);
 
     return object;
 }
@@ -346,9 +346,8 @@ void I3TableWriter::Convert(I3FramePtr frame) {
          
          I3FrameObjectConstPtr object;
          
-         try {
-            object = GetFrameObject(frame, objName,true);
-         } catch (...) {
+	 object = GetFrameObject(frame, objName);
+	 if(!object && frame->Has(objName)){
             uselessKeys_.insert(objName);
             log_trace("Added key '%s' to ban list (unregistered class)",objName.c_str());
             continue;
